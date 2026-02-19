@@ -5,6 +5,9 @@ import { generateQuestions } from './services/geminiService';
 import Button from './components/Button';
 import Input from './components/Input';
 import ProgressNavigation from './components/ProgressNavigation';
+import ReadingPassage from './components/ReadingPassage';
+import LeaderboardDashboard from './components/LeaderboardDashboard';
+import { addLeaderboardEntry, subscribeToLeaderboard, resetLeaderboard } from './services/firebase';
 import {
   Trophy,
   User as UserIcon,
@@ -34,6 +37,8 @@ const App: React.FC = () => {
   const [currentStage, setCurrentStage] = useState(0); // 0 to 9
   const [timeLeft, setTimeLeft] = useState<number>(480); // 8 minutes = 480 seconds
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [userAnswers, setUserAnswers] = useState<Record<string, boolean>>({});
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // UI State
   const [showSettings, setShowSettings] = useState(false);
@@ -46,11 +51,18 @@ const App: React.FC = () => {
 
   // Initialize Leaderboard & Settings
   useEffect(() => {
-    const savedLb = localStorage.getItem('leaderboardHEALTHYQUEST');
-    if (savedLb) setLeaderboard(JSON.parse(savedLb));
-
     const savedSettings = localStorage.getItem('healthylife_settings');
     if (savedSettings) setSettings(JSON.parse(savedSettings));
+
+    // Subscribe to Firebase
+    setIsSyncing(true);
+    const unsubscribe = subscribeToLeaderboard((entries) => {
+      setLeaderboard(entries);
+      localStorage.setItem('leaderboardHEALTHYQUEST', JSON.stringify(entries));
+      setIsSyncing(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   // Timer: Countdown from 480
@@ -119,6 +131,7 @@ const App: React.FC = () => {
     setSelectedAnswer(null);
     setIsAnswerConfirmed(false);
     setFeedbackMessage(null);
+    setUserAnswers({});
 
     setAppState(AppState.PLAYING);
   };
@@ -134,6 +147,12 @@ const App: React.FC = () => {
     setIsAnswerConfirmed(true);
     const currentQ = questions[currentStage];
     const isCorrect = selectedAnswer === currentQ.correctAnswerId;
+
+    // Record answer
+    setUserAnswers(prev => ({
+      ...prev,
+      [currentQ.id]: isCorrect
+    }));
 
     if (isCorrect) {
       setFeedbackMessage("CORRECT!");
@@ -154,27 +173,24 @@ const App: React.FC = () => {
   };
 
   const completeGame = (isTimeout = false) => {
-    // Score based on time spent? Or just completion?
-    // User wants "Fastest" leaderboard.
-    // Time Spent = 480 - timeLeft
+    // Score based on correct answers (1 point each, displayed as *10 later)
+    const finalScore = Object.values(userAnswers).filter(Boolean).length;
     const timeSpent = 480 - timeLeft;
 
     // Save to Leaderboard
     const newEntry: LeaderboardEntry = {
       name: user.name,
       className: user.className,
-      score: 10,
+      score: finalScore,
       timeSpent: timeSpent,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      answers: userAnswers
     };
 
-    // logic: Add, Sort by Time Ascending, Slice 999
-    const updatedLb = [...leaderboard, newEntry]
-      .sort((a, b) => a.timeSpent - b.timeSpent)
-      .slice(0, 999);
+    // Save to Firebase
+    addLeaderboardEntry(newEntry);
 
-    setLeaderboard(updatedLb);
-    localStorage.setItem('leaderboardHEALTHYQUEST', JSON.stringify(updatedLb));
+    // We rely on the subscription to update the local leaderboard state
     setAppState(AppState.RESULT);
   };
 
@@ -299,10 +315,8 @@ const App: React.FC = () => {
         <div className="flex-1 w-full max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
 
           {/* LEFT: Reading Passage */}
-          <div className="bg-[#F0FDF4] rounded-2xl shadow-inner border border-green-100 p-6 overflow-y-auto">
-            <div className="prose prose-green max-w-none">
-              {formattedReading}
-            </div>
+          <div className="bg-[#F0FDF4] rounded-2xl shadow-inner border border-green-100 p-6 overflow-hidden relative">
+            <ReadingPassage content={READING_PASSAGE} />
           </div>
 
           {/* RIGHT: Question Card */}
@@ -419,63 +433,12 @@ const App: React.FC = () => {
   );
 
   const renderLeaderboard = () => (
-    <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
-      <div className="max-w-xl w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-in flex flex-col h-[85vh]">
-        <div className="p-6 bg-gradient-to-r from-[#0F766E] to-[#14B8A6] text-white shadow-lg z-10">
-          <div className="flex items-center justify-between mb-2">
-            <button onClick={() => setAppState(AppState.RESULT)} className="hover:bg-white/20 p-2 rounded-full transition-colors">
-              <RotateCcw size={20} />
-            </button>
-            <h2 className="text-xl font-bold flex items-center gap-2 uppercase tracking-wider">
-              <Trophy className="text-yellow-300" /> Top 10 Fastest
-            </h2>
-            <div className="w-9" />
-          </div>
-          <p className="text-center text-[#5EEAD4] text-xs font-medium">
-            {leaderboard.length >= 999 ? 'FULL LEADERBOARD (999 people)' : `${leaderboard.length} brave challengers`}
-          </p>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
-          {leaderboard.length === 0 ? (
-            <div className="text-center text-slate-400 py-12">
-              No champions yet. Be the first!
-            </div>
-          ) : (
-            leaderboard.slice(0, 10).map((entry, idx) => (
-              <div key={idx} className="flex items-center bg-white p-4 rounded-xl border-b-4 border-slate-100 shadow-sm transform hover:scale-[1.01] transition-all">
-                <div className={`
-                 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg mr-4 border-2
-                 ${idx === 0 ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
-                    idx === 1 ? 'bg-slate-100 text-slate-600 border-slate-300' :
-                      idx === 2 ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-slate-50 text-slate-400 border-transparent'}
-               `}>
-                  {idx + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="font-bold text-[#0F766E] text-lg">{entry.name}</div>
-                  <div className="text-xs text-slate-500 font-medium bg-slate-100 inline-block px-2 py-0.5 rounded-md">Class {entry.className}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-mono font-bold text-[#0F766E] text-lg">
-                    {Math.floor(entry.timeSpent / 60)}' {entry.timeSpent % 60}s
-                  </div>
-                  <div className="text-[10px] text-slate-400">
-                    {new Date(entry.timestamp).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="p-4 bg-white border-t border-slate-100">
-          <Button fullWidth onClick={() => setAppState(AppState.LOGIN)} className="bg-slate-800 text-white hover:bg-slate-900">
-            <LogOut size={16} className="mr-2" /> EXIT GAME
-          </Button>
-        </div>
-      </div>
-    </div>
+    <LeaderboardDashboard
+      entries={leaderboard}
+      onReset={resetLeaderboard}
+      onExit={() => setAppState(AppState.LOGIN)}
+      isSyncing={isSyncing}
+    />
   );
 
   return (
