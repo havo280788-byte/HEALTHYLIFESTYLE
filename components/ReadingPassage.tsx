@@ -54,6 +54,12 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     useLayoutEffect(() => {
         if (contentRef.current) {
             contentRef.current.scrollTop = savedScrollTop.current;
+            // Double insurance: sometimes browsers reset scroll after layout calc
+            requestAnimationFrame(() => {
+                if (contentRef.current) {
+                    contentRef.current.scrollTop = savedScrollTop.current;
+                }
+            });
         }
     }, [htmlContent]);
 

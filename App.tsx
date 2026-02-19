@@ -147,15 +147,12 @@ const App: React.FC = () => {
 
   const handleAnswerSelect = (optionId: string) => {
     if (isAnswerConfirmed) return;
+
     setSelectedAnswer(optionId);
-  };
-
-  const confirmAnswer = () => {
-    if (!selectedAnswer) return;
-
     setIsAnswerConfirmed(true);
+
     const currentQ = questions[currentStage];
-    const isCorrect = selectedAnswer === currentQ.correctAnswerId;
+    const isCorrect = optionId === currentQ.correctAnswerId;
 
     // Record answer
     setUserAnswers(prev => ({
@@ -165,10 +162,8 @@ const App: React.FC = () => {
 
     if (isCorrect) {
       setFeedbackMessage("CORRECT!");
-      // playSound('correct'); // Disabled per user request
     } else {
       setFeedbackMessage("INCORRECT");
-      // playSound('incorrect'); // Disabled per user request
     }
   };
 
@@ -384,18 +379,9 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Footer Actions */}
-              <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
-                {!isAnswerConfirmed && (
-                  <Button
-                    onClick={confirmAnswer}
-                    disabled={!selectedAnswer}
-                    fullWidth
-                    className="bg-[#0F766E] hover:bg-[#115e59] text-white py-3 md:py-4 text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
-                  >
-                    Confirm Answer
-                  </Button>
-                )}
+              {/* Footer Actions - REMOVED CONFIRM BUTTON */}
+              <div className="p-4 bg-slate-50 border-t border-slate-100 text-center text-slate-400 text-sm italic">
+                Select an answer to continue...
               </div>
             </div>
           </div>
