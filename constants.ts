@@ -47,126 +47,131 @@ Running, cycling, walking and hiking are some types of outdoor fitness. More and
 `;
 
 export const FALLBACK_QUESTIONS: Question[] = [
-  // 5 True/False
-  {
-    id: 'tf1',
-    type: QuestionType.TRUE_FALSE,
-    content: 'According to the text, 75% of people find home workouts easier and more convenient.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' }
-    ],
-    correctAnswerId: 'true',
-    explanation: 'The text states that "75% of people asked say it is easier, cheaper and more convenient to exercise at home."'
-  },
-  {
-    id: 'tf2',
-    type: QuestionType.TRUE_FALSE,
-    content: 'You need expensive equipment to create a perfect home gym.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' }
-    ],
-    correctAnswerId: 'false',
-    explanation: 'The text mentions you only need "a mat, light weights and some space."'
-  },
-  {
-    id: 'tf3',
-    type: QuestionType.TRUE_FALSE,
-    content: 'Fitness apps are only available for young people.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' }
-    ],
-    correctAnswerId: 'false',
-    explanation: 'The text says these apps are "for people of all ages."'
-  },
-  {
-    id: 'tf4',
-    type: QuestionType.TRUE_FALSE,
-    content: 'Smart fitness mirrors allow you to see yourself while training.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' }
-    ],
-    correctAnswerId: 'true',
-    explanation: 'The text confirms that "the person exercising can see themself in the mirror."'
-  },
-  {
-    id: 'tf5',
-    type: QuestionType.TRUE_FALSE,
-    content: 'Outdoor fitness activities include boxing and Pilates.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' }
-    ],
-    correctAnswerId: 'false',
-    explanation: 'Boxing and Pilates are mentioned as programs on smart fitness mirrors, while running and cycling are listed as outdoor fitness.'
-  },
-  // 5 Multiple Choice
+  // 5 Multiple Choice (Comprehension)
   {
     id: 'mc1',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Why are home workouts becoming popular?',
+    content: 'Mini-workouts last from _______.',
     options: [
-      { id: 'a', text: 'Gyms are closing down' },
-      { id: 'b', text: 'Working people lack time to go to fitness centres' },
-      { id: 'c', text: 'They require heavy weights' },
-      { id: 'd', text: 'Apps pay you to exercise' }
+      { id: 'a', text: '5 to 10 minutes' },
+      { id: 'b', text: '15 to 20 minutes' },
+      { id: 'c', text: '30 to 45 minutes' },
+      { id: 'd', text: '60 to 90 minutes' }
     ],
-    correctAnswerId: 'b',
-    explanation: 'The text says "many working people can\'t manage to have time to go to the fitness centre."'
+    correctAnswerId: 'a',
+    explanation: 'The text states: "Mini-workouts of 5 to 10 minutes spread out during the day are also a great way to exercise while busy at home."'
   },
   {
     id: 'mc2',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'What is a suggested duration for "mini-workouts"?',
+    content: 'Some fitness apps also offer healthy _______tips.',
     options: [
-      { id: 'a', text: '1 hour' },
-      { id: 'b', text: '30 minutes' },
-      { id: 'c', text: '5 to 10 minutes' },
-      { id: 'd', text: '20 seconds' }
+      { id: 'a', text: 'exercise programmes' },
+      { id: 'b', text: 'diet advice and wellness' },
+      { id: 'c', text: 'outdoor activities' },
+      { id: 'd', text: 'fitness equipment' }
     ],
-    correctAnswerId: 'c',
-    explanation: 'The text suggests "Mini-workouts of 5 to 10 minutes spread out during the day."'
+    correctAnswerId: 'b',
+    explanation: 'According to the text: "They offer a variety of workouts as well as healthy diet advice and wellness tips."'
   },
   {
     id: 'mc3',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'What allows exercise equipment like treadmills to be interactive?',
+    content: 'The latest fitness _______ is apps on our smart watches, laptops and computers.',
     options: [
-      { id: 'a', text: 'Screens and speakers' },
-      { id: 'b', text: 'Wheels and pedals' },
-      { id: 'c', text: 'Remote controls' },
-      { id: 'd', text: 'Virtual Reality headsets' }
+      { id: 'a', text: 'routine' },
+      { id: 'b', text: 'habit' },
+      { id: 'c', text: 'craze' },
+      { id: 'd', text: 'schedule' }
     ],
-    correctAnswerId: 'a',
-    explanation: 'Equipment has "become interactive with screens and speakers."'
+    correctAnswerId: 'c',
+    explanation: 'The text mentions: "Fitness applications on our mobiles, smart watches and computers are the latest craze."'
   },
   {
     id: 'mc4',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Which of the following is NOT mentioned as an outdoor fitness activity?',
+    content: 'Smart fitness mirrors are like _______ that teach exercises.',
     options: [
-      { id: 'a', text: 'Hiking' },
-      { id: 'b', text: 'Cycling' },
-      { id: 'c', text: 'Swimming' },
-      { id: 'd', text: 'Walking' }
+      { id: 'a', text: 'gym members' },
+      { id: 'b', text: 'fitness students' },
+      { id: 'c', text: 'personal trainers' },
+      { id: 'd', text: 'office workers' }
     ],
     correctAnswerId: 'c',
-    explanation: 'Swimming is not listed in the text; Running, cycling, walking and hiking are.'
+    explanation: 'The text explains: "Smart fitness mirrors, acting as personal trainers, provide a variety of exercise programmes..."'
   },
   {
     id: 'mc5',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'What benefit does the text mention for outdoor fitness?',
+    content: 'Fresh air is one of the _______ of exercising outside.',
     options: [
-      { id: 'a', text: 'No equipment needed' },
-      { id: 'b', text: 'Fresh air and green healing' },
-      { id: 'c', text: 'It is always free' },
-      { id: 'd', text: 'You can bring your pet' }
+      { id: 'a', text: 'plans' },
+      { id: 'b', text: 'rewards' },
+      { id: 'c', text: 'benefits' },
+      { id: 'd', text: 'workouts' }
     ],
-    correctAnswerId: 'b',
-    explanation: 'The text mentions "enjoying the benefits of nature with some fresh air and green healing."'
+    correctAnswerId: 'c',
+    explanation: 'The text refers to "enjoying the benefits of nature with some fresh air and green healing."'
+  },
+  // 5 True / False / Doesn't Say
+  {
+    id: 'tf1',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Many people think it is less expensive to exercise in their homes.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'true',
+    explanation: 'The text says: "75% of people asked say it is easier, cheaper and more convenient to exercise at home."'
+  },
+  {
+    id: 'tf2',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Home gyms need a lot of space.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'false',
+    explanation: 'The text states: "All you need is a mat, light weights and some space," implying minimal space is sufficient.'
+  },
+  {
+    id: 'tf3',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Most fitness apps are downloaded on mobile phones.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'ds',
+    explanation: 'The text mentions apps on mobiles, smart watches, and computers are a craze, but does not specify that "most" are downloaded on phones.'
+  },
+  {
+    id: 'tf4',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'You can’t take exercise classes with a smart fitness mirror.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'false',
+    explanation: 'The text says smart fitness mirrors "provide a variety of exercise programmes from boxing to Pilates."'
+  },
+  {
+    id: 'tf5',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Outdoor fitness classes don’t have equipment.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'ds',
+    explanation: 'The text mentions outdoor classes but doesn\'t specify whether they have equipment or not.'
   }
 ];
