@@ -161,10 +161,10 @@ const App: React.FC = () => {
 
     if (isCorrect) {
       setFeedbackMessage("CORRECT!");
-      playSound('correct');
+      // playSound('correct'); // Disabled per user request
     } else {
       setFeedbackMessage("INCORRECT");
-      playSound('incorrect');
+      // playSound('incorrect'); // Disabled per user request
     }
   };
 

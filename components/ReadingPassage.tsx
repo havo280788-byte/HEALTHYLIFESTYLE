@@ -51,19 +51,27 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
         if (contentRef.current && contentRef.current.contains(range.commonAncestorContainer)) {
             try {
                 const span = document.createElement('span');
-                span.className = 'bg-yellow-200/50 border-b-2 border-yellow-400 cursor-pointer transition-colors hover:bg-yellow-300/50';
+                // Use a stronger yellow and ensure it's visible
+                span.className = 'bg-yellow-300 text-slate-900 px-1 rounded-sm cursor-pointer hover:bg-yellow-400 transition-colors shadow-sm';
+                span.title = "Click to remove highlight"; // Tooltip
+
                 span.onclick = (e) => {
                     if (isHighlightMode) {
-                        // Remove highlight on click if in mode (optional, or separate eraser)
-                        // For now, let's just allow adding. Implementation of removal needs careful DOM manipulation.
-                        // Let's keep it simple: Select to highlight.
+                        e.stopPropagation(); // Prevent parent clicks
+                        // Unwrap the span to remove highlight
+                        const parent = span.parentNode;
+                        while (span.firstChild) {
+                            parent?.insertBefore(span.firstChild, span);
+                        }
+                        parent?.removeChild(span);
                     }
                 };
+
                 range.surroundContents(span);
                 selection.removeAllRanges();
             } catch (e) {
                 console.warn("Cannot highlight across different block elements", e);
-                // Fallback or ignore complex multi-block selections for this simple implementation
+                alert("Please select text within a single paragraph to highlight.");
             }
         }
     };
