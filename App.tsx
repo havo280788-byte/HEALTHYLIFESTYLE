@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { User, Question, AppState, LeaderboardEntry, GameSettings, QuestionType } from './types';
-import { GEMINI_MODELS, FALLBACK_QUESTIONS, GAME_STAGES, THEME_COLORS } from './constants';
+import { GEMINI_MODELS, FALLBACK_QUESTIONS, GAME_STAGES, THEME_COLORS, READING_PASSAGE } from './constants';
 import { generateQuestions } from './services/geminiService';
 import Button from './components/Button';
 import Input from './components/Input';
-import GameMap from './components/GameMap';
+import ProgressNavigation from './components/ProgressNavigation';
 import {
   Trophy,
   User as UserIcon,
@@ -19,7 +19,8 @@ import {
   Leaf,
   Heart,
   Activity,
-  Award
+  Award,
+  Clock
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -101,7 +102,7 @@ const App: React.FC = () => {
       gameQuestions = [...FALLBACK_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 10);
     }
 
-    // Double check we have enough (duplicate if needed for safety, though fallback has 10)
+    // Double check we have enough
     while (gameQuestions.length < 10) {
       gameQuestions.push(gameQuestions[0]);
     }
@@ -154,7 +155,7 @@ const App: React.FC = () => {
     const newEntry: LeaderboardEntry = {
       name: user.name,
       className: user.className,
-      score: 10, // Assuming completion is the goal, or we could track actual correct answers
+      score: 10,
       timeSpent: finalTime,
       timestamp: Date.now()
     };
@@ -172,63 +173,65 @@ const App: React.FC = () => {
   // --- Renderers ---
 
   const renderLogin = () => (
-    <div className="max-w-md w-full mx-auto bg-white/95 backdrop-blur shadow-2xl rounded-3xl p-8 border-4 border-[#14B8A6] animate-fade-in relative overflow-hidden">
-      {/* Decorative Icons */}
-      <Leaf className="absolute -top-4 -right-4 text-[#5EEAD4]/30 w-24 h-24 rotate-12" />
-      <Heart className="absolute bottom-4 -left-4 text-[#5EEAD4]/30 w-16 h-16 -rotate-12" />
+    <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
+      <div className="max-w-md w-full mx-auto bg-white/95 backdrop-blur shadow-2xl rounded-3xl p-8 border-4 border-[#14B8A6] animate-fade-in relative overflow-hidden">
+        {/* Decorative Icons */}
+        <Leaf className="absolute -top-4 -right-4 text-[#5EEAD4]/30 w-24 h-24 rotate-12" />
+        <Heart className="absolute bottom-4 -left-4 text-[#5EEAD4]/30 w-16 h-16 -rotate-12" />
 
-      <div className="text-center mb-8 relative z-10">
-        <div className="w-20 h-20 rounded-full bg-[#0F766E] flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
-          <Activity size={40} />
-        </div>
-        <h1 className="text-2xl md:text-3xl font-black text-[#0F766E] mb-2 uppercase tracking-wide">English 11<br />Healthy Lifestyle</h1>
-        <p className="text-[#14B8A6] font-medium">Ready to test your knowledge?</p>
-      </div>
-
-      <div className="space-y-5 relative z-10">
-        <Input
-          label="FULL NAME"
-          placeholder="Enter your name"
-          value={user.name}
-          onChange={(e) => setUser({ ...user, name: e.target.value })}
-          icon={<UserIcon size={18} />}
-        />
-        <Input
-          label="CLASS"
-          placeholder="e.g. 11A1"
-          value={user.className}
-          onChange={(e) => setUser({ ...user, className: e.target.value })}
-          icon={<BookOpen size={18} />}
-        />
-
-        <Button
-          fullWidth
-          onClick={startGame}
-          disabled={!user.name || !user.className}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
-        >
-          START CHALLENGE <Play size={20} className="ml-2" />
-        </Button>
-      </div>
-
-      {/* Settings Toggle */}
-      <div className="mt-8 text-center">
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          className="text-xs text-slate-400 hover:text-[#0F766E] flex items-center justify-center gap-1 mx-auto"
-        >
-          <Settings size={14} /> Settings
-        </button>
-        {showSettings && (
-          <div className="mt-4 p-4 bg-slate-50 rounded-xl space-y-3 text-left border border-slate-200">
-            <Input
-              label="API Key (Optional)"
-              type="password"
-              value={settings.apiKey}
-              onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-            />
+        <div className="text-center mb-8 relative z-10">
+          <div className="w-20 h-20 rounded-full bg-[#0F766E] flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
+            <Activity size={40} />
           </div>
-        )}
+          <h1 className="text-2xl md:text-3xl font-black text-[#0F766E] mb-2 uppercase tracking-wide">English 11<br />Healthy Lifestyle</h1>
+          <p className="text-[#14B8A6] font-medium">Ready to test your knowledge?</p>
+        </div>
+
+        <div className="space-y-5 relative z-10">
+          <Input
+            label="FULL NAME"
+            placeholder="Enter your name"
+            value={user.name}
+            onChange={(e) => setUser({ ...user, name: e.target.value })}
+            icon={<UserIcon size={18} />}
+          />
+          <Input
+            label="CLASS"
+            placeholder="e.g. 11A1"
+            value={user.className}
+            onChange={(e) => setUser({ ...user, className: e.target.value })}
+            icon={<BookOpen size={18} />}
+          />
+
+          <Button
+            fullWidth
+            onClick={startGame}
+            disabled={!user.name || !user.className}
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+          >
+            START CHALLENGE <Play size={20} className="ml-2" />
+          </Button>
+        </div>
+
+        {/* Settings Toggle */}
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="text-xs text-slate-400 hover:text-[#0F766E] flex items-center justify-center gap-1 mx-auto"
+          >
+            <Settings size={14} /> Settings
+          </button>
+          {showSettings && (
+            <div className="mt-4 p-4 bg-slate-50 rounded-xl space-y-3 text-left border border-slate-200">
+              <Input
+                label="API Key (Optional)"
+                type="password"
+                value={settings.apiKey}
+                onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -237,84 +240,108 @@ const App: React.FC = () => {
     const currentQ = questions[currentStage];
     if (!currentQ) return null;
 
+    // Formatting Reading Passage (Simple markdown-like replacement for basic bolding/titles)
+    // In a real app we might use a markdown renderer, but here we keep it zero-dep-consistent
+    const formattedReading = READING_PASSAGE.split('\n').map((line, idx) => {
+      if (line.startsWith('## ')) return <h2 key={idx} className="text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">{line.replace('## ', '')}</h2>;
+      if (line.startsWith('**')) {
+        const content = line.replace(/\*\*/g, '');
+        return <h3 key={idx} className="text-lg font-bold text-[#0d9488] mt-4 mb-2">{content}</h3>;
+      }
+      if (line.trim() === '') return <div key={idx} className="h-4" />;
+      return <p key={idx} className="mb-2 text-slate-700 leading-relaxed text-lg">{line}</p>;
+    });
+
     return (
-      <div className="w-full max-w-5xl mx-auto px-4 py-6 flex flex-col items-center">
-        {/* Header / Stats */}
-        <div className="w-full flex justify-between items-center bg-white/90 backdrop-blur p-4 rounded-xl shadow-md mb-6 border-l-4 border-[#0F766E]">
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-slate-400 uppercase">Player</span>
-            <span className="font-bold text-[#0F766E]">{user.name}</span>
-          </div>
-          <div className="flex flex-col items-end">
-            <span className="text-xs font-bold text-slate-400 uppercase">Time</span>
-            <span className="font-mono font-bold text-2xl text-[#0F766E]">
-              {Math.floor(elapsedSeconds / 60).toString().padStart(2, '0')}:
-              {(elapsedSeconds % 60).toString().padStart(2, '0')}
-            </span>
-          </div>
-        </div>
+      <div className="h-screen w-full flex flex-col bg-slate-50 overflow-hidden">
+        {/* 1. Navigation Bar */}
+        <ProgressNavigation currentStage={currentStage} />
 
-        {/* 2D Map */}
-        <GameMap currentStage={currentStage} />
+        {/* 2. Main Split Content */}
+        <div className="flex-1 w-full max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
 
-        {/* Question Area */}
-        <div className="w-full max-w-2xl mt-4 relative">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-[#14B8A6]/30">
-            <div className="bg-[#0F766E] text-white p-4 text-center">
-              <h3 className="text-sm font-bold opacity-80 mb-1">STAGE {currentStage + 1}: {GAME_STAGES[currentStage]}</h3>
-              <h2 className="text-xl md:text-2xl font-bold leading-tight px-4">{currentQ.content}</h2>
+          {/* LEFT: Reading Passage */}
+          <div className="bg-[#F0FDF4] rounded-2xl shadow-inner border border-green-100 p-6 overflow-y-auto">
+            <div className="prose prose-green max-w-none">
+              {formattedReading}
             </div>
+          </div>
 
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currentQ.options.map(opt => {
-                let btnClass = "border-2 border-slate-100 hover:border-[#5EEAD4] hover:bg-slate-50";
-
-                if (isAnswerConfirmed) {
-                  if (opt.id === currentQ.correctAnswerId) btnClass = "bg-green-100 border-green-500 text-green-800";
-                  else if (opt.id === selectedAnswer) btnClass = "bg-red-100 border-red-500 text-red-800";
-                  else btnClass = "opacity-50 grayscale";
-                } else if (selectedAnswer === opt.id) {
-                  btnClass = "border-[#14B8A6] bg-[#14B8A6]/10 ring-2 ring-[#5EEAD4]";
-                }
-
-                return (
-                  <button
-                    key={opt.id}
-                    onClick={() => handleAnswerSelect(opt.id)}
-                    disabled={isAnswerConfirmed}
-                    className={`p-4 rounded-xl text-left font-medium transition-all ${btnClass} flex justify-between items-center`}
-                  >
-                    <span>{opt.text}</span>
-                    {isAnswerConfirmed && opt.id === currentQ.correctAnswerId && <CheckCircle2 size={20} className="text-green-600" />}
-                    {isAnswerConfirmed && opt.id === selectedAnswer && opt.id !== currentQ.correctAnswerId && <XCircle size={20} className="text-red-600" />}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Feedback / Action Bar */}
-            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-center">
-              {!isAnswerConfirmed ? (
-                <Button
-                  onClick={confirmAnswer}
-                  disabled={!selectedAnswer}
-                  className="bg-[#0F766E] hover:bg-[#115e59] text-white px-8 py-3 text-lg shadow-lg"
-                >
-                  Confirm Answer
-                </Button>
-              ) : (
-                <div className="w-full text-center">
-                  <div className={`text-xl font-black mb-3 ${feedbackMessage === 'CORRECT!' ? 'text-green-600' : 'text-red-500'}`}>
-                    {feedbackMessage}
-                  </div>
-                  <Button
-                    onClick={nextStage}
-                    className="bg-[#14B8A6] hover:bg-[#0d9488] text-white w-full max-w-xs mx-auto shadow-md"
-                  >
-                    CONTINUE <Play size={16} className="ml-2" />
-                  </Button>
+          {/* RIGHT: Question Card */}
+          <div className="flex flex-col overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 flex-shrink-0">
+              {/* Card Header with Timer */}
+              <div className="bg-indigo-50/50 p-4 border-b border-indigo-100 flex justify-between items-center">
+                <span className="font-bold text-[#0F766E] uppercase tracking-wider text-sm">
+                  Question {currentStage + 1} / 10
+                </span>
+                <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm text-[#0F766E] font-mono font-bold">
+                  <Clock size={16} />
+                  {Math.floor(elapsedSeconds / 60).toString().padStart(2, '0')}:
+                  {(elapsedSeconds % 60).toString().padStart(2, '0')}
                 </div>
-              )}
+              </div>
+
+              <div className="p-6 md:p-8">
+                <h2 className="text-xl font-bold text-slate-800 mb-6 leading-snug">
+                  {currentQ.content}
+                </h2>
+
+                <div className="space-y-3">
+                  {currentQ.options.map(opt => {
+                    let btnClass = "border-2 border-slate-100 hover:border-[#5EEAD4] hover:bg-slate-50";
+
+                    if (isAnswerConfirmed) {
+                      if (opt.id === currentQ.correctAnswerId) btnClass = "bg-green-100 border-green-500 text-green-800 shadow-sm";
+                      else if (opt.id === selectedAnswer) btnClass = "bg-red-100 border-red-500 text-red-800 shadow-sm";
+                      else btnClass = "opacity-40 grayscale";
+                    } else if (selectedAnswer === opt.id) {
+                      btnClass = "border-[#14B8A6] bg-[#14B8A6]/10 ring-2 ring-[#5EEAD4] shadow-md";
+                    }
+
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => handleAnswerSelect(opt.id)}
+                        disabled={isAnswerConfirmed}
+                        className={`w-full p-4 rounded-xl text-left font-medium transition-all duration-200 ${btnClass} flex justify-between items-center group`}
+                      >
+                        <span className="text-lg">{opt.text}</span>
+                        {isAnswerConfirmed && opt.id === currentQ.correctAnswerId && <CheckCircle2 size={24} className="text-green-600" />}
+                        {isAnswerConfirmed && opt.id === selectedAnswer && opt.id !== currentQ.correctAnswerId && <XCircle size={24} className="text-red-600" />}
+                        {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-4 h-4 rounded-full bg-[#14B8A6]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
+                {!isAnswerConfirmed ? (
+                  <Button
+                    onClick={confirmAnswer}
+                    disabled={!selectedAnswer}
+                    fullWidth
+                    className="bg-[#0F766E] hover:bg-[#115e59] text-white py-4 text-lg shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Confirm Answer
+                  </Button>
+                ) : (
+                  <div className="animate-fade-in w-full">
+                    <div className={`text-xl font-black mb-4 ${feedbackMessage === 'CORRECT!' ? 'text-green-600' : 'text-red-500'}`}>
+                      {feedbackMessage}
+                    </div>
+                    <Button
+                      onClick={nextStage}
+                      fullWidth
+                      className="bg-[#14B8A6] hover:bg-[#0d9488] text-white shadow-md py-3"
+                    >
+                      CONTINUE TO NEXT STAGE <Play size={18} className="ml-2" />
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -322,13 +349,10 @@ const App: React.FC = () => {
     );
   };
 
-  const renderResult = () => {
-    // Calculate minutes used
-    const finalMinutes = (leaderboard[leaderboard.length - 1]?.timeSpent / 60).toFixed(2); // Approximate from latest entry
-
-    return (
+  const renderResult = () => (
+    <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
       <div className="max-w-lg w-full mx-auto bg-white p-8 rounded-3xl shadow-2xl text-center animate-fade-in relative overflow-hidden">
-        {/* Fireworks decoration (CSS simplified) */}
+        {/* Fireworks decoration */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10 bg-[url('https://media.giphy.com/media/26tOZ42MgWX5LmOht/giphy.gif')] bg-cover" />
 
         <div className="w-24 h-24 bg-yellow-100/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ring-4 ring-yellow-200">
@@ -357,73 +381,77 @@ const App: React.FC = () => {
           </Button>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 
   const renderLeaderboard = () => (
-    <div className="max-w-xl w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-in flex flex-col h-[85vh]">
-      <div className="p-6 bg-gradient-to-r from-[#0F766E] to-[#14B8A6] text-white shadow-lg z-10">
-        <div className="flex items-center justify-between mb-2">
-          <button onClick={() => setAppState(AppState.RESULT)} className="hover:bg-white/20 p-2 rounded-full transition-colors">
-            <RotateCcw size={20} />
-          </button>
-          <h2 className="text-xl font-bold flex items-center gap-2 uppercase tracking-wider">
-            <Trophy className="text-yellow-300" /> Top 10 Fastest
-          </h2>
-          <div className="w-9" />
-        </div>
-        <p className="text-center text-[#5EEAD4] text-xs font-medium">
-          {leaderboard.length >= 999 ? 'FULL LEADERBOARD (999 people)' : `${leaderboard.length} brave challengers`}
-        </p>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
-        {leaderboard.length === 0 ? (
-          <div className="text-center text-slate-400 py-12">
-            No champions yet. Be the first!
+    <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
+      <div className="max-w-xl w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden animate-fade-in flex flex-col h-[85vh]">
+        <div className="p-6 bg-gradient-to-r from-[#0F766E] to-[#14B8A6] text-white shadow-lg z-10">
+          <div className="flex items-center justify-between mb-2">
+            <button onClick={() => setAppState(AppState.RESULT)} className="hover:bg-white/20 p-2 rounded-full transition-colors">
+              <RotateCcw size={20} />
+            </button>
+            <h2 className="text-xl font-bold flex items-center gap-2 uppercase tracking-wider">
+              <Trophy className="text-yellow-300" /> Top 10 Fastest
+            </h2>
+            <div className="w-9" />
           </div>
-        ) : (
-          leaderboard.slice(0, 10).map((entry, idx) => (
-            <div key={idx} className="flex items-center bg-white p-4 rounded-xl border-b-4 border-slate-100 shadow-sm transform hover:scale-[1.01] transition-all">
-              <div className={`
+          <p className="text-center text-[#5EEAD4] text-xs font-medium">
+            {leaderboard.length >= 999 ? 'FULL LEADERBOARD (999 people)' : `${leaderboard.length} brave challengers`}
+          </p>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+          {leaderboard.length === 0 ? (
+            <div className="text-center text-slate-400 py-12">
+              No champions yet. Be the first!
+            </div>
+          ) : (
+            leaderboard.slice(0, 10).map((entry, idx) => (
+              <div key={idx} className="flex items-center bg-white p-4 rounded-xl border-b-4 border-slate-100 shadow-sm transform hover:scale-[1.01] transition-all">
+                <div className={`
                  w-10 h-10 rounded-full flex items-center justify-center font-black text-lg mr-4 border-2
                  ${idx === 0 ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
-                  idx === 1 ? 'bg-slate-100 text-slate-600 border-slate-300' :
-                    idx === 2 ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-slate-50 text-slate-400 border-transparent'}
+                    idx === 1 ? 'bg-slate-100 text-slate-600 border-slate-300' :
+                      idx === 2 ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-slate-50 text-slate-400 border-transparent'}
                `}>
-                {idx + 1}
-              </div>
-              <div className="flex-1">
-                <div className="font-bold text-[#0F766E] text-lg">{entry.name}</div>
-                <div className="text-xs text-slate-500 font-medium bg-slate-100 inline-block px-2 py-0.5 rounded-md">Class {entry.className}</div>
-              </div>
-              <div className="text-right">
-                <div className="font-mono font-bold text-[#0F766E] text-lg">
-                  {Math.floor(entry.timeSpent / 60)}' {entry.timeSpent % 60}s
+                  {idx + 1}
                 </div>
-                <div className="text-[10px] text-slate-400">
-                  {new Date(entry.timestamp).toLocaleDateString()}
+                <div className="flex-1">
+                  <div className="font-bold text-[#0F766E] text-lg">{entry.name}</div>
+                  <div className="text-xs text-slate-500 font-medium bg-slate-100 inline-block px-2 py-0.5 rounded-md">Class {entry.className}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono font-bold text-[#0F766E] text-lg">
+                    {Math.floor(entry.timeSpent / 60)}' {entry.timeSpent % 60}s
+                  </div>
+                  <div className="text-[10px] text-slate-400">
+                    {new Date(entry.timestamp).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          )}
+        </div>
 
-      <div className="p-4 bg-white border-t border-slate-100">
-        <Button fullWidth onClick={() => setAppState(AppState.LOGIN)} className="bg-slate-800 text-white hover:bg-slate-900">
-          <LogOut size={16} className="mr-2" /> EXIT GAME
-        </Button>
+        <div className="p-4 bg-white border-t border-slate-100">
+          <Button fullWidth onClick={() => setAppState(AppState.LOGIN)} className="bg-slate-800 text-white hover:bg-slate-900">
+            <LogOut size={16} className="mr-2" /> EXIT GAME
+          </Button>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0F766E] to-[#14B8A6] flex items-center justify-center p-4 font-sans text-slate-800">
+    <div>
       {appState === AppState.LOADING && (
-        <div className="text-center text-white animate-pulse">
-          <div className="w-16 h-16 border-4 border-[#5EEAD4] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-bold">{loadingText}</h2>
+        <div className="min-h-screen bg-[#0F766E] flex items-center justify-center text-center text-white animate-pulse">
+          <div>
+            <div className="w-16 h-16 border-4 border-[#5EEAD4] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <h2 className="text-xl font-bold">{loadingText}</h2>
+          </div>
         </div>
       )}
       {appState === AppState.LOGIN && renderLogin()}

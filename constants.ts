@@ -28,127 +28,143 @@ export const THEME_COLORS = {
   error: '#ef4444', // Red
 };
 
+export const READING_PASSAGE = `
+## GET IN SHAPE WITH THE LATEST FITNESS TRENDS
+
+**Going to the gym, or not?**
+Home workouts are becoming very popular these days because many working people can't manage to have time to go to the fitness centre. Recently, 75% of people asked say it is easier, cheaper and more convenient to exercise at home. Mini-workouts of 5 to 10 minutes spread out during the day are also a great way to exercise while busy at home. All you need is a mat, light weights and some space for the perfect home gym.
+
+**Apps are everywhere**
+As we use our mobile phones for almost everything, it is no surprise they can help us exercise too. Fitness applications on our mobiles, smart watches and computers are the latest craze. These apps are often free to download and for people of all ages. They offer a variety of workouts as well as healthy diet advice and wellness tips. They also help track your progress and even give rewards such as badges and stars for encouragement.
+
+**High-tech exercising**
+Technology has definitely become part of our daily exercise. Whether at home or at the gym, exercise bikes, treadmills and other types of equipment have become interactive with screens and speakers. Smart fitness mirrors, acting as personal trainers, provide a variety of exercise programmes from boxing to Pilates while the person exercising can see themself in the mirror.
+
+**Building muscles outdoors**
+Running, cycling, walking and hiking are some types of outdoor fitness. More and more people are getting together to exercise or take an outdoor class while enjoying the benefits of nature with some fresh air and green healing.
+`;
+
 export const FALLBACK_QUESTIONS: Question[] = [
   // 5 True/False
   {
     id: 'tf1',
     type: QuestionType.TRUE_FALSE,
-    content: 'Eating a lot of sugar is good for your teeth and energy.',
+    content: 'According to the text, 75% of people find home workouts easier and more convenient.',
     options: [
       { id: 'true', text: 'True' },
       { id: 'false', text: 'False' }
     ],
-    correctAnswerId: 'false',
-    explanation: 'Too much sugar causes tooth decay and energy crashes. Balanced diets are better.'
+    correctAnswerId: 'true',
+    explanation: 'The text states that "75% of people asked say it is easier, cheaper and more convenient to exercise at home."'
   },
   {
     id: 'tf2',
     type: QuestionType.TRUE_FALSE,
-    content: 'You should drink about 8 glasses of water every day.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' }
-    ],
-    correctAnswerId: 'true',
-    explanation: 'Staying hydrated is essential for your body to function correctly.'
-  },
-  {
-    id: 'tf3',
-    type: QuestionType.TRUE_FALSE,
-    content: 'Sleeping for only 4 hours is enough for a teenager.',
+    content: 'You need expensive equipment to create a perfect home gym.',
     options: [
       { id: 'true', text: 'True' },
       { id: 'false', text: 'False' }
     ],
     correctAnswerId: 'false',
-    explanation: 'Teenagers need 8-10 hours of sleep for proper growth and focus.'
+    explanation: 'The text mentions you only need "a mat, light weights and some space."'
+  },
+  {
+    id: 'tf3',
+    type: QuestionType.TRUE_FALSE,
+    content: 'Fitness apps are only available for young people.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' }
+    ],
+    correctAnswerId: 'false',
+    explanation: 'The text says these apps are "for people of all ages."'
   },
   {
     id: 'tf4',
     type: QuestionType.TRUE_FALSE,
-    content: 'Regular exercise strengthens your heart and muscles.',
+    content: 'Smart fitness mirrors allow you to see yourself while training.',
     options: [
       { id: 'true', text: 'True' },
       { id: 'false', text: 'False' }
     ],
     correctAnswerId: 'true',
-    explanation: 'Exercise improves cardiovascular health and builds strength.'
+    explanation: 'The text confirms that "the person exercising can see themself in the mirror."'
   },
   {
     id: 'tf5',
     type: QuestionType.TRUE_FALSE,
-    content: 'Fruits and vegetables provide essential vitamins.',
+    content: 'Outdoor fitness activities include boxing and Pilates.',
     options: [
       { id: 'true', text: 'True' },
       { id: 'false', text: 'False' }
     ],
-    correctAnswerId: 'true',
-    explanation: 'They are rich in vitamins, minerals, and fiber needed for health.'
+    correctAnswerId: 'false',
+    explanation: 'Boxing and Pilates are mentioned as programs on smart fitness mirrors, while running and cycling are listed as outdoor fitness.'
   },
   // 5 Multiple Choice
   {
     id: 'mc1',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Which of the following is considered a healthy snack?',
+    content: 'Why are home workouts becoming popular?',
     options: [
-      { id: 'a', text: 'Potato chips' },
-      { id: 'b', text: 'Chocolate bar' },
-      { id: 'c', text: 'An apple' },
-      { id: 'd', text: 'Fried chicken' }
+      { id: 'a', text: 'Gyms are closing down' },
+      { id: 'b', text: 'Working people lack time to go to fitness centres' },
+      { id: 'c', text: 'They require heavy weights' },
+      { id: 'd', text: 'Apps pay you to exercise' }
     ],
-    correctAnswerId: 'c',
-    explanation: 'Apples are natural, full of fiber, and have no added sugars compared to processed snacks.'
+    correctAnswerId: 'b',
+    explanation: 'The text says "many working people can\'t manage to have time to go to the fitness centre."'
   },
   {
     id: 'mc2',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'What is the best way to prevent spreading germs?',
+    content: 'What is a suggested duration for "mini-workouts"?',
     options: [
-      { id: 'a', text: 'Touching your face' },
-      { id: 'b', text: 'Washing hands frequently' },
-      { id: 'c', text: 'Sharing water bottles' },
-      { id: 'd', text: 'Coughing without covering' }
+      { id: 'a', text: '1 hour' },
+      { id: 'b', text: '30 minutes' },
+      { id: 'c', text: '5 to 10 minutes' },
+      { id: 'd', text: '20 seconds' }
     ],
-    correctAnswerId: 'b',
-    explanation: 'Washing hands with soap removes bacteria and viruses effectively.'
+    correctAnswerId: 'c',
+    explanation: 'The text suggests "Mini-workouts of 5 to 10 minutes spread out during the day."'
   },
   {
     id: 'mc3',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Which activity is NOT part of a sedentary lifestyle?',
+    content: 'What allows exercise equipment like treadmills to be interactive?',
     options: [
-      { id: 'a', text: 'Playing video games all day' },
-      { id: 'b', text: 'Watching TV for hours' },
-      { id: 'c', text: 'Running in the park' },
-      { id: 'd', text: 'Sitting at a desk' }
+      { id: 'a', text: 'Screens and speakers' },
+      { id: 'b', text: 'Wheels and pedals' },
+      { id: 'c', text: 'Remote controls' },
+      { id: 'd', text: 'Virtual Reality headsets' }
     ],
-    correctAnswerId: 'c',
-    explanation: 'Running is an active physical exercise, whereas the others involve sitting for long periods.'
+    correctAnswerId: 'a',
+    explanation: 'Equipment has "become interactive with screens and speakers."'
   },
   {
     id: 'mc4',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'To keep your eyes healthy, you should eat foods rich in Vitamin A, like:',
+    content: 'Which of the following is NOT mentioned as an outdoor fitness activity?',
     options: [
-      { id: 'a', text: 'Carrots' },
-      { id: 'b', text: 'Bread' },
-      { id: 'c', text: 'Rice' },
-      { id: 'd', text: 'Pasta' }
+      { id: 'a', text: 'Hiking' },
+      { id: 'b', text: 'Cycling' },
+      { id: 'c', text: 'Swimming' },
+      { id: 'd', text: 'Walking' }
     ],
-    correctAnswerId: 'a',
-    explanation: 'Carrots are famous for being high in Vitamin A, which supports good vision.'
+    correctAnswerId: 'c',
+    explanation: 'Swimming is not listed in the text; Running, cycling, walking and hiking are.'
   },
   {
     id: 'mc5',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Mental health is improved by:',
+    content: 'What benefit does the text mention for outdoor fitness?',
     options: [
-      { id: 'a', text: 'Ignoring your feelings' },
-      { id: 'b', text: 'Talking to friends and family' },
-      { id: 'c', text: 'Sleeping very late' },
-      { id: 'd', text: 'Eating junk food' }
+      { id: 'a', text: 'No equipment needed' },
+      { id: 'b', text: 'Fresh air and green healing' },
+      { id: 'c', text: 'It is always free' },
+      { id: 'd', text: 'You can bring your pet' }
     ],
     correctAnswerId: 'b',
-    explanation: 'Social connection and expressing feelings are key to maintaining good mental health.'
+    explanation: 'The text mentions "enjoying the benefits of nature with some fresh air and green healing."'
   }
 ];
