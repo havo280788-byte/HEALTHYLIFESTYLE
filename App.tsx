@@ -130,6 +130,9 @@ const App: React.FC = () => {
       gameQuestions.push(gameQuestions[0]);
     }
 
+    // Clear persistent highlights from previous session
+    localStorage.removeItem('healthylife_reading_highlights');
+
     setQuestions(gameQuestions);
     setTimeLeft(480); // Reset to 8 minutes
     setCurrentStage(0);

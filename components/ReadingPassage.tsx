@@ -28,16 +28,48 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     // Initial parsing of markdown-like syntax to HTML
     const [htmlContent, setHtmlContent] = useState<string>('');
 
+    // Storage Key
+    const STORAGE_KEY = 'healthylife_reading_highlights';
+
     useEffect(() => {
-        // Parse the initial content (Markdown-ish to HTML)
-        const parsed = content.split('\n').map(line => {
-            if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
-            if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
-            if (line.trim() === '') return `<div class="h-4"></div>`;
-            return `<p class="mb-2 text-slate-700 leading-relaxed text-base md:text-lg">${line}</p>`;
-        }).join('');
-        setHtmlContent(parsed);
+        // Try to load from local storage first
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            setHtmlContent(saved);
+        } else {
+            // Parse the initial content (Markdown-ish to HTML)
+            const parsed = content.split('\n').map(line => {
+                if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
+                if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
+                if (line.trim() === '') return `<div class="h-4"></div>`;
+                return `<p class="mb-2 text-slate-700 leading-relaxed text-base md:text-lg">${line}</p>`;
+            }).join('');
+            setHtmlContent(parsed);
+        }
     }, [content]);
+
+    const saveContent = () => {
+        if (contentRef.current) {
+            localStorage.setItem(STORAGE_KEY, contentRef.current.innerHTML);
+        }
+    };
+
+    const handleContainerClick = (e: React.MouseEvent) => {
+        if (!isHighlightMode) return;
+
+        const target = e.target as HTMLElement;
+        // Check if clicked element is a highlight span
+        if (target.tagName === 'SPAN' && target.classList.contains('bg-yellow-300')) {
+            e.stopPropagation();
+            // Unwrap
+            const parent = target.parentNode;
+            while (target.firstChild) {
+                parent?.insertBefore(target.firstChild, target);
+            }
+            parent?.removeChild(target);
+            saveContent();
+        }
+    };
 
     const handleMouseUp = () => {
         if (!isHighlightMode) return;
@@ -55,20 +87,9 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 span.className = 'bg-yellow-300 text-slate-900 px-1 rounded-sm cursor-pointer hover:bg-yellow-400 transition-colors shadow-sm';
                 span.title = "Click to remove highlight"; // Tooltip
 
-                span.onclick = (e) => {
-                    if (isHighlightMode) {
-                        e.stopPropagation(); // Prevent parent clicks
-                        // Unwrap the span to remove highlight
-                        const parent = span.parentNode;
-                        while (span.firstChild) {
-                            parent?.insertBefore(span.firstChild, span);
-                        }
-                        parent?.removeChild(span);
-                    }
-                };
-
                 range.surroundContents(span);
                 selection.removeAllRanges();
+                saveContent(); // Save immediately
             } catch (e) {
                 console.warn("Cannot highlight across different block elements", e);
                 alert("Please select text within a single paragraph to highlight.");
@@ -97,6 +118,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 className={`flex-1 overflow-y-auto p-4 md:p-6 transition-colors duration-300 ${isHighlightMode ? 'cursor-text selection:bg-yellow-100 selection:text-yellow-900' : ''}`}
                 onMouseUp={handleMouseUp}
                 onTouchEnd={handleMouseUp} // Basic touch support
+                onClick={handleContainerClick}
                 dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
 
