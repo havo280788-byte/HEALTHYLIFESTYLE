@@ -31,10 +31,10 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     useEffect(() => {
         // Parse the initial content (Markdown-ish to HTML)
         const parsed = content.split('\n').map(line => {
-            if (line.startsWith('## ')) return `<h2 class="text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
-            if (line.startsWith('**')) return `<h3 class="text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
+            if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
+            if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
             if (line.trim() === '') return `<div class="h-4"></div>`;
-            return `<p class="mb-2 text-slate-700 leading-relaxed text-lg">${line}</p>`;
+            return `<p class="mb-2 text-slate-700 leading-relaxed text-base md:text-lg">${line}</p>`;
         }).join('');
         setHtmlContent(parsed);
     }, [content]);
@@ -75,8 +75,8 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 <button
                     onClick={() => setIsHighlightMode(!isHighlightMode)}
                     className={`p-2 rounded-md transition-all ${isHighlightMode
-                            ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400 shadow-inner'
-                            : 'hover:bg-slate-100 text-slate-500'
+                        ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400 shadow-inner'
+                        : 'hover:bg-slate-100 text-slate-500'
                         }`}
                     title={isHighlightMode ? "Disable Highlight Mode" : "Enable Highlight Mode"}
                 >
@@ -86,7 +86,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
 
             <div
                 ref={contentRef}
-                className={`flex-1 overflow-y-auto p-6 transition-colors duration-300 ${isHighlightMode ? 'cursor-text selection:bg-yellow-100 selection:text-yellow-900' : ''}`}
+                className={`flex-1 overflow-y-auto p-4 md:p-6 transition-colors duration-300 ${isHighlightMode ? 'cursor-text selection:bg-yellow-100 selection:text-yellow-900' : ''}`}
                 onMouseUp={handleMouseUp}
                 onTouchEnd={handleMouseUp} // Basic touch support
                 dangerouslySetInnerHTML={{ __html: htmlContent }}

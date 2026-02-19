@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Question, AppState, LeaderboardEntry, GameSettings, QuestionType } from './types';
-import { GEMINI_MODELS, FALLBACK_QUESTIONS, GAME_STAGES, THEME_COLORS, READING_PASSAGE } from './constants';
+import { GEMINI_MODELS, FALLBACK_QUESTIONS, GAME_STAGES, THEME_COLORS, READING_PASSAGE, SOUND_EFFECTS } from './constants';
 import { generateQuestions } from './services/geminiService';
 import Button from './components/Button';
 import Input from './components/Input';
@@ -90,6 +90,11 @@ const App: React.FC = () => {
     localStorage.setItem('healthylife_settings', JSON.stringify(newSettings));
   };
 
+  const playSound = (type: 'correct' | 'incorrect' | 'click') => {
+    const audio = new Audio(SOUND_EFFECTS[type]);
+    audio.play().catch(e => console.error("Error playing sound:", e));
+  };
+
   const startGame = async () => {
     if (!user.name || !user.className) {
       alert("Please enter both Name and Class!");
@@ -156,8 +161,10 @@ const App: React.FC = () => {
 
     if (isCorrect) {
       setFeedbackMessage("CORRECT!");
+      playSound('correct');
     } else {
       setFeedbackMessage("INCORRECT");
+      playSound('incorrect');
     }
   };
 
@@ -289,20 +296,20 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             {/* Left: Titles */}
             <div className="flex flex-col">
-              <h1 className="text-lg md:text-xl font-bold text-[#0F766E] flex items-center gap-2">
+              <h1 className="text-base md:text-xl font-bold text-[#0F766E] flex items-center gap-2">
                 <span>🥗</span> English 11 – Healthy Lifestyle
               </h1>
-              <h2 className="text-sm font-semibold text-slate-500 pl-7 flex items-center gap-2">
+              <h2 className="text-xs md:text-sm font-semibold text-slate-500 pl-7 flex items-center gap-2">
                 <span>🧠</span> Reading Challenge
               </h2>
             </div>
 
             {/* Right: Countdown Timer */}
             <div className={`
-                 flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-mono font-bold text-xl md:text-2xl shadow-inner
+                 flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-xl border-2 font-mono font-bold text-lg md:text-2xl shadow-inner
                  ${isUrgent ? 'bg-red-50 text-red-600 border-red-100 animate-pulse' : 'bg-green-50 text-[#0F766E] border-green-100'}
               `}>
-              <Clock size={24} />
+              <Clock size={20} className="md:w-6 md:h-6" />
               {timerString}
             </div>
           </div>
@@ -330,8 +337,8 @@ const App: React.FC = () => {
                 {/* Timer moved to top header, so we can remove it from here or keep small one? Removed for cleaner UI as per req */}
               </div>
 
-              <div className="p-6 md:p-8">
-                <h2 className="text-xl font-bold text-slate-800 mb-6 leading-snug">
+              <div className="p-4 md:p-8">
+                <h2 className="text-lg md:text-xl font-bold text-slate-800 mb-4 md:mb-6 leading-snug">
                   {currentQ.content}
                 </h2>
 
@@ -352,9 +359,9 @@ const App: React.FC = () => {
                         key={opt.id}
                         onClick={() => handleAnswerSelect(opt.id)}
                         disabled={isAnswerConfirmed}
-                        className={`w-full p-4 rounded-xl text-left font-medium transition-all duration-200 ${btnClass} flex justify-between items-center group`}
+                        className={`w-full p-3 md:p-4 rounded-xl text-left font-medium transition-all duration-200 ${btnClass} flex justify-between items-center group`}
                       >
-                        <span className="text-lg">{opt.text}</span>
+                        <span className="text-base md:text-lg">{opt.text}</span>
                         {isAnswerConfirmed && opt.id === currentQ.correctAnswerId && <CheckCircle2 size={24} className="text-green-600" />}
                         {isAnswerConfirmed && opt.id === selectedAnswer && opt.id !== currentQ.correctAnswerId && <XCircle size={24} className="text-red-600" />}
                         {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-4 h-4 rounded-full bg-[#14B8A6]" />}
@@ -371,7 +378,7 @@ const App: React.FC = () => {
                     onClick={confirmAnswer}
                     disabled={!selectedAnswer}
                     fullWidth
-                    className="bg-[#0F766E] hover:bg-[#115e59] text-white py-4 text-lg shadow-lg hover:shadow-xl transition-all"
+                    className="bg-[#0F766E] hover:bg-[#115e59] text-white py-3 md:py-4 text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
                   >
                     Confirm Answer
                   </Button>
@@ -421,7 +428,10 @@ const App: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" onClick={() => setAppState(AppState.LEADERBOARD)}>
+          <Button variant="outline" onClick={() => {
+            playSound('click');
+            setAppState(AppState.LEADERBOARD);
+          }}>
             LEADERBOARD
           </Button>
           <Button onClick={() => setAppState(AppState.LOGIN)} className="bg-[#0F766E] text-white hover:bg-[#0d9488]">

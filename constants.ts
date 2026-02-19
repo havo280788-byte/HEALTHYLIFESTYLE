@@ -175,3 +175,9 @@ export const FALLBACK_QUESTIONS: Question[] = [
     explanation: 'The text mentions outdoor classes but doesn\'t specify whether they have equipment or not.'
   }
 ];
+
+export const SOUND_EFFECTS = {
+  correct: 'https://cdn.pixabay.com/audio/2021/08/04/audio_12b0c7443c.mp3', // Ding
+  incorrect: 'https://cdn.pixabay.com/audio/2021/08/04/audio_c6ccf3232f.mp3', // Error/Buzz
+  click: 'https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3', // Pop/Click
+};

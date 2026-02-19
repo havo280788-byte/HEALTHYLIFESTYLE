@@ -26,7 +26,7 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
         // Our Q IDs are 'mc1'...'mc5' and 'tf1'...'tf5'. 
         // Let's just map index 0-7 (Q1-Q8).
 
-        const questionRates = Array.from({ length: 8 }).map((_, idx) => {
+        const questionRates = Array.from({ length: 10 }).map((_, idx) => {
             // Find how many got this Q index correct
             // We need to know which Q ID maps to which index in our game.
             // Assuming 'mc1' is index 0...
@@ -158,8 +158,8 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                         </div>
 
                         <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-green-300 uppercase tracking-wider">
-                            <div className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-green-400 animate-pulse' : 'bg-slate-400'}`} />
-                            {isSyncing ? 'LIVE SYNC' : 'OFFLINE'}
+                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
+                            LIVE SYNC ACTIVE
                         </div>
                     </div>
 
