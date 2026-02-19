@@ -333,118 +333,98 @@ const App: React.FC = () => {
             <ReadingPassage content={READING_PASSAGE} />
           </div>
 
-          {/* RIGHT: Question Interface (New Green Gradient Design) */}
-          <div className="flex flex-col rounded-3xl overflow-hidden shadow-2xl relative">
-            {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] z-0" />
+          {/* RIGHT: Question Interface (Compact Green Card) */}
+          <div className="flex flex-col overflow-y-auto">
+            <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 flex-shrink-0 relative">
 
-            {/* Content Container */}
-            <div className="relative z-10 flex flex-col h-full p-6 md:p-8">
+              {/* Decorative Overlay */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-10 -mb-10 blur-xl pointer-events-none"></div>
 
-              {/* Top Section: Pill Label */}
-              <div className="flex justify-start mb-6">
-                <div className="bg-white/15 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-sm font-semibold tracking-wide border border-white/20 shadow-sm">
+              {/* Card Header */}
+              <div className="bg-black/10 p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-sm relative z-10">
+                <span className="font-bold text-green-50 uppercase tracking-wider text-sm">
+                  Question {currentStage + 1} / 10
+                </span>
+                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
                   STAGE {currentStage + 1}
                 </div>
               </div>
 
-              {/* Question Text */}
-              <div className="flex-1 flex items-center mb-8">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-relaxed drop-shadow-md text-left">
+              <div className="p-6 md:p-8 relative z-10">
+                <h2 className="text-xl md:text-2xl font-bold text-white mb-6 leading-relaxed drop-shadow-sm">
                   {currentQ.content}
                 </h2>
-              </div>
 
-              {/* Answer Buttons */}
-              <div className="flex flex-col md:flex-row gap-4 w-full">
-                {currentQ.options.map(opt => {
-                  // Determine Label (T, F, DS, or A, B, C...)
-                  let label = "";
-                  const lowerText = opt.text.toLowerCase();
-                  if (lowerText === "true") label = "T";
-                  else if (lowerText === "false") label = "F";
-                  else if (lowerText === "doesn't say" || lowerText === "does not say") label = "DS";
-                  else label = opt.id.toUpperCase(); // Fallback to ID or index if needed, but logic asks for T/F/DS specifically for those. 
+                <div className="space-y-3">
+                  {currentQ.options.map(opt => {
+                    // Logic: 
+                    // White Box default
+                    // Selected: Green Text + Thick Border OR Solid Green? 
+                    // "Only difference is answers in white boxes" -> implied they stay white?
+                    // But usually selected state needs distinction. Use Solid Green for clarity as per modern standards.
 
-                  // State Styles
-                  const isSelected = selectedAnswer === opt.id;
-                  const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
-                  const isWrongSelection = isSelected && !isCorrectAnswer && isAnswerConfirmed;
-                  const isCorrectSelection = isSelected && isCorrectAnswer && isAnswerConfirmed;
+                    const isSelected = selectedAnswer === opt.id;
+                    const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
+                    const isWrongSelection = isSelected && !isCorrectAnswer && isAnswerConfirmed;
+                    const isCorrectSelection = isSelected && isCorrectAnswer && isAnswerConfirmed;
 
-                  let cardClasses = "bg-[#F9FAFB] text-slate-700 hover:bg-[#DCFCE7]"; // Default
-                  let borderClass = "border-transparent";
-                  let labelBoxClass = "bg-slate-200 text-slate-600";
+                    let btnClass = "bg-white text-slate-700 hover:bg-green-50 border-2 border-transparent shadow-sm";
+                    let statusIcon = null;
 
-                  if (isSelected) {
-                    cardClasses = "bg-[#22C55E] text-white shadow-lg scale-[1.02]";
-                    labelBoxClass = "bg-white/30 text-white";
-                  }
-
-                  if (isAnswerConfirmed) {
-                    if (isCorrectSelection) {
-                      borderClass = "border-[#14532D] ring-4 ring-[#15803D]/30";
-                      cardClasses = "bg-[#22C55E] text-white"; // Keep green
-                    } else if (isWrongSelection) {
-                      borderClass = "border-[#DC2626] ring-4 ring-[#DC2626]/30";
-                      cardClasses = "bg-white text-slate-700"; // Revert to white but with red border
-                    } else {
-                      cardClasses = "bg-white/80 text-slate-400 opacity-60"; // Dim others
+                    if (isSelected) {
+                      btnClass = "bg-green-100 text-green-800 border-2 border-green-500 shadow-md transform scale-[1.01]";
                     }
-                  }
 
-                  return (
-                    <button
-                      key={opt.id}
-                      onClick={() => handleAnswerSelect(opt.id)}
-                      disabled={isAnswerConfirmed}
-                      className={`
-                          relative flex-1 group flex flex-row md:flex-col items-center justify-center p-4 md:py-8 md:px-4 rounded-[20px] transition-all duration-300 ease-out
-                          border-2 ${borderClass} ${cardClasses} shadow-md
-                        `}
-                    >
-                      {/* Circle/Box for Label */}
-                      <span className={`
-                           absolute left-4 md:left-auto md:top-4 w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center font-bold text-sm md:text-base transition-colors
-                           ${labelBoxClass}
-                         `}>
-                        {label}
-                      </span>
+                    if (isAnswerConfirmed) {
+                      if (isCorrectSelection) {
+                        btnClass = "bg-[#dcfce7] border-2 border-[#15803D] text-[#14532D]";
+                        statusIcon = <CheckCircle2 size={20} className="text-[#15803D]" />;
+                      } else if (isWrongSelection) {
+                        btnClass = "bg-red-50 border-2 border-[#DC2626] text-[#991B1B]";
+                        statusIcon = <XCircle size={20} className="text-[#DC2626]" />;
+                      } else {
+                        btnClass = "bg-white/90 text-slate-400 opacity-75";
+                      }
+                    } else if (isSelected) {
+                      // While selected but not confirmed
+                      btnClass = "bg-white border-2 border-[#22C55E] text-[#15803D] shadow-md ring-2 ring-green-400/30";
+                    }
 
-                      <span className="text-lg md:text-xl font-bold text-center pl-8 md:pl-0 mt-0 md:mt-6">
-                        {opt.text}
-                      </span>
-
-                      {/* Status Icons Overlay */}
-                      {isAnswerConfirmed && isSelected && (
-                        <div className="absolute top-2 right-2 md:top-2 md:right-2">
-                          {isCorrectSelection ? <CheckCircle2 className="text-white" /> : <XCircle className="text-red-500" />}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => handleAnswerSelect(opt.id)}
+                        disabled={isAnswerConfirmed}
+                        className={`w-full p-4 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center group`}
+                      >
+                        <span className="text-base md:text-lg">{opt.text}</span>
+                        {statusIcon}
+                        {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-3 h-3 rounded-full bg-[#22C55E]" />}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Check Answer Button (Floating or integrated?) - Keeping it simple at bottom if needed, or rely on auto/click? 
-                  Original had a "Check Answer" button. User didn't explicitly ask to remove it, but "Interaction Style" implies selection states.
-                  I will keep the "Check Answer" button but style it to fit.
-              */}
-              <div className="mt-6 flex justify-end">
+              {/* Footer Actions */}
+              <div className="p-4 bg-black/10 border-t border-white/10 text-center backdrop-blur-sm relative z-10">
                 {!isAnswerConfirmed && (
                   <Button
                     onClick={checkAnswer}
                     disabled={!selectedAnswer}
-                    className="bg-white text-[#15803D] hover:bg-[#dcfce7] font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    fullWidth
+                    className="bg-white text-[#15803D] hover:bg-green-50 font-bold py-3 md:py-4 text-base shadow-lg hover:shadow-xl transition-all"
                   >
                     CHECK ANSWER
                   </Button>
                 )}
                 {isAnswerConfirmed && (
-                  <div className="h-12"></div> // Spacer to keep layout stable
+                  <div className="text-white/80 text-sm font-medium py-2 animate-pulse">
+                    Listen to the feedback...
+                  </div>
                 )}
               </div>
-
             </div>
           </div>
         </div>
