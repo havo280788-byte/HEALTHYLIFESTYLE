@@ -50,7 +50,9 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
 
     const saveContent = () => {
         if (contentRef.current) {
-            localStorage.setItem(STORAGE_KEY, contentRef.current.innerHTML);
+            const newHtml = contentRef.current.innerHTML;
+            localStorage.setItem(STORAGE_KEY, newHtml);
+            setHtmlContent(newHtml); // Sync state with DOM to prevent reversions
         }
     };
 

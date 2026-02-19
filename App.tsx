@@ -321,6 +321,15 @@ const App: React.FC = () => {
           <ProgressNavigation currentStage={currentStage} />
         </div>
 
+        {/* Feedback Overlay */}
+        {isAnswerConfirmed && (
+          <FeedbackOverlay
+            isCorrect={feedbackMessage === 'CORRECT!'}
+            correctAnswer={currentQ.options.find(opt => opt.id === currentQ.correctAnswerId)?.text || ''}
+            onNext={nextStage}
+          />
+        )}
+
         {/* 2. Main Split Content */}
         <div className="flex-1 w-full max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
 
@@ -376,7 +385,7 @@ const App: React.FC = () => {
 
               {/* Footer Actions */}
               <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
-                {!isAnswerConfirmed ? (
+                {!isAnswerConfirmed && (
                   <Button
                     onClick={confirmAnswer}
                     disabled={!selectedAnswer}
@@ -385,19 +394,6 @@ const App: React.FC = () => {
                   >
                     Confirm Answer
                   </Button>
-                ) : (
-                  <div className="animate-fade-in w-full">
-                    <div className={`text-xl font-black mb-4 ${feedbackMessage === 'CORRECT!' ? 'text-green-600' : 'text-red-500'}`}>
-                      {feedbackMessage}
-                    </div>
-                    <Button
-                      onClick={nextStage}
-                      fullWidth
-                      className="bg-[#14B8A6] hover:bg-[#0d9488] text-white shadow-md py-3"
-                    >
-                      CONTINUE TO NEXT STAGE <Play size={18} className="ml-2" />
-                    </Button>
-                  </div>
                 )}
               </div>
             </div>
