@@ -414,7 +414,7 @@ const App: React.FC = () => {
                     onClick={checkAnswer}
                     disabled={!selectedAnswer}
                     fullWidth
-                    className="bg-white text-[#15803D] hover:bg-green-50 font-bold py-3 md:py-4 text-base shadow-lg hover:shadow-xl transition-all"
+                    className="bg-orange-500 text-white hover:bg-orange-600 font-bold py-3 md:py-4 text-base shadow-lg hover:shadow-xl transition-all"
                   >
                     CHECK ANSWER
                   </Button>
