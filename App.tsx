@@ -147,12 +147,15 @@ const App: React.FC = () => {
 
   const handleAnswerSelect = (optionId: string) => {
     if (isAnswerConfirmed) return;
-
     setSelectedAnswer(optionId);
-    setIsAnswerConfirmed(true);
+  };
 
+  const checkAnswer = () => {
+    if (!selectedAnswer) return;
+
+    setIsAnswerConfirmed(true);
     const currentQ = questions[currentStage];
-    const isCorrect = optionId === currentQ.correctAnswerId;
+    const isCorrect = selectedAnswer === currentQ.correctAnswerId;
 
     // Record answer
     setUserAnswers(prev => ({
@@ -379,9 +382,18 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Footer Actions - REMOVED CONFIRM BUTTON */}
-              <div className="p-4 bg-slate-50 border-t border-slate-100 text-center text-slate-400 text-sm italic">
-                Select an answer to continue...
+              {/* Footer Actions - CHECK YOUR ANSWER BUTTON RESTORED */}
+              <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
+                {!isAnswerConfirmed && (
+                  <Button
+                    onClick={checkAnswer}
+                    disabled={!selectedAnswer}
+                    fullWidth
+                    className="bg-[#0F766E] hover:bg-[#115e59] text-white py-3 md:py-4 text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
+                  >
+                    CHECK YOUR ANSWER
+                  </Button>
+                )}
               </div>
             </div>
           </div>
