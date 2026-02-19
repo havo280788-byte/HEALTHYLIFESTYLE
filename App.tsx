@@ -326,6 +326,7 @@ const App: React.FC = () => {
             isCorrect={feedbackMessage === 'CORRECT!'}
             correctAnswer={currentQ.options.find(opt => opt.id === currentQ.correctAnswerId)?.text || ''}
             onNext={nextStage}
+            stage={currentStage + 1}
           />
         )}
 
@@ -356,11 +357,45 @@ const App: React.FC = () => {
                 <div className="space-y-3">
                   {currentQ.options.map(opt => {
                     let btnClass = "border-2 border-slate-100 hover:border-[#5EEAD4] hover:bg-slate-50";
+                    let showCorrect = false;
+                    let showWrong = false;
 
                     if (isAnswerConfirmed) {
-                      if (opt.id === currentQ.correctAnswerId) btnClass = "bg-green-100 border-green-500 text-green-800 shadow-sm";
-                      else if (opt.id === selectedAnswer) btnClass = "bg-red-100 border-red-500 text-red-800 shadow-sm";
-                      else btnClass = "opacity-40 grayscale";
+                      // Logic: 
+                      // 1. If this option is what the user selected:
+                      //    - If correct: GREEN
+                      //    - If incorrect: RED
+                      // 2. If this option is the CORRECT answer:
+                      //    - ONLY show Green if the user ALSO selected it (i.e. they got it right).
+                      //    - If they got it wrong, DO NOT reveal the correct answer (User request).
+
+                      const isSelected = opt.id === selectedAnswer;
+                      const isThisCorrect = opt.id === currentQ.correctAnswerId;
+                      const didUserWin = selectedAnswer === currentQ.correctAnswerId;
+
+                      if (isSelected) {
+                        if (isThisCorrect) {
+                          btnClass = "bg-green-100 border-green-500 text-green-800 shadow-sm";
+                          showCorrect = true;
+                        } else {
+                          btnClass = "bg-red-100 border-red-500 text-red-800 shadow-sm";
+                          showWrong = true;
+                        }
+                      } else {
+                        // Not selected
+                        if (isThisCorrect && didUserWin) {
+                          // If user won, we can highlight the correct answer (which is also selected, handled above, but technically this block is for non-selected options)
+                          // Actually if the user selected it, it falls in the 'if (isSelected)' block.
+                          // So this block is for unselected options. 
+                          // Unselected options should mainly be greyed out.
+                          btnClass = "opacity-40 grayscale";
+                        } else {
+                          // User lost, or this is just a distractor.
+                          // User request: KHÔNG HIỂN THỊ ĐÁP ÁN (Do not show answer).
+                          // So even if isThisCorrect is true, we keep it grey.
+                          btnClass = "opacity-40 grayscale";
+                        }
+                      }
                     } else if (selectedAnswer === opt.id) {
                       btnClass = "border-[#14B8A6] bg-[#14B8A6]/10 ring-2 ring-[#5EEAD4] shadow-md";
                     }
@@ -373,8 +408,8 @@ const App: React.FC = () => {
                         className={`w-full p-3 md:p-4 rounded-xl text-left font-medium transition-all duration-200 ${btnClass} flex justify-between items-center group`}
                       >
                         <span className="text-base md:text-lg">{opt.text}</span>
-                        {isAnswerConfirmed && opt.id === currentQ.correctAnswerId && <CheckCircle2 size={24} className="text-green-600" />}
-                        {isAnswerConfirmed && opt.id === selectedAnswer && opt.id !== currentQ.correctAnswerId && <XCircle size={24} className="text-red-600" />}
+                        {showCorrect && <CheckCircle2 size={24} className="text-green-600" />}
+                        {showWrong && <XCircle size={24} className="text-red-600" />}
                         {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-4 h-4 rounded-full bg-[#14B8A6]" />}
                       </button>
                     );

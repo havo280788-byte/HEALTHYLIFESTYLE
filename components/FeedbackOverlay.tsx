@@ -5,9 +5,26 @@ interface FeedbackOverlayProps {
     isCorrect: boolean;
     correctAnswer: string;
     onNext: () => void;
+    stage: number;
 }
 
-const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ isCorrect, correctAnswer, onNext }) => {
+const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ isCorrect, correctAnswer, onNext, stage }) => {
+    const getSuccessMessage = (stageNum: number) => {
+        const messages: { [key: number]: string } = {
+            1: "🌱 Great start!",
+            2: "🥗 Smart choice!",
+            3: "💧 Well done!",
+            4: "🏃 Stay active!",
+            5: "💪 Strong work!",
+            6: "🧠 Brilliant!",
+            7: "🌙 Nice balance!",
+            8: "🚴 Great progress!",
+            9: "❤️ Fantastic!",
+            10: "🏆 Outstanding!"
+        };
+        return messages[stageNum] || "Great job!";
+    };
+
     return (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
             <div className="relative w-full max-w-md mx-4 overflow-hidden rounded-3xl shadow-2xl animate-scale-in">
@@ -29,12 +46,11 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ isCorrect, correctAns
                     {/* Subtitle / Answer */}
                     <div className="mb-8 text-white/90 font-medium text-lg">
                         {isCorrect ? (
-                            <p>Great job! Ready for the next stage?</p>
+                            <p>{getSuccessMessage(stage)}</p>
                         ) : (
                             <div className="flex flex-col items-center gap-1">
-                                <p className="opacity-80 text-sm uppercase tracking-wider font-bold">Answer:</p>
                                 <p className="bg-white/20 px-4 py-2 rounded-lg font-bold backdrop-blur-md">
-                                    {correctAnswer}
+                                    Incorrect. Please review the passage.
                                 </p>
                             </div>
                         )}
