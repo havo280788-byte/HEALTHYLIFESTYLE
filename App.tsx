@@ -120,9 +120,9 @@ const App: React.FC = () => {
       }
     }
 
-    // Ensure we have 10 questions and shuffle if using fallback
+    // Ensure we have 10 questions and use FIXED order for fallback
     if (!settings.apiKey) {
-      gameQuestions = [...FALLBACK_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 10);
+      gameQuestions = [...FALLBACK_QUESTIONS].slice(0, 10);
     }
 
     // Double check we have enough

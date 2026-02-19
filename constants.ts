@@ -47,7 +47,20 @@ Running, cycling, walking and hiking are some types of outdoor fitness. More and
 `;
 
 export const FALLBACK_QUESTIONS: Question[] = [
-  // 5 Multiple Choice (Comprehension)
+  // 1. Many people think it is less expensive to exercise in their homes.
+  {
+    id: 'tf1',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Many people think it is less expensive to exercise in their homes.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'true',
+    explanation: 'The text says: "75% of people asked say it is easier, cheaper and more convenient to exercise at home."'
+  },
+  // 2. Mini-workouts last from _________.
   {
     id: 'mc1',
     type: QuestionType.MULTIPLE_CHOICE,
@@ -61,19 +74,20 @@ export const FALLBACK_QUESTIONS: Question[] = [
     correctAnswerId: 'a',
     explanation: 'The text states: "Mini-workouts of 5 to 10 minutes spread out during the day are also a great way to exercise while busy at home."'
   },
+  // 3. Home gyms need a lot of space.
   {
-    id: 'mc2',
+    id: 'tf2',
     type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Some fitness apps also offer healthy _______tips.',
+    content: 'Home gyms need a lot of space.',
     options: [
-      { id: 'a', text: 'exercise programmes' },
-      { id: 'b', text: 'diet advice and wellness' },
-      { id: 'c', text: 'outdoor activities' },
-      { id: 'd', text: 'fitness equipment' }
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
     ],
-    correctAnswerId: 'b',
-    explanation: 'According to the text: "They offer a variety of workouts as well as healthy diet advice and wellness tips."'
+    correctAnswerId: 'false',
+    explanation: 'The text states: "All you need is a mat, light weights and some space," implying minimal space is sufficient.'
   },
+  // 4. The latest fitness _________ is apps on our smart watches, laptops and computers.
   {
     id: 'mc3',
     type: QuestionType.MULTIPLE_CHOICE,
@@ -87,6 +101,34 @@ export const FALLBACK_QUESTIONS: Question[] = [
     correctAnswerId: 'c',
     explanation: 'The text mentions: "Fitness applications on our mobiles, smart watches and computers are the latest craze."'
   },
+  // 5. Most fitness apps are downloaded on mobile phones.
+  {
+    id: 'tf3',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Most fitness apps are downloaded on mobile phones.',
+    options: [
+      { id: 'true', text: 'True' },
+      { id: 'false', text: 'False' },
+      { id: 'ds', text: "Doesn't Say" }
+    ],
+    correctAnswerId: 'ds',
+    explanation: 'The text mentions apps on mobiles, smart watches, and computers are a craze, but does not specify that "most" are downloaded on phones.'
+  },
+  // 6. Some fitness apps also offer healthy _________ tips.
+  {
+    id: 'mc2',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Some fitness apps also offer healthy _______tips.',
+    options: [
+      { id: 'a', text: 'exercise programmes' },
+      { id: 'b', text: 'diet advice and wellness' },
+      { id: 'c', text: 'outdoor activities' },
+      { id: 'd', text: 'fitness equipment' }
+    ],
+    correctAnswerId: 'b',
+    explanation: 'According to the text: "They offer a variety of workouts as well as healthy diet advice and wellness tips."'
+  },
+  // 7. Smart fitness mirrors are like _________ that teach exercises.
   {
     id: 'mc4',
     type: QuestionType.MULTIPLE_CHOICE,
@@ -100,56 +142,7 @@ export const FALLBACK_QUESTIONS: Question[] = [
     correctAnswerId: 'c',
     explanation: 'The text explains: "Smart fitness mirrors, acting as personal trainers, provide a variety of exercise programmes..."'
   },
-  {
-    id: 'mc5',
-    type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Fresh air is one of the _______ of exercising outside.',
-    options: [
-      { id: 'a', text: 'plans' },
-      { id: 'b', text: 'rewards' },
-      { id: 'c', text: 'benefits' },
-      { id: 'd', text: 'workouts' }
-    ],
-    correctAnswerId: 'c',
-    explanation: 'The text refers to "enjoying the benefits of nature with some fresh air and green healing."'
-  },
-  // 5 True / False / Doesn't Say
-  {
-    id: 'tf1',
-    type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Many people think it is less expensive to exercise in their homes.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' },
-      { id: 'ds', text: "Doesn't Say" }
-    ],
-    correctAnswerId: 'true',
-    explanation: 'The text says: "75% of people asked say it is easier, cheaper and more convenient to exercise at home."'
-  },
-  {
-    id: 'tf2',
-    type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Home gyms need a lot of space.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' },
-      { id: 'ds', text: "Doesn't Say" }
-    ],
-    correctAnswerId: 'false',
-    explanation: 'The text states: "All you need is a mat, light weights and some space," implying minimal space is sufficient.'
-  },
-  {
-    id: 'tf3',
-    type: QuestionType.MULTIPLE_CHOICE,
-    content: 'Most fitness apps are downloaded on mobile phones.',
-    options: [
-      { id: 'true', text: 'True' },
-      { id: 'false', text: 'False' },
-      { id: 'ds', text: "Doesn't Say" }
-    ],
-    correctAnswerId: 'ds',
-    explanation: 'The text mentions apps on mobiles, smart watches, and computers are a craze, but does not specify that "most" are downloaded on phones.'
-  },
+  // 8. You can't take exercise classes with a smart fitness mirror.
   {
     id: 'tf4',
     type: QuestionType.MULTIPLE_CHOICE,
@@ -162,6 +155,7 @@ export const FALLBACK_QUESTIONS: Question[] = [
     correctAnswerId: 'false',
     explanation: 'The text says smart fitness mirrors "provide a variety of exercise programmes from boxing to Pilates."'
   },
+  // 9. Outdoor fitness classes don't have equipment.
   {
     id: 'tf5',
     type: QuestionType.MULTIPLE_CHOICE,
@@ -173,6 +167,20 @@ export const FALLBACK_QUESTIONS: Question[] = [
     ],
     correctAnswerId: 'ds',
     explanation: 'The text mentions outdoor classes but doesn\'t specify whether they have equipment or not.'
+  },
+  // 10. Fresh air is one of the _________ of exercising outside.
+  {
+    id: 'mc5',
+    type: QuestionType.MULTIPLE_CHOICE,
+    content: 'Fresh air is one of the _______ of exercising outside.',
+    options: [
+      { id: 'a', text: 'plans' },
+      { id: 'b', text: 'rewards' },
+      { id: 'c', text: 'benefits' },
+      { id: 'd', text: 'workouts' }
+    ],
+    correctAnswerId: 'c',
+    explanation: 'The text refers to "enjoying the benefits of nature with some fresh air and green healing."'
   }
 ];
 
