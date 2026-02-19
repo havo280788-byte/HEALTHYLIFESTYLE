@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { PenTool, Eraser, Highlighter } from 'lucide-react';
 
 interface ReadingPassageProps {
@@ -48,11 +48,21 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
         }
     }, [content]);
 
+    // To prevent scroll jumping when updating innerHTML
+    const savedScrollTop = useRef(0);
+
+    useLayoutEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.scrollTop = savedScrollTop.current;
+        }
+    }, [htmlContent]);
+
     const saveContent = () => {
         if (contentRef.current) {
+            savedScrollTop.current = contentRef.current.scrollTop; // Capture current scroll
             const newHtml = contentRef.current.innerHTML;
             localStorage.setItem(STORAGE_KEY, newHtml);
-            setHtmlContent(newHtml); // Sync state with DOM to prevent reversions
+            setHtmlContent(newHtml); // Sync state
         }
     };
 
@@ -124,11 +134,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
 
-            {isHighlightMode && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-3 py-1.5 rounded-full shadow-lg pointer-events-none animate-fade-in opacity-80">
-                    Select text to highlight
-                </div>
-            )}
+
         </div>
     );
 };
