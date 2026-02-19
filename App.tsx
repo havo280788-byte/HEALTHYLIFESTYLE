@@ -7,6 +7,7 @@ import Input from './components/Input';
 import ProgressNavigation from './components/ProgressNavigation';
 import ReadingPassage from './components/ReadingPassage';
 import LeaderboardDashboard from './components/LeaderboardDashboard';
+import FeedbackOverlay from './components/FeedbackOverlay';
 import { addLeaderboardEntry, subscribeToLeaderboard, resetLeaderboard } from './services/firebase';
 import {
   Trophy,
