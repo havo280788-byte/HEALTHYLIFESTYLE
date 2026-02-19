@@ -1,76 +1,30 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { PenTool, Eraser, Highlighter } from 'lucide-react';
 
 interface ReadingPassageProps {
     content: string;
 }
 
-interface Highlight {
-    id: string; // unique ID for key
-    text: string;
-    range: Range; // Store the range to re-apply or checking overlap (complex to persist)
-    // For simpler persistence in this demo, we might just store text + index if we parse it,
-    // but standard DOM range styling is easier with `CSS.highlights` or wrapping in spans.
-    // Given the constraints and likely "react-way", wrapping text in <span> is best.
-}
-
-// Simple approach: Split content by lines, render each line.
-// Highlighting across elements is hard.
-// BETTER APPROACH: Render the full markdown text in a preservable way, and use a library or manual span wrapping.
-// FOR THIS TASK: The user wants "Highlight right corner".
-// We will implement a "Highlight Mode" that when active, allows selecting text to wrap it in a <mark> tag.
-
 const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     const [isHighlightMode, setIsHighlightMode] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+    const isFirstRender = useRef(true);
 
-    // We need to store html content to allow modifying it with highlights
-    // Initial parsing of markdown-like syntax to HTML
-    const [htmlContent, setHtmlContent] = useState<string>('');
-
-    // Storage Key
-    const STORAGE_KEY = 'healthylife_reading_highlights';
-
+    // Initialize content ONCE (or when content prop changes)
     useEffect(() => {
-        // Try to load from local storage first
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            setHtmlContent(saved);
-        } else {
-            // Parse the initial content (Markdown-ish to HTML)
-            const parsed = content.split('\n').map(line => {
-                if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
-                if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
-                if (line.trim() === '') return `<div class="h-4"></div>`;
-                return `<p class="mb-2 text-slate-700 leading-relaxed text-base md:text-lg">${line}</p>`;
-            }).join('');
-            setHtmlContent(parsed);
-        }
-    }, [content]);
+        if (!contentRef.current) return;
 
-    // To prevent scroll jumping when updating innerHTML
-    const savedScrollTop = useRef(0);
+        // Parse Markdown
+        const initialHtml = content.split('\n').map(line => {
+            if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
+            if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
+            if (line.trim() === '') return `<div class="h-4"></div>`;
+            return `<p class="mb-2 text-slate-700 leading-relaxed text-base md:text-lg">${line}</p>`;
+        }).join('');
 
-    useLayoutEffect(() => {
-        if (contentRef.current) {
-            contentRef.current.scrollTop = savedScrollTop.current;
-            // Double insurance: sometimes browsers reset scroll after layout calc
-            requestAnimationFrame(() => {
-                if (contentRef.current) {
-                    contentRef.current.scrollTop = savedScrollTop.current;
-                }
-            });
-        }
-    }, [htmlContent]);
-
-    const saveContent = () => {
-        if (contentRef.current) {
-            savedScrollTop.current = contentRef.current.scrollTop; // Capture current scroll
-            const newHtml = contentRef.current.innerHTML;
-            localStorage.setItem(STORAGE_KEY, newHtml);
-            setHtmlContent(newHtml); // Sync state
-        }
-    };
+        // Set innerHTML directly - React doesn't manage this anymore
+        contentRef.current.innerHTML = initialHtml;
+    }, [content]); // Only re-run if PROP content changes (which is static)
 
     const handleContainerClick = (e: React.MouseEvent) => {
         if (!isHighlightMode) return;
@@ -85,7 +39,6 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 parent?.insertBefore(target.firstChild, target);
             }
             parent?.removeChild(target);
-            saveContent();
         }
     };
 
@@ -107,10 +60,9 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
 
                 range.surroundContents(span);
                 selection.removeAllRanges();
-                saveContent(); // Save immediately
             } catch (e) {
                 console.warn("Cannot highlight across different block elements", e);
-                alert("Please select text within a single paragraph to highlight.");
+                // Optionally alert user, but console warn is less intrusive
             }
         }
     };
@@ -137,12 +89,11 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 onMouseUp={handleMouseUp}
                 onTouchEnd={handleMouseUp} // Basic touch support
                 onClick={handleContainerClick}
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
+            // No dangerouslySetInnerHTML - we manage content manually!
             />
-
-
         </div>
     );
 };
 
-export default ReadingPassage;
+// MEMOIZE to prevent re-renders from parent (Timer in App.tsx)
+export default memo(ReadingPassage);
