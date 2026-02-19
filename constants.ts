@@ -19,6 +19,8 @@ export const GAME_STAGES = [
   "Wellness Champion"
 ];
 
+export const STAGE_ICONS = ["🌱", "🥗", "💧", "🏃", "💪", "🧠", "🌙", "🚴", "❤️", "🏆"];
+
 export const THEME_COLORS = {
   primary: '#0F766E', // Deep Teal
   secondary: '#14B8A6', // Fresh Teal

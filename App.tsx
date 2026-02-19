@@ -32,8 +32,7 @@ const App: React.FC = () => {
   // Game Data
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentStage, setCurrentStage] = useState(0); // 0 to 9
-  const [startTime, setStartTime] = useState<number>(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number>(480); // 8 minutes = 480 seconds
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
   // UI State
@@ -54,16 +53,23 @@ const App: React.FC = () => {
     if (savedSettings) setSettings(JSON.parse(savedSettings));
   }, []);
 
-  // Timer (Updates display only - logic uses Date.now())
+  // Timer: Countdown from 480
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (appState === AppState.PLAYING) {
       interval = setInterval(() => {
-        setElapsedSeconds(Math.round((Date.now() - startTime) / 1000));
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            completeGame(true); // Timeout finish
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [appState, startTime]);
+  }, [appState]);
 
   // --- Actions ---
 
@@ -108,8 +114,7 @@ const App: React.FC = () => {
     }
 
     setQuestions(gameQuestions);
-    setStartTime(Date.now());
-    setElapsedSeconds(0);
+    setTimeLeft(480); // Reset to 8 minutes
     setCurrentStage(0);
     setSelectedAnswer(null);
     setIsAnswerConfirmed(false);
@@ -144,19 +149,22 @@ const App: React.FC = () => {
       setIsAnswerConfirmed(false);
       setFeedbackMessage(null);
     } else {
-      completeGame();
+      completeGame(false);
     }
   };
 
-  const completeGame = () => {
-    const finalTime = Math.round((Date.now() - startTime) / 1000);
+  const completeGame = (isTimeout = false) => {
+    // Score based on time spent? Or just completion?
+    // User wants "Fastest" leaderboard.
+    // Time Spent = 480 - timeLeft
+    const timeSpent = 480 - timeLeft;
 
     // Save to Leaderboard
     const newEntry: LeaderboardEntry = {
       name: user.name,
       className: user.className,
       score: 10,
-      timeSpent: finalTime,
+      timeSpent: timeSpent,
       timestamp: Date.now()
     };
 
@@ -252,10 +260,40 @@ const App: React.FC = () => {
       return <p key={idx} className="mb-2 text-slate-700 leading-relaxed text-lg">{line}</p>;
     });
 
+    // Format Timer mm:ss
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const timerString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const isUrgent = timeLeft < 60; // Red color if under 1 minute
+
     return (
       <div className="h-screen w-full flex flex-col bg-slate-50 overflow-hidden">
-        {/* 1. Navigation Bar */}
-        <ProgressNavigation currentStage={currentStage} />
+        {/* === HEADER SECTION === */}
+        <div className="bg-white border-b border-slate-100 shadow-sm z-50">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            {/* Left: Titles */}
+            <div className="flex flex-col">
+              <h1 className="text-lg md:text-xl font-bold text-[#0F766E] flex items-center gap-2">
+                <span>🥗</span> English 11 – Healthy Lifestyle
+              </h1>
+              <h2 className="text-sm font-semibold text-slate-500 pl-7 flex items-center gap-2">
+                <span>🧠</span> Reading Challenge
+              </h2>
+            </div>
+
+            {/* Right: Countdown Timer */}
+            <div className={`
+                 flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-mono font-bold text-xl md:text-2xl shadow-inner
+                 ${isUrgent ? 'bg-red-50 text-red-600 border-red-100 animate-pulse' : 'bg-green-50 text-[#0F766E] border-green-100'}
+              `}>
+              <Clock size={24} />
+              {timerString}
+            </div>
+          </div>
+
+          {/* Progress Navigation inside Header now? Or just below? User said "Header ... Icon Bar" */}
+          <ProgressNavigation currentStage={currentStage} />
+        </div>
 
         {/* 2. Main Split Content */}
         <div className="flex-1 w-full max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
@@ -275,11 +313,7 @@ const App: React.FC = () => {
                 <span className="font-bold text-[#0F766E] uppercase tracking-wider text-sm">
                   Question {currentStage + 1} / 10
                 </span>
-                <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm text-[#0F766E] font-mono font-bold">
-                  <Clock size={16} />
-                  {Math.floor(elapsedSeconds / 60).toString().padStart(2, '0')}:
-                  {(elapsedSeconds % 60).toString().padStart(2, '0')}
-                </div>
+                {/* Timer moved to top header, so we can remove it from here or keep small one? Removed for cleaner UI as per req */}
               </div>
 
               <div className="p-6 md:p-8">
