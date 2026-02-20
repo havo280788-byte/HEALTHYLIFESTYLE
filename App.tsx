@@ -352,7 +352,7 @@ const App: React.FC = () => {
               </div>
 
               <div className="p-6 md:p-8 relative z-10">
-                <h2 className="text-xl md:text-2xl font-bold text-white mb-6 leading-relaxed drop-shadow-sm">
+                <h2 className="text-lg md:text-2xl font-bold text-white mb-6 leading-relaxed drop-shadow-sm">
                   {currentQ.content}
                 </h2>
 
@@ -398,7 +398,7 @@ const App: React.FC = () => {
                         disabled={isAnswerConfirmed}
                         className={`w-full p-4 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center group`}
                       >
-                        <span className="text-base md:text-lg">{opt.text}</span>
+                        <span className="text-sm md:text-lg">{opt.text}</span>
                         {statusIcon}
                         {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-3 h-3 rounded-full bg-[#22C55E]" />}
                       </button>
