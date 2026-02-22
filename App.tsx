@@ -280,7 +280,7 @@ const App: React.FC = () => {
     const isUrgent = timeLeft < 60; // Red color if under 1 minute
 
     return (
-      <div className="h-screen w-full flex flex-col bg-slate-50 overflow-hidden font-['Poppins']">
+      <div className="min-h-screen w-full flex flex-col bg-slate-50 md:h-screen md:overflow-hidden font-['Poppins']">
         {/* === HEADER SECTION === */}
         <div className="bg-white border-b border-slate-100 shadow-sm z-50">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -314,23 +314,23 @@ const App: React.FC = () => {
         )}
 
         {/* 2. Main Split Content */}
-        <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 overflow-hidden">
+        <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 md:overflow-hidden">
 
           {/* LEFT: Reading Passage */}
-          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '60vh', overflowY: 'auto', padding: '20px' }}>
+          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '50vh', overflowY: 'auto', padding: '20px' }}>
             <ReadingPassage content={READING_PASSAGE} />
           </div>
 
           {/* RIGHT: Question Interface (Compact Green Card) */}
-          <div className="flex flex-col overflow-y-auto md:flex-1">
-            <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 flex-shrink-0 relative">
+          <div className="flex flex-col overflow-hidden md:flex-1">
+            <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 relative flex flex-col flex-1">
 
               {/* Decorative Overlay */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-10 -mb-10 blur-xl pointer-events-none"></div>
 
               {/* Card Header */}
-              <div className="bg-black/10 p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-sm relative z-10">
+              <div className="bg-black/10 p-3 md:p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-sm relative z-10">
                 <span className="font-bold text-green-50 uppercase tracking-wider text-sm">
                   Question {currentStage + 1} / 10
                 </span>
@@ -339,12 +339,12 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-6 md:p-8 relative z-10">
-                <h2 className="text-base md:text-2xl font-bold text-white mb-6 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
+              <div className="p-4 md:p-5 relative z-10 flex-1 flex flex-col">
+                <h2 className="text-base md:text-2xl font-bold text-white mb-3 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
                   {currentQ.content}
                 </h2>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {currentQ.options.map(opt => {
                     // Logic: 
                     // White Box default
@@ -384,7 +384,7 @@ const App: React.FC = () => {
                         key={opt.id}
                         onClick={() => handleAnswerSelect(opt.id)}
                         disabled={isAnswerConfirmed}
-                        className={`w-full p-4 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center group`}
+                        className={`w-full p-3 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center group`}
                       >
                         <span className="text-sm md:text-lg" style={{ fontWeight: 500 }}>{opt.text}</span>
                         {statusIcon}
@@ -396,7 +396,7 @@ const App: React.FC = () => {
               </div>
 
               {/* Footer Actions */}
-              <div className="p-4 bg-black/10 border-t border-white/10 text-center backdrop-blur-sm relative z-10">
+              <div className="p-3 md:p-3 bg-black/10 border-t border-white/10 text-center backdrop-blur-sm relative z-10">
                 {!isAnswerConfirmed && (
                   <Button
                     onClick={checkAnswer}
