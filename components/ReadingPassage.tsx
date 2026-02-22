@@ -68,7 +68,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     };
 
     return (
-        <div className="relative h-full flex flex-col">
+        <div className="relative flex flex-col">
             {/* Floating Toolbar */}
             <div className="absolute top-4 right-4 z-10 flex gap-2 bg-white/90 backdrop-blur p-1.5 rounded-lg shadow-md border border-slate-200">
                 <button
@@ -85,7 +85,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
 
             <div
                 ref={contentRef}
-                className={`flex-1 overflow-y-auto p-4 md:p-6 transition-colors duration-300 ${isHighlightMode ? 'cursor-text selection:bg-yellow-100 selection:text-yellow-900' : ''}`}
+                className={`flex-1 transition-colors duration-300 ${isHighlightMode ? 'cursor-text selection:bg-yellow-100 selection:text-yellow-900' : ''}`}
                 onMouseUp={handleMouseUp}
                 onTouchEnd={handleMouseUp} // Basic touch support
                 onClick={handleContainerClick}

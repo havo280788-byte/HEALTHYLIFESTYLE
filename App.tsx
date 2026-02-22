@@ -273,18 +273,6 @@ const App: React.FC = () => {
     const currentQ = questions[currentStage];
     if (!currentQ) return null;
 
-    // Formatting Reading Passage (Simple markdown-like replacement for basic bolding/titles)
-    // In a real app we might use a markdown renderer, but here we keep it zero-dep-consistent
-    const formattedReading = READING_PASSAGE.split('\n').map((line, idx) => {
-      if (line.startsWith('## ')) return <h2 key={idx} className="text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">{line.replace('## ', '')}</h2>;
-      if (line.startsWith('**')) {
-        const content = line.replace(/\*\*/g, '');
-        return <h3 key={idx} className="text-lg font-bold text-[#0d9488] mt-4 mb-2">{content}</h3>;
-      }
-      if (line.trim() === '') return <div key={idx} className="h-4" />;
-      return <p key={idx} className="mb-2 text-slate-700 leading-relaxed text-lg">{line}</p>;
-    });
-
     // Format Timer mm:ss
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
@@ -329,7 +317,7 @@ const App: React.FC = () => {
         <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 overflow-hidden">
 
           {/* LEFT: Reading Passage */}
-          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 overflow-hidden relative md:flex-1 reading-passage-container" style={{ maxHeight: '60vh', overflowY: 'auto', padding: '20px' }}>
+          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '60vh', overflowY: 'auto', padding: '20px' }}>
             <ReadingPassage content={READING_PASSAGE} />
           </div>
 
