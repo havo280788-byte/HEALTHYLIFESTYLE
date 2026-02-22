@@ -61,6 +61,13 @@ const App: React.FC = () => {
   const [pinError, setPinError] = useState(false);
   const [teacherSelectedAnswer, setTeacherSelectedAnswer] = useState<string | null>(null);
 
+  // Review Mode State
+  const [reviewStudent, setReviewStudent] = useState<LeaderboardEntry | null>(null);
+  const [reviewQuestionIdx, setReviewQuestionIdx] = useState(0);
+
+  // Track selected answer IDs (questionId -> optionId)
+  const [selectedAnswerMap, setSelectedAnswerMap] = useState<Record<string, string>>({});
+
   // --- Effects ---
 
   // Initialize Leaderboard & Settings
@@ -203,10 +210,16 @@ const App: React.FC = () => {
     const currentQ = questions[currentStage];
     const isCorrect = selectedAnswer === currentQ.correctAnswerId;
 
-    // Record answer
+    // Record answer correctness
     setUserAnswers(prev => ({
       ...prev,
       [currentQ.id]: isCorrect
+    }));
+
+    // Record which option was selected
+    setSelectedAnswerMap(prev => ({
+      ...prev,
+      [currentQ.id]: selectedAnswer!
     }));
 
     if (isCorrect) {
@@ -253,7 +266,8 @@ const App: React.FC = () => {
       score: finalScore,
       timeSpent: timeSpent,
       timestamp: Date.now(),
-      answers: userAnswers
+      answers: userAnswers,
+      selectedAnswers: selectedAnswerMap
     };
 
     // Save to Firebase
@@ -668,152 +682,238 @@ const App: React.FC = () => {
   };
 
   // =====================================================
-  // TEACHER REVIEW — Student answers by name
+  // TEACHER REVIEW — Per-student per-question review
   // =====================================================
   const renderTeacherReview = () => {
-    // Sort entries by name
-    const sortedEntries = [...leaderboard].sort((a, b) => a.name.localeCompare(b.name));
-    const questionIds = questions.length > 0 ? questions.map(q => q.id) : FALLBACK_QUESTIONS.slice(0, 10).map(q => q.id);
+    const sortedEntries = [...leaderboard].sort((a, b) => a.name.localeCompare(b.name, 'vi-VN'));
+    const gameQuestions = questions.length > 0 ? questions : FALLBACK_QUESTIONS.slice(0, 10);
+    const totalQ = gameQuestions.length;
+    const currentQ = gameQuestions[reviewQuestionIdx];
+
+    const studentAnswerCorrect = reviewStudent?.answers?.[currentQ?.id];
+    const studentSelectedId = reviewStudent?.selectedAnswers?.[currentQ?.id];
+    const isCorrectAnswer = studentAnswerCorrect === true;
+
+    const fmtTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
 
     return (
-      <div className="min-h-screen bg-slate-50 font-['Poppins']">
-        {/* Header */}
-        <div className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex flex-col">
-              <h1 className="text-base md:text-xl font-bold text-[#0F766E] flex items-center gap-2 font-['Montserrat']">
-                <span>🥗</span> English 11 – Healthy Lifestyle
-              </h1>
-              <span className="text-xs text-slate-400 font-medium tracking-wide">READING CHALLENGE</span>
-            </div>
+      <div className="min-h-screen md:h-screen bg-slate-50 font-['Poppins'] flex flex-col overflow-hidden">
+        {/* REVIEW HEADER */}
+        <div className="bg-white border-b border-slate-100 shadow-sm z-50 shrink-0">
+          <div className="max-w-7xl mx-auto px-3 md:px-4 py-2 md:py-3 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
-                <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>
-                TEACHER MODE
+              <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-bold shadow-md">
+                <Eye size={14} />
+                <span className="hidden md:inline">REVIEW MODE</span><span className="md:hidden">REVIEW</span>
               </div>
+            </div>
+            <div className="flex items-center gap-2 md:gap-3">
+              <span className="text-xs md:text-sm font-semibold text-slate-500">
+                Question <span className="text-[#0F766E] font-bold">{reviewQuestionIdx + 1}</span> of {totalQ}
+              </span>
               <button
-                onClick={() => setAppState(AppState.TEACHER_PLAYING)}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
+                onClick={() => { setReviewStudent(null); setReviewQuestionIdx(0); setAppState(AppState.TEACHER_PLAYING); }}
+                className="p-1.5 md:p-2 rounded-lg bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-600 transition-colors border border-slate-200"
+                title="Close"
               >
-                QUESTIONS
-              </button>
-              <button
-                onClick={() => setAppState(AppState.LEADERBOARD)}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
-              >
-                LEADERBOARD
+                <XCircle size={18} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="max-w-7xl mx-auto p-4 md:p-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-            <div className="p-4 md:p-6 border-b border-slate-100 bg-gradient-to-r from-[#0F766E]/5 to-transparent">
-              <h2 className="text-lg md:text-xl font-bold text-[#0F766E] flex items-center gap-2">
-                <Eye size={22} /> Student Responses
-              </h2>
-              <p className="text-sm text-slate-500 mt-1">{sortedEntries.length} student(s) submitted</p>
+        {/* STUDENT DROPDOWN */}
+        <div className="max-w-7xl mx-auto w-full px-3 md:px-4 pt-3 shrink-0">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">Student:</label>
+            <select
+              value={reviewStudent ? `${reviewStudent.name}|${reviewStudent.timestamp}` : ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!val) { setReviewStudent(null); return; }
+                const [name, ts] = val.split('|');
+                const student = sortedEntries.find(s => s.name === name && s.timestamp === Number(ts));
+                setReviewStudent(student || null);
+                setReviewQuestionIdx(0);
+              }}
+              className="w-full p-2 md:p-2.5 rounded-lg border-2 border-slate-200 focus:border-[#0F766E] focus:outline-none text-sm font-medium text-slate-700 bg-slate-50 transition-colors"
+            >
+              <option value="">— Select a student —</option>
+              {sortedEntries.map((entry, idx) => {
+                const correct = entry.answers ? Object.values(entry.answers).filter(Boolean).length : 0;
+                const total = entry.answers ? Object.keys(entry.answers).length : 0;
+                return (
+                  <option key={idx} value={`${entry.name}|${entry.timestamp}`}>
+                    {entry.name} ({entry.className}) — {correct}/{total} — {fmtTime(entry.timeSpent)}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+
+        {/* MAIN CONTENT */}
+        {!reviewStudent ? (
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center text-slate-400">
+              <UserIcon size={48} className="mx-auto mb-3 opacity-40" />
+              <p className="font-medium text-lg">Select a student to review</p>
+              <p className="text-sm mt-1">{sortedEntries.length} student(s) submitted</p>
+            </div>
+          </div>
+        ) : currentQ ? (
+          <div className="flex-1 max-w-7xl mx-auto w-full px-3 md:px-4 py-3 flex flex-col md:flex-row gap-3 md:gap-4 min-h-0 overflow-hidden">
+            {/* LEFT: Reading Passage */}
+            <div className="md:w-1/2 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0 max-h-[40vh] md:max-h-none">
+              <div className="p-2.5 bg-slate-50 border-b border-slate-200 shrink-0">
+                <span className="text-[10px] md:text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                  <BookOpen size={14} /> READING PASSAGE
+                </span>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <ReadingPassage content={READING_PASSAGE} />
+              </div>
             </div>
 
-            {sortedEntries.length === 0 ? (
-              <div className="p-12 text-center text-slate-400">
-                <UserIcon size={48} className="mx-auto mb-3 opacity-40" />
-                <p className="font-medium">No student submissions yet.</p>
+            {/* RIGHT: Question + Answers */}
+            <div className="md:w-1/2 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0">
+              {/* Question header */}
+              <div className="p-3 md:p-4 bg-gradient-to-r from-[#0F766E] to-[#14B8A6] text-white shrink-0">
+                <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    Stage {reviewQuestionIdx + 1}
+                  </span>
+                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    Multiple Choice
+                  </span>
+                  {studentAnswerCorrect !== undefined && (
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${isCorrectAnswer ? 'bg-green-400/30 text-green-100' : 'bg-red-400/30 text-red-100'
+                      }`}>
+                      {isCorrectAnswer ? '✅ Correct' : '❌ Incorrect'}
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-sm md:text-base font-bold leading-relaxed">{currentQ.content}</h3>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="text-left py-3 px-4 font-bold text-slate-600">#</th>
-                      <th className="text-left py-3 px-4 font-bold text-slate-600">Name</th>
-                      <th className="text-left py-3 px-4 font-bold text-slate-600">Class</th>
-                      <th className="text-center py-3 px-4 font-bold text-slate-600">Score</th>
-                      <th className="text-center py-3 px-4 font-bold text-slate-600">Time</th>
-                      {questionIds.map((_, i) => (
-                        <th key={i} className="text-center py-3 px-2 font-bold text-slate-600 whitespace-nowrap">Q{i + 1}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedEntries.map((entry, idx) => (
-                      <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 text-slate-400 font-mono">{idx + 1}</td>
-                        <td className="py-3 px-4 font-semibold text-slate-800">{entry.name}</td>
-                        <td className="py-3 px-4 text-slate-500">{entry.className}</td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold text-xs">
-                            {entry.score * 10}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-center text-slate-500 font-mono text-xs">
-                          {Math.floor(entry.timeSpent / 60)}:{(entry.timeSpent % 60).toString().padStart(2, '0')}
-                        </td>
-                        {questionIds.map((qId, i) => {
-                          const answer = entry.answers?.[qId];
-                          return (
-                            <td key={i} className="py-3 px-2 text-center">
-                              {answer === undefined ? (
-                                <span className="text-slate-300">—</span>
-                              ) : answer ? (
-                                <span className="text-green-500 font-bold">✅</span>
-                              ) : (
-                                <span className="text-red-500 font-bold">❌</span>
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+              {/* Answer options */}
+              <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2">
+                {currentQ.options.map(opt => {
+                  const isCorrect = opt.id === currentQ.correctAnswerId;
+                  const isStudentPick = opt.id === studentSelectedId;
+                  const hasData = studentAnswerCorrect !== undefined;
+
+                  let bgClass = 'bg-slate-50 border-slate-200 text-slate-600';
+                  if (hasData) {
+                    if (isCorrect) bgClass = 'bg-green-50 border-green-400 text-green-800';
+                    else if (isStudentPick && !isCorrect) bgClass = 'bg-red-50 border-red-400 text-red-700';
+                    else bgClass = 'bg-slate-50 border-slate-100 text-slate-400';
+                  }
+
+                  return (
+                    <div key={opt.id} className={`p-3 rounded-xl border-2 ${bgClass} flex items-center justify-between`}>
+                      <span className="text-sm font-medium">{opt.text}</span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {hasData && isStudentPick && (
+                          <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">STUDENT</span>
+                        )}
+                        {hasData && isCorrect && <CheckCircle2 size={18} className="text-green-600" />}
+                        {hasData && isStudentPick && !isCorrect && <XCircle size={18} className="text-red-500" />}
+                      </div>
+                    </div>
+                  );
+                })}
+                {studentAnswerCorrect !== undefined && !studentSelectedId && (
+                  <div className="text-xs text-slate-400 text-center mt-2 bg-slate-50 p-2 rounded-lg">
+                    ℹ️ Detailed answer choice not available for older submissions
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* PREV / NEXT */}
+              <div className="p-3 border-t border-slate-200 bg-slate-50 shrink-0">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
+                    disabled={reviewQuestionIdx === 0}
+                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft size={18} /> PREV
+                  </button>
+                  <button
+                    onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
+                    disabled={reviewQuestionIdx === totalQ - 1}
+                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0d9488] text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    NEXT <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  };
+
+  const renderResult = () => {
+    // Calculate accuracy
+    const totalQuestions = questions.length || 10;
+    const correctCount = Object.values(userAnswers).filter(Boolean).length;
+    const accuracy = Math.round((correctCount / totalQuestions) * 100);
+    const timeSpent = 480 - timeLeft;
+    const mins = Math.floor(timeSpent / 60);
+    const secs = timeSpent % 60;
+    const timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+    // Badge logic
+    let badge = '🌱 AI Explorer';
+    if (accuracy >= 90) badge = '🏆 AI Reading Pro';
+    else if (accuracy >= 70) badge = '🔬 AI Analyst';
+
+    return (
+      <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
+        <div className="max-w-md w-full mx-auto bg-white p-6 md:p-8 rounded-3xl shadow-2xl text-center animate-fade-in relative overflow-hidden">
+
+          <div className="w-20 h-20 md:w-24 md:h-24 bg-green-100/50 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner ring-4 ring-green-200">
+            <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-green-600" />
+          </div>
+
+          <h2 className="text-xl md:text-2xl font-black text-[#0F766E] mb-1 uppercase tracking-wide">Challenge Completed!</h2>
+          <p className="text-[#14B8A6] font-medium mb-6 text-sm">Great work! Here's your summary.</p>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="bg-[#f0fdfa] rounded-xl p-4 border border-[#ccfbf1]">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Accuracy</div>
+              <div className="text-2xl md:text-3xl font-black text-[#0F766E]">{accuracy}%</div>
+              <div className="text-xs text-slate-500 font-medium">{correctCount}/{totalQuestions}</div>
+            </div>
+            <div className="bg-[#f0fdfa] rounded-xl p-4 border border-[#ccfbf1]">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Time</div>
+              <div className="text-2xl md:text-3xl font-black text-[#0F766E]">{timeString}</div>
+              <div className="text-xs text-slate-500 font-medium">minutes</div>
+            </div>
+          </div>
+
+          {/* Badge */}
+          <div className="bg-yellow-50 rounded-xl p-3 mb-6 border border-yellow-200">
+            <div className="text-[10px] font-bold text-yellow-600 uppercase tracking-widest mb-1">Badge Earned</div>
+            <div className="text-lg font-black text-yellow-700">{badge}</div>
+          </div>
+
+          {/* Waiting for Teacher */}
+          <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 animate-pulse">
+            <div className="flex items-center justify-center gap-2 text-blue-700 font-bold text-sm">
+              <Clock size={16} className="animate-spin" style={{ animationDuration: '3s' }} />
+              WAITING FOR TEACHER REVIEW…
+            </div>
+            <p className="text-xs text-blue-500 mt-2">Your answers have been submitted.<br />Please wait patiently for your teacher to review the results.</p>
           </div>
         </div>
       </div>
     );
   };
-
-  const renderResult = () => (
-    <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
-      <div className="max-w-lg w-full mx-auto bg-white p-8 rounded-3xl shadow-2xl text-center animate-fade-in relative overflow-hidden">
-        {/* Fireworks decoration */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10 bg-[url('https://media.giphy.com/media/26tOZ42MgWX5LmOht/giphy.gif')] bg-cover" />
-
-        <div className="w-24 h-24 bg-yellow-100/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ring-4 ring-yellow-200">
-          <Award className="w-12 h-12 text-yellow-600" />
-        </div>
-
-        <h2 className="text-3xl font-black text-[#0F766E] mb-2">🎉 Challenge Complete!</h2>
-        <p className="text-[#14B8A6] font-medium mb-6">You did a fantastic job!</p>
-
-        <div className="bg-[#f0fdfa] rounded-xl p-6 mb-8 border border-[#ccfbf1]">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">COMPLETION TIME</div>
-          <div className="text-4xl font-black text-[#0F766E]">
-            {Math.floor(leaderboard[leaderboard.length - 1]?.timeSpent / 60)}m {leaderboard[leaderboard.length - 1]?.timeSpent % 60}s
-          </div>
-          <div className="mt-2 text-sm font-bold text-yellow-600 flex items-center justify-center gap-1">
-            <Trophy size={14} /> BRAVE TROPHY
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" onClick={() => {
-            playSound('click');
-            setAppState(AppState.LEADERBOARD);
-          }}>
-            LEADERBOARD
-          </Button>
-          <Button onClick={() => setAppState(AppState.LOGIN)} className="bg-[#0F766E] text-white hover:bg-[#0d9488]">
-            PLAY AGAIN
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
 
   const renderLeaderboard = () => (
     <LeaderboardDashboard
@@ -821,8 +921,10 @@ const App: React.FC = () => {
       onReset={resetLeaderboard}
       onExit={() => isTeacherMode ? setAppState(AppState.TEACHER_PLAYING) : setAppState(AppState.LOGIN)}
       isSyncing={isSyncing}
+      isTeacherMode={isTeacherMode}
     />
   );
+
 
   return (
     <div>

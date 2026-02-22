@@ -29,6 +29,7 @@ export interface LeaderboardEntry {
   timeSpent: number; // in seconds
   timestamp: number;
   answers?: Record<string, boolean>; // map of questionId -> isCorrect
+  selectedAnswers?: Record<string, string>; // map of questionId -> selected optionId
 }
 
 export interface GameSettings {

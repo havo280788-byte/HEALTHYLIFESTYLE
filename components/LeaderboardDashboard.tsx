@@ -1,85 +1,272 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { LeaderboardEntry } from '../types';
 import { BarChart, DonutChart } from './DashboardCharts';
-import { Trophy, RefreshCw, X, Circle, Clock } from 'lucide-react';
-import Button from './Button';
+import { Trophy, RefreshCw, X, Clock, Users, Target, Zap, BookOpen, Brain, Search, MessageSquare } from 'lucide-react';
+import { FALLBACK_QUESTIONS } from '../constants';
 
 interface LeaderboardDashboardProps {
     entries: LeaderboardEntry[];
     onReset: () => void;
     onExit: () => void;
     isSyncing?: boolean;
+    isTeacherMode?: boolean;
 }
 
-const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, onReset, onExit, isSyncing = false }) => {
+const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, onReset, onExit, isSyncing = false, isTeacherMode = false }) => {
+    const [viewMode, setViewMode] = useState<'student' | 'teacher'>(isTeacherMode ? 'teacher' : 'student');
 
-    // --- Analytics ---
-    const stats = useMemo(() => {
+    // Question IDs in order
+    const questionIds = FALLBACK_QUESTIONS.slice(0, 10).map(q => q.id);
+
+    // --- Teacher Analytics ---
+    const teacherStats = useMemo(() => {
         if (entries.length === 0) return null;
 
+        const total = entries.length;
+        const totalQuestions = 10;
+
+        // Avg Accuracy
+        const avgAccuracy = Math.round(
+            entries.reduce((sum, e) => {
+                const correct = e.answers ? Object.values(e.answers).filter(Boolean).length : 0;
+                return sum + (correct / totalQuestions) * 100;
+            }, 0) / total
+        );
+
+        // Fastest time (among ≥80% accuracy)
+        const highScorers = entries.filter(e => {
+            const correct = e.answers ? Object.values(e.answers).filter(Boolean).length : 0;
+            return (correct / totalQuestions) >= 0.8;
+        });
+        const fastestTime = highScorers.length > 0
+            ? Math.min(...highScorers.map(e => e.timeSpent))
+            : null;
+
+        // Per-question accuracy
+        const questionInsights = questionIds.map((qId, idx) => {
+            const correctCount = entries.filter(e => e.answers?.[qId] === true).length;
+            const rate = Math.round((correctCount / total) * 100);
+            return { label: `Q${idx + 1}`, qId, correctCount, total, rate };
+        });
+
+        // Hardest questions (lowest rate)
+        const minRate = Math.min(...questionInsights.map(q => q.rate));
+        const hardest = questionInsights.filter(q => q.rate === minRate).map(q => q.label);
+
+        // Skills breakdown
+        // Fact Retrieval: mc1, mc2 (direct fact from text)
+        // Reference (Pronouns/Context): mc3, mc4 (vocabulary/context)
+        // Inference: tf1, tf2, tf3 (True/False/Doesn't Say = inference)
+        // Detail/Scanning: mc5, tf4, tf5 (scanning for detail)
+        const getSkillStats = (ids: string[]) => {
+            let correct = 0;
+            let possible = 0;
+            entries.forEach(e => {
+                ids.forEach(id => {
+                    if (e.answers?.[id] !== undefined) {
+                        possible++;
+                        if (e.answers[id]) correct++;
+                    }
+                });
+            });
+            return { correct, possible, rate: possible > 0 ? Math.round((correct / possible) * 100) : 0 };
+        };
+
+        const skills = [
+            { label: 'Fact Retrieval', icon: '📖', ...getSkillStats(['tf1', 'mc1']), color: '#22c55e' },
+            { label: 'Reference', icon: '🔗', ...getSkillStats(['mc3', 'mc4']), color: '#3b82f6' },
+            { label: 'Inference', icon: '🧠', ...getSkillStats(['tf2', 'tf3', 'tf5']), color: '#a855f7' },
+            { label: 'Detail / Scanning', icon: '🔍', ...getSkillStats(['mc2', 'mc5', 'tf4']), color: '#f59e0b' },
+        ];
+
+        return { total, avgAccuracy, fastestTime, questionInsights, hardest, skills };
+    }, [entries]);
+
+    // --- Student Analytics (existing) ---
+    const studentStats = useMemo(() => {
+        if (entries.length === 0) return null;
         const totalPlayers = entries.length;
         const fastestTime = Math.min(...entries.map(e => e.timeSpent));
 
-        // Correct Answer Rate per Question (Q1-Q8... wait, we have 10, design says Q1-Q8)
-        // We will show Q1-Q8 to match design, or Q1-Q10 if we want to be accurate.
-        // Let's loop 1-8 for design fidelity initially, or map actual question IDs.
-        // Our Q IDs are 'mc1'...'mc5' and 'tf1'...'tf5'. 
-        // Let's just map index 0-7 (Q1-Q8).
-
-        const questionRates = Array.from({ length: 10 }).map((_, idx) => {
-            // Find how many got this Q index correct
-            // We need to know which Q ID maps to which index in our game.
-            // Assuming 'mc1' is index 0...
-            // Since we don't have the question configuration here, we rely on the `answers` map in entry.
-            // But `answers` keys are IDs. 
-            // Let's assume standard IDs: mc1...mc5, tf1...tf5.
-            // Q1=mc1, Q2=mc2... Q5=mc5, Q6=tf1...
-
-            const qId = idx < 5 ? `mc${idx + 1}` : `tf${idx - 4}`; // Q6 is tf1
+        const questionRates = questionIds.map((qId, idx) => {
             const correctCount = entries.filter(e => e.answers?.[qId]).length;
             const rate = (correctCount / totalPlayers) * 100;
             return { label: `Q${idx + 1}`, value: rate };
         });
 
-        // Skills Breakdown
-        // Fact Retrieval (Q1-Q3), Reading Comp (Q4-Q5), Critical Thinking (Q6-Q10)
-        // Q1-Q3: mc1, mc2, mc3
-        // Q4-Q5: mc4, mc5
-        // Q6-Q8+: tf1...
-
         const getRate = (ids: string[]) => {
             let totalCorrect = 0;
-            let totalPossible = 0;
             entries.forEach(e => {
-                ids.forEach(id => {
-                    if (e.answers?.[id]) totalCorrect++;
-                    totalPossible++;
-                });
+                ids.forEach(id => { if (e.answers?.[id]) totalCorrect++; });
             });
-            return totalPossible === 0 ? 0 : totalCorrect; // Just raw count for donut proportion?
-            // Donut usually shows distribution. 
-            // If strict design: "Skills Breakdown" likely means "Where points came from" or "Performance relative".
-            // Let's just use total correct answers in that category.
+            return totalCorrect;
         };
 
         const skillsData = [
-            { label: 'Critical Thinking', value: getRate(['tf1', 'tf2', 'tf3', 'tf4', 'tf5']), color: '#f472b6' }, // Pink
-            { label: 'Fact Retrieval', value: getRate(['mc1', 'mc2', 'mc3']), color: '#22c55e' }, // Green
-            { label: 'Reading Comp.', value: getRate(['mc4', 'mc5']), color: '#60a5fa' }, // Blue
+            { label: 'Critical Thinking', value: getRate(['tf1', 'tf2', 'tf3', 'tf4', 'tf5']), color: '#f472b6' },
+            { label: 'Fact Retrieval', value: getRate(['mc1', 'mc2', 'mc3']), color: '#22c55e' },
+            { label: 'Reading Comp.', value: getRate(['mc4', 'mc5']), color: '#60a5fa' },
         ];
 
         return { totalPlayers, fastestTime, questionRates, skillsData };
     }, [entries]);
 
-    return (
+    const fmtTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
+
+    // ===========================
+    // TEACHER VIEW
+    // ===========================
+    const renderTeacherView = () => (
+        <div className="min-h-screen bg-slate-50 font-['Poppins']">
+            {/* Header */}
+            <div className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
+                <div className="max-w-5xl mx-auto px-3 md:px-6 py-3 flex items-center justify-between">
+                    <div>
+                        <h1 className="text-lg md:text-2xl font-black text-[#0F766E]">📊 Teacher Dashboard</h1>
+                        <p className="text-xs text-slate-400">Class analytics & question insights</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {/* Toggle */}
+                        <div className="bg-slate-100 rounded-lg p-0.5 flex text-xs font-bold border border-slate-200">
+                            <button
+                                onClick={() => setViewMode('student')}
+                                className={`px-3 py-1.5 rounded-md transition-all ${viewMode === 'student' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            >STUDENT</button>
+                            <button
+                                onClick={() => setViewMode('teacher')}
+                                className={`px-3 py-1.5 rounded-md transition-all ${viewMode === 'teacher' ? 'bg-[#0F766E] text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            >TEACHER</button>
+                        </div>
+                        <button onClick={onExit} className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors border border-slate-200">
+                            <X size={18} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="max-w-5xl mx-auto px-3 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+                {!teacherStats ? (
+                    <div className="bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200">
+                        <Users size={48} className="mx-auto mb-3 opacity-40" />
+                        <p className="font-medium text-lg">No submissions yet</p>
+                    </div>
+                ) : (
+                    <>
+                        {/* CLASS SNAPSHOT */}
+                        <div>
+                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                <Zap size={14} /> Class Snapshot
+                            </h2>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Teams Joined</div>
+                                    <div className="text-2xl md:text-3xl font-black text-indigo-600">{teacherStats.total}</div>
+                                </div>
+                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Completion</div>
+                                    <div className="text-2xl md:text-3xl font-black text-green-600">100%</div>
+                                </div>
+                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Avg Accuracy</div>
+                                    <div className="text-2xl md:text-3xl font-black text-[#0F766E]">{teacherStats.avgAccuracy}%</div>
+                                </div>
+                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Fastest (≥80%)</div>
+                                    <div className="text-2xl md:text-3xl font-black text-amber-600">
+                                        {teacherStats.fastestTime !== null ? fmtTime(teacherStats.fastestTime) : '—'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* QUESTION INSIGHTS */}
+                        <div>
+                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                <Target size={14} /> Question Insights
+                            </h2>
+                            <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                <div className="space-y-2.5">
+                                    {teacherStats.questionInsights.map((q) => (
+                                        <div key={q.label} className="flex items-center gap-3">
+                                            <span className="text-xs font-bold text-slate-500 w-8 shrink-0">{q.label}</span>
+                                            <div className="flex-1 bg-slate-100 rounded-full h-5 overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full transition-all duration-500 ${q.rate >= 70 ? 'bg-green-500' : q.rate >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                                    style={{ width: `${Math.max(q.rate, 2)}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-xs font-bold text-slate-600 w-12 text-right">{q.rate}%</span>
+                                            <span className="text-[10px] text-slate-400 w-10 text-right">{q.correctCount}/{q.total}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2">
+                                    <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+                                        Hardest: {teacherStats.hardest.join(', ')}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SKILLS BREAKDOWN */}
+                        <div>
+                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                <BookOpen size={14} /> AI Reading Skills
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {teacherStats.skills.map((skill) => (
+                                    <div key={skill.label} className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                <span>{skill.icon}</span> {skill.label}
+                                            </span>
+                                            <span className="text-lg font-black" style={{ color: skill.color }}>{skill.rate}%</span>
+                                        </div>
+                                        <div className="bg-slate-100 rounded-full h-3 overflow-hidden mb-1.5">
+                                            <div
+                                                className="h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${Math.max(skill.rate, 2)}%`, backgroundColor: skill.color }}
+                                            />
+                                        </div>
+                                        <span className="text-[10px] text-slate-400 font-medium">{skill.correct}/{skill.possible} correct</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* ACTIONS */}
+                        <div className="flex items-center gap-3 pt-2">
+                            <button
+                                onClick={onExit}
+                                className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors border border-slate-200"
+                            >
+                                BACK TO START
+                            </button>
+                            <button
+                                onClick={onReset}
+                                className="py-3 px-6 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-colors shadow-md"
+                            >
+                                RESET DATA
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+
+    // ===========================
+    // STUDENT VIEW (existing layout)
+    // ===========================
+    const renderStudentView = () => (
         <div className="flex bg-gradient-to-br from-[#a5b4fc] to-[#c084fc] min-h-screen p-4 md:p-8 font-sans">
             <div className="flex-1 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-w-7xl mx-auto">
 
                 {/* LEFT PANEL: Class Performance */}
-                <div className="flex-[2] p-8 bg-slate-50 overflow-y-auto">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-black text-[#1e1b4b]">Class Performance</h1>
-                        <p className="text-slate-500">Real-time statistics from all players</p>
+                <div className="flex-[2] p-4 md:p-8 bg-slate-50 overflow-y-auto">
+                    <div className="mb-6 md:mb-8">
+                        <h1 className="text-xl md:text-3xl font-black text-[#1e1b4b]">Class Performance</h1>
+                        <p className="text-slate-500 text-sm">Real-time statistics from all players</p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -87,10 +274,10 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <h3 className="text-[#1e1b4b] font-bold mb-4 border-l-4 border-indigo-500 pl-3">Correct Answer Rate</h3>
                             <div className="h-40">
-                                {stats ? <BarChart data={stats.questionRates} color="#6366f1" /> : <div className="h-full flex items-center justify-center text-slate-300">No Data</div>}
+                                {studentStats ? <BarChart data={studentStats.questionRates} color="#6366f1" /> : <div className="h-full flex items-center justify-center text-slate-300">No Data</div>}
                             </div>
                             <div className="flex justify-between text-xs text-slate-400 mt-2 px-2">
-                                {stats?.questionRates.map(d => <span key={d.label}>{d.label}</span>)}
+                                {studentStats?.questionRates.map(d => <span key={d.label}>{d.label}</span>)}
                             </div>
                         </div>
 
@@ -98,13 +285,13 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <h3 className="text-[#1e1b4b] font-bold mb-4 border-l-4 border-purple-500 pl-3">Skills Breakdown</h3>
                             <div className="h-40 flex items-center justify-center gap-6">
-                                {stats ? (
+                                {studentStats ? (
                                     <>
                                         <div className="w-32 h-32">
-                                            <DonutChart data={stats.skillsData} />
+                                            <DonutChart data={studentStats.skillsData} />
                                         </div>
                                         <div className="space-y-2">
-                                            {stats.skillsData.map((d, i) => (
+                                            {studentStats.skillsData.map((d, i) => (
                                                 <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-600">
                                                     <span className="w-2 h-2 rounded-full" style={{ background: d.color }} />
                                                     {d.label}
@@ -119,17 +306,17 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
 
                     {/* Stats Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-indigo-50 p-5 rounded-2xl">
+                        <div className="bg-indigo-50 p-4 md:p-5 rounded-2xl">
                             <div className="text-xs font-bold text-indigo-400 uppercase mb-1">TOTAL PLAYERS</div>
-                            <div className="text-4xl font-black text-indigo-900">{stats?.totalPlayers || 0}</div>
+                            <div className="text-2xl md:text-4xl font-black text-indigo-900">{studentStats?.totalPlayers || 0}</div>
                         </div>
-                        <div className="bg-green-50 p-5 rounded-2xl">
+                        <div className="bg-green-50 p-4 md:p-5 rounded-2xl">
                             <div className="text-xs font-bold text-green-500 uppercase mb-1">FASTEST TIME</div>
-                            <div className="text-4xl font-black text-green-900">{stats ? `${stats.fastestTime}s` : '--'}</div>
+                            <div className="text-2xl md:text-4xl font-black text-green-900">{studentStats ? `${studentStats.fastestTime}s` : '--'}</div>
                         </div>
-                        <div className="bg-orange-50 p-5 rounded-2xl">
+                        <div className="bg-orange-50 p-4 md:p-5 rounded-2xl">
                             <div className="text-xs font-bold text-orange-400 uppercase mb-1">COMPLETION RATE</div>
-                            <div className="text-4xl font-black text-orange-900">100%</div>
+                            <div className="text-2xl md:text-4xl font-black text-orange-900">100%</div>
                         </div>
                     </div>
                 </div>
@@ -137,25 +324,31 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                 {/* RIGHT PANEL: Leaderboard List */}
                 <div className="flex-1 bg-indigo-600 flex flex-col text-white relative">
                     {/* Header */}
-                    <div className="p-8 pb-4">
+                    <div className="p-4 md:p-8 pb-4">
                         <div className="flex justify-between items-start mb-2">
                             <div>
-                                <h2 className="text-2xl font-black uppercase tracking-wide">LEADERBOARD</h2>
-                                <p className="text-indigo-200 text-sm font-bold">TOP 10 PLAYERS</p>
+                                <h2 className="text-lg md:text-2xl font-black uppercase tracking-wide">LEADERBOARD</h2>
+                                <p className="text-indigo-200 text-xs md:text-sm font-bold">TOP 10 PLAYERS</p>
                             </div>
                             <button onClick={onExit} className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors">
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-4 mt-6">
-                            <button
-                                onClick={onReset}
-                                className="bg-indigo-500 hover:bg-indigo-400 text-xs font-bold py-1.5 px-3 rounded-lg border border-indigo-400/50 shadow-sm transition-colors"
-                            >
-                                Reset Data
-                            </button>
-                        </div>
+                        {isTeacherMode && (
+                            <div className="mt-4">
+                                <div className="bg-indigo-500/50 rounded-lg p-0.5 flex text-xs font-bold">
+                                    <button
+                                        onClick={() => setViewMode('student')}
+                                        className={`flex-1 px-3 py-1.5 rounded-md transition-all ${viewMode === 'student' ? 'bg-white text-indigo-700 shadow-sm' : 'text-indigo-200 hover:text-white'}`}
+                                    >STUDENT</button>
+                                    <button
+                                        onClick={() => setViewMode('teacher')}
+                                        className={`flex-1 px-3 py-1.5 rounded-md transition-all ${viewMode === 'teacher' ? 'bg-white text-indigo-700 shadow-sm' : 'text-indigo-200 hover:text-white'}`}
+                                    >TEACHER</button>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-green-300 uppercase tracking-wider">
                             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
@@ -174,21 +367,20 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                                 entries.slice(0, 10).map((entry, idx) => (
                                     <div key={idx} className="flex items-center bg-white border border-slate-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow">
                                         <div className={`
-                            w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm mr-3
-                            ${idx === 0 ? 'bg-yellow-400 text-yellow-900' :
+                                            w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm mr-3
+                                            ${idx === 0 ? 'bg-yellow-400 text-yellow-900' :
                                                 idx === 1 ? 'bg-slate-200 text-slate-600' :
                                                     idx === 2 ? 'bg-orange-300 text-orange-800' : 'bg-slate-50 text-slate-400'}
-                         `}>
+                                        `}>
                                             {idx + 1}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="font-bold text-slate-800 truncate">{entry.name}</div>
-                                            {/* <div className="text-[10px] text-slate-400">Class {entry.className}</div> */}
                                         </div>
                                         <div className="text-right flex items-center gap-2">
-                                            <div className="text-sm font-bold text-[#0F766E]">{entry.score * 8} pts</div> {/* Score logic: 10 * 8? User said max 80 */}
+                                            <div className="text-sm font-bold text-[#0F766E]">{entry.score * 10} pts</div>
                                             <div className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-xs font-mono font-bold">
-                                                {entry.timeSpent}s
+                                                {fmtTime(entry.timeSpent)}
                                             </div>
                                         </div>
                                     </div>
@@ -201,6 +393,12 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
             </div>
         </div>
     );
+
+    // Render based on view mode
+    if (viewMode === 'teacher' && isTeacherMode) {
+        return renderTeacherView();
+    }
+    return renderStudentView();
 };
 
 export default LeaderboardDashboard;
