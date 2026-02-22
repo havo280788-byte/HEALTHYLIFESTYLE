@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
-import { PenTool, Eraser, Highlighter } from 'lucide-react';
+import { Eraser, Highlighter, Palette } from 'lucide-react';
 
 interface ReadingPassageProps {
     content: string;
@@ -7,6 +7,7 @@ interface ReadingPassageProps {
 
 const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     const [isHighlightMode, setIsHighlightMode] = useState(false);
+    const [highlightColor, setHighlightColor] = useState('#FFF3B0'); // yellow default, toggle to #CFFAFE cyan
     const contentRef = useRef<HTMLDivElement>(null);
     const isFirstRender = useRef(true);
 
@@ -31,7 +32,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
 
         const target = e.target as HTMLElement;
         // Check if clicked element is a highlight span
-        if (target.tagName === 'SPAN' && target.classList.contains('bg-yellow-300')) {
+        if (target.tagName === 'SPAN' && target.style.backgroundColor) {
             e.stopPropagation();
             // Unwrap
             const parent = target.parentNode;
@@ -54,8 +55,8 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
         if (contentRef.current && contentRef.current.contains(range.commonAncestorContainer)) {
             try {
                 const span = document.createElement('span');
-                // Use a stronger yellow and ensure it's visible
-                span.className = 'bg-yellow-300 text-slate-900 px-1 rounded-sm cursor-pointer hover:bg-yellow-400 transition-colors shadow-sm';
+                span.style.backgroundColor = highlightColor;
+                span.className = 'text-slate-900 px-1 rounded-sm cursor-pointer transition-colors shadow-sm';
                 span.title = "Click to remove highlight"; // Tooltip
 
                 range.surroundContents(span);
@@ -70,7 +71,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     return (
         <div className="relative flex flex-col">
             {/* Floating Toolbar */}
-            <div className="absolute top-4 right-4 z-10 flex gap-2 bg-white/90 backdrop-blur p-1.5 rounded-lg shadow-md border border-slate-200">
+            <div className="absolute top-4 right-4 z-10 flex gap-1.5 bg-white/90 backdrop-blur p-1.5 rounded-lg shadow-md border border-slate-200">
                 <button
                     onClick={() => setIsHighlightMode(!isHighlightMode)}
                     className={`p-2 rounded-md transition-all ${isHighlightMode
@@ -79,7 +80,30 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                         }`}
                     title={isHighlightMode ? "Disable Highlight Mode" : "Enable Highlight Mode"}
                 >
-                    <Highlighter size={20} />
+                    <Highlighter size={18} />
+                </button>
+                <button
+                    onClick={() => setHighlightColor(highlightColor === '#FFF3B0' ? '#CFFAFE' : '#FFF3B0')}
+                    className="p-2 rounded-md hover:bg-slate-100 text-slate-500 transition-all"
+                    title={`Switch color (${highlightColor === '#FFF3B0' ? 'Yellow → Cyan' : 'Cyan → Yellow'})`}
+                >
+                    <Palette size={18} style={{ color: highlightColor === '#FFF3B0' ? '#F59E0B' : '#06B6D4' }} />
+                </button>
+                <button
+                    onClick={() => {
+                        if (contentRef.current) {
+                            const spans = contentRef.current.querySelectorAll('span[style*="background-color"]');
+                            spans.forEach(span => {
+                                const parent = span.parentNode;
+                                while (span.firstChild) parent?.insertBefore(span.firstChild, span);
+                                parent?.removeChild(span);
+                            });
+                        }
+                    }}
+                    className="p-2 rounded-md hover:bg-red-50 text-slate-500 hover:text-red-500 transition-all"
+                    title="Clear all highlights"
+                >
+                    <Eraser size={18} />
                 </button>
             </div>
 

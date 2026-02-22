@@ -24,8 +24,14 @@ import {
   Heart,
   Activity,
   Award,
-  Clock
+  Clock,
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  Eye
 } from 'lucide-react';
+
+const TEACHER_PIN = '1234';
 
 const App: React.FC = () => {
   // --- State ---
@@ -46,7 +52,14 @@ const App: React.FC = () => {
   const [loadingText, setLoadingText] = useState('Loading...');
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null); // "Correct!" or "Incorrect"
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+
+  // Teacher Mode State
+  const [isTeacherMode, setIsTeacherMode] = useState(false);
+  const [showPinDialog, setShowPinDialog] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState(false);
+  const [teacherSelectedAnswer, setTeacherSelectedAnswer] = useState<string | null>(null);
 
   // --- Effects ---
 
@@ -94,6 +107,14 @@ const App: React.FC = () => {
   const playSound = (type: 'correct' | 'incorrect' | 'click') => {
     const audio = new Audio(SOUND_EFFECTS[type]);
     audio.play().catch(e => console.error("Error playing sound:", e));
+  };
+
+  const loadQuestions = () => {
+    let gameQuestions = [...FALLBACK_QUESTIONS].slice(0, 10);
+    while (gameQuestions.length < 10) {
+      gameQuestions.push(gameQuestions[0]);
+    }
+    return gameQuestions;
   };
 
   const startGame = async () => {
@@ -145,9 +166,34 @@ const App: React.FC = () => {
     setAppState(AppState.PLAYING);
   };
 
+  const startTeacherMode = () => {
+    if (pinInput !== TEACHER_PIN) {
+      setPinError(true);
+      return;
+    }
+    setPinError(false);
+    setShowPinDialog(false);
+    setPinInput('');
+    setIsTeacherMode(true);
+    setQuestions(loadQuestions());
+    setCurrentStage(0);
+    setTeacherSelectedAnswer(null);
+    setAppState(AppState.TEACHER_PLAYING);
+  };
+
+  const exitTeacherMode = () => {
+    setIsTeacherMode(false);
+    setTeacherSelectedAnswer(null);
+    setAppState(AppState.LOGIN);
+  };
+
   const handleAnswerSelect = (optionId: string) => {
     if (isAnswerConfirmed) return;
     setSelectedAnswer(optionId);
+  };
+
+  const handleTeacherAnswerSelect = (optionId: string) => {
+    setTeacherSelectedAnswer(optionId === teacherSelectedAnswer ? null : optionId);
   };
 
   const checkAnswer = () => {
@@ -181,6 +227,20 @@ const App: React.FC = () => {
     }
   };
 
+  const teacherNextStage = () => {
+    if (currentStage < 9) {
+      setCurrentStage(prev => prev + 1);
+      setTeacherSelectedAnswer(null);
+    }
+  };
+
+  const teacherPrevStage = () => {
+    if (currentStage > 0) {
+      setCurrentStage(prev => prev - 1);
+      setTeacherSelectedAnswer(null);
+    }
+  };
+
   const completeGame = (isTimeout = false) => {
     // Score based on correct answers (1 point each, displayed as *10 later)
     const finalScore = Object.values(userAnswers).filter(Boolean).length;
@@ -204,6 +264,45 @@ const App: React.FC = () => {
   };
 
   // --- Renderers ---
+
+  const renderPinDialog = () => (
+    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-xs">
+        <div className="text-center mb-4">
+          <div className="w-14 h-14 rounded-full bg-[#0F766E]/10 flex items-center justify-center mx-auto mb-3">
+            <Lock size={28} className="text-[#0F766E]" />
+          </div>
+          <h3 className="text-lg font-bold text-slate-800">Teacher Access</h3>
+          <p className="text-sm text-slate-500 mt-1">Enter PIN to continue</p>
+        </div>
+        <input
+          type="password"
+          maxLength={4}
+          value={pinInput}
+          onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
+          onKeyDown={(e) => e.key === 'Enter' && startTeacherMode()}
+          className={`w-full text-center text-2xl tracking-[0.5em] font-bold py-3 border-2 rounded-xl outline-none transition-colors ${pinError ? 'border-red-400 bg-red-50 text-red-600' : 'border-slate-200 focus:border-[#0F766E]'}`}
+          placeholder="••••"
+          autoFocus
+        />
+        {pinError && <p className="text-red-500 text-xs text-center mt-2 font-medium">Wrong PIN. Try again.</p>}
+        <div className="flex gap-3 mt-4">
+          <button
+            onClick={() => { setShowPinDialog(false); setPinInput(''); setPinError(false); }}
+            className="flex-1 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={startTeacherMode}
+            className="flex-1 py-2.5 rounded-xl bg-[#0F766E] text-white font-semibold hover:bg-[#0d9488] transition-colors"
+          >
+            Enter
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   const renderLogin = () => (
     <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
@@ -246,8 +345,18 @@ const App: React.FC = () => {
           </Button>
         </div>
 
+        {/* Teacher Button — Desktop only */}
+        <div className="mt-6 hidden md:flex justify-center">
+          <button
+            onClick={() => setShowPinDialog(true)}
+            className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#0F766E] transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200"
+          >
+            <Lock size={14} /> Teacher
+          </button>
+        </div>
+
         {/* Settings Toggle */}
-        <div className="mt-8 text-center">
+        <div className="mt-4 text-center">
           <button
             onClick={() => setShowSettings(!showSettings)}
             className="text-xs text-slate-400 hover:text-[#0F766E] flex items-center justify-center gap-1 mx-auto"
@@ -266,6 +375,9 @@ const App: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* PIN Dialog */}
+      {showPinDialog && renderPinDialog()}
     </div>
   );
 
@@ -346,12 +458,6 @@ const App: React.FC = () => {
 
                 <div className="space-y-2">
                   {currentQ.options.map(opt => {
-                    // Logic: 
-                    // White Box default
-                    // Selected: Green Text + Thick Border OR Solid Green? 
-                    // "Only difference is answers in white boxes" -> implied they stay white?
-                    // But usually selected state needs distinction. Use Solid Green for clarity as per modern standards.
-
                     const isSelected = selectedAnswer === opt.id;
                     const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
                     const isWrongSelection = isSelected && !isCorrectAnswer && isAnswerConfirmed;
@@ -375,7 +481,6 @@ const App: React.FC = () => {
                         btnClass = "bg-white/90 text-slate-400 opacity-75";
                       }
                     } else if (isSelected) {
-                      // While selected but not confirmed
                       btnClass = "bg-white border-2 border-[#22C55E] text-[#15803D] shadow-md ring-2 ring-green-400/30";
                     }
 
@@ -396,7 +501,7 @@ const App: React.FC = () => {
               </div>
 
               {/* Footer Actions */}
-              <div className="p-3 md:p-3 bg-black/10 border-t border-white/10 text-center backdrop-blur-sm relative z-10">
+              <div className="p-3 bg-black/10 border-t border-white/10 text-center backdrop-blur-sm relative z-10">
                 {!isAnswerConfirmed && (
                   <Button
                     onClick={checkAnswer}
@@ -414,6 +519,258 @@ const App: React.FC = () => {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =====================================================
+  // TEACHER MODE PLAYING
+  // =====================================================
+  const renderTeacherPlaying = () => {
+    const currentQ = questions[currentStage];
+    if (!currentQ) return null;
+
+    return (
+      <div className="min-h-screen w-full flex flex-col bg-slate-50 md:h-screen md:overflow-hidden font-['Poppins']">
+        {/* === TEACHER HEADER === */}
+        <div className="bg-white border-b border-slate-100 shadow-sm z-50">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            {/* Left: Titles */}
+            <div className="flex flex-col">
+              <h1 className="text-base md:text-xl font-bold text-[#0F766E] flex items-center gap-2 font-['Montserrat']">
+                <span>🥗</span> English 11 – Healthy Lifestyle
+              </h1>
+              <span className="text-xs text-slate-400 font-medium tracking-wide">READING CHALLENGE</span>
+            </div>
+
+            {/* Right: Teacher Mode badge + buttons */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
+                <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>
+                TEACHER MODE
+              </div>
+              <button
+                onClick={() => setAppState(AppState.TEACHER_REVIEW)}
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
+              >
+                REVIEW
+              </button>
+              <button
+                onClick={() => setAppState(AppState.LEADERBOARD)}
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
+              >
+                LEADERBOARD
+              </button>
+            </div>
+          </div>
+          <ProgressNavigation currentStage={currentStage} />
+        </div>
+
+        {/* Main Split Content */}
+        <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 md:overflow-hidden">
+
+          {/* LEFT: Reading Passage */}
+          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '50vh', overflowY: 'auto', padding: '20px' }}>
+            <ReadingPassage content={READING_PASSAGE} />
+          </div>
+
+          {/* RIGHT: Question (Teacher Mode) */}
+          <div className="flex flex-col min-h-0 md:flex-1">
+            <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 relative flex flex-col flex-1 min-h-0">
+
+              {/* Decorative */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-10 -mb-10 blur-xl pointer-events-none"></div>
+
+              {/* Card Header */}
+              <div className="bg-black/10 p-3 md:p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-sm relative z-10">
+                <span className="font-bold text-green-50 uppercase tracking-wider text-sm">
+                  Question {currentStage + 1} / 10
+                </span>
+                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
+                  STAGE {currentStage + 1}
+                </div>
+              </div>
+
+              {/* Question + instant-reveal options */}
+              <div className="p-4 md:p-5 relative z-10 flex-1 flex flex-col overflow-y-auto min-h-0">
+                <h2 className="text-base md:text-xl font-bold text-white mb-3 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
+                  {currentQ.content}
+                </h2>
+
+                <div className="space-y-2">
+                  {currentQ.options.map(opt => {
+                    const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
+                    const isSelected = teacherSelectedAnswer === opt.id;
+                    const hasRevealed = teacherSelectedAnswer !== null;
+
+                    let btnClass = "bg-white text-slate-700 hover:bg-green-50 border-2 border-transparent shadow-sm cursor-pointer";
+
+                    if (hasRevealed) {
+                      if (isCorrectAnswer) {
+                        // Always show the correct answer in green
+                        btnClass = "bg-[#dcfce7] border-2 border-[#15803D] text-[#14532D]";
+                      } else if (isSelected && !isCorrectAnswer) {
+                        // Wrong selection
+                        btnClass = "bg-red-50 border-2 border-[#DC2626] text-[#991B1B]";
+                      } else {
+                        btnClass = "bg-white/90 text-slate-400 opacity-75";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => handleTeacherAnswerSelect(opt.id)}
+                        className={`w-full p-3 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center`}
+                      >
+                        <span className="text-sm md:text-lg" style={{ fontWeight: 500 }}>{opt.text}</span>
+                        {hasRevealed && isCorrectAnswer && <CheckCircle2 size={20} className="text-[#15803D]" />}
+                        {hasRevealed && isSelected && !isCorrectAnswer && <XCircle size={20} className="text-[#DC2626]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Footer: PREV / NEXT / EXIT */}
+              <div className="p-3 bg-black/10 border-t border-white/10 backdrop-blur-sm relative z-10">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={teacherPrevStage}
+                    disabled={currentStage === 0}
+                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft size={18} /> PREV
+                  </button>
+                  <button
+                    onClick={teacherNextStage}
+                    disabled={currentStage === 9}
+                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    NEXT <ChevronRight size={18} />
+                  </button>
+                  <button
+                    onClick={exitTeacherMode}
+                    className="flex items-center justify-center gap-1 py-2.5 px-4 rounded-xl bg-red-500/80 hover:bg-red-600 text-white font-bold text-sm transition-colors"
+                  >
+                    <LogOut size={16} /> EXIT
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =====================================================
+  // TEACHER REVIEW — Student answers by name
+  // =====================================================
+  const renderTeacherReview = () => {
+    // Sort entries by name
+    const sortedEntries = [...leaderboard].sort((a, b) => a.name.localeCompare(b.name));
+    const questionIds = questions.length > 0 ? questions.map(q => q.id) : FALLBACK_QUESTIONS.slice(0, 10).map(q => q.id);
+
+    return (
+      <div className="min-h-screen bg-slate-50 font-['Poppins']">
+        {/* Header */}
+        <div className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex flex-col">
+              <h1 className="text-base md:text-xl font-bold text-[#0F766E] flex items-center gap-2 font-['Montserrat']">
+                <span>🥗</span> English 11 – Healthy Lifestyle
+              </h1>
+              <span className="text-xs text-slate-400 font-medium tracking-wide">READING CHALLENGE</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
+                <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>
+                TEACHER MODE
+              </div>
+              <button
+                onClick={() => setAppState(AppState.TEACHER_PLAYING)}
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
+              >
+                QUESTIONS
+              </button>
+              <button
+                onClick={() => setAppState(AppState.LEADERBOARD)}
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
+              >
+                LEADERBOARD
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto p-4 md:p-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+            <div className="p-4 md:p-6 border-b border-slate-100 bg-gradient-to-r from-[#0F766E]/5 to-transparent">
+              <h2 className="text-lg md:text-xl font-bold text-[#0F766E] flex items-center gap-2">
+                <Eye size={22} /> Student Responses
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">{sortedEntries.length} student(s) submitted</p>
+            </div>
+
+            {sortedEntries.length === 0 ? (
+              <div className="p-12 text-center text-slate-400">
+                <UserIcon size={48} className="mx-auto mb-3 opacity-40" />
+                <p className="font-medium">No student submissions yet.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      <th className="text-left py-3 px-4 font-bold text-slate-600">#</th>
+                      <th className="text-left py-3 px-4 font-bold text-slate-600">Name</th>
+                      <th className="text-left py-3 px-4 font-bold text-slate-600">Class</th>
+                      <th className="text-center py-3 px-4 font-bold text-slate-600">Score</th>
+                      <th className="text-center py-3 px-4 font-bold text-slate-600">Time</th>
+                      {questionIds.map((_, i) => (
+                        <th key={i} className="text-center py-3 px-2 font-bold text-slate-600 whitespace-nowrap">Q{i + 1}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedEntries.map((entry, idx) => (
+                      <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-4 text-slate-400 font-mono">{idx + 1}</td>
+                        <td className="py-3 px-4 font-semibold text-slate-800">{entry.name}</td>
+                        <td className="py-3 px-4 text-slate-500">{entry.className}</td>
+                        <td className="py-3 px-4 text-center">
+                          <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold text-xs">
+                            {entry.score * 10}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center text-slate-500 font-mono text-xs">
+                          {Math.floor(entry.timeSpent / 60)}:{(entry.timeSpent % 60).toString().padStart(2, '0')}
+                        </td>
+                        {questionIds.map((qId, i) => {
+                          const answer = entry.answers?.[qId];
+                          return (
+                            <td key={i} className="py-3 px-2 text-center">
+                              {answer === undefined ? (
+                                <span className="text-slate-300">—</span>
+                              ) : answer ? (
+                                <span className="text-green-500 font-bold">✅</span>
+                              ) : (
+                                <span className="text-red-500 font-bold">❌</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -462,7 +819,7 @@ const App: React.FC = () => {
     <LeaderboardDashboard
       entries={leaderboard}
       onReset={resetLeaderboard}
-      onExit={() => setAppState(AppState.LOGIN)}
+      onExit={() => isTeacherMode ? setAppState(AppState.TEACHER_PLAYING) : setAppState(AppState.LOGIN)}
       isSyncing={isSyncing}
     />
   );
@@ -481,6 +838,8 @@ const App: React.FC = () => {
       {appState === AppState.PLAYING && renderPlaying()}
       {appState === AppState.RESULT && renderResult()}
       {appState === AppState.LEADERBOARD && renderLeaderboard()}
+      {appState === AppState.TEACHER_PLAYING && renderTeacherPlaying()}
+      {appState === AppState.TEACHER_REVIEW && renderTeacherReview()}
     </div>
   );
 };
