@@ -39,12 +39,12 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ isCorrect, correctAns
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-3xl font-black mb-2 drop-shadow-md">
+                    <h2 className="text-2xl font-black mb-2 drop-shadow-md">
                         {isCorrect ? 'Correct!' : 'Incorrect'}
                     </h2>
 
                     {/* Subtitle / Answer */}
-                    <div className="mb-8 text-white/90 font-medium text-lg">
+                    <div className="mb-8 text-white/90 font-medium text-base">
                         {isCorrect ? (
                             <p>{getSuccessMessage(stage)}</p>
                         ) : (

@@ -322,7 +322,7 @@ const App: React.FC = () => {
           </div>
 
           {/* RIGHT: Question Interface (Compact Green Card) */}
-          <div className="flex flex-col overflow-hidden md:flex-1">
+          <div className="flex flex-col overflow-y-auto md:flex-1">
             <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 relative flex flex-col flex-1">
 
               {/* Decorative Overlay */}
@@ -340,7 +340,7 @@ const App: React.FC = () => {
               </div>
 
               <div className="p-4 md:p-5 relative z-10 flex-1 flex flex-col">
-                <h2 className="text-base md:text-2xl font-bold text-white mb-3 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
+                <h2 className="text-base md:text-xl font-bold text-white mb-3 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
                   {currentQ.content}
                 </h2>
 
