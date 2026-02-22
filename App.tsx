@@ -592,85 +592,104 @@ const App: React.FC = () => {
 
           {/* RIGHT: Question (Teacher Mode) */}
           <div className="flex flex-col min-h-0 md:flex-1">
-            <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 relative flex flex-col flex-1 min-h-0">
-
-              {/* Decorative */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-10 -mb-10 blur-xl pointer-events-none"></div>
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 relative flex flex-col flex-1 min-h-0">
 
               {/* Card Header */}
-              <div className="bg-black/10 p-3 md:p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-sm relative z-10">
-                <span className="font-bold text-green-50 uppercase tracking-wider text-sm">
-                  Question {currentStage + 1} / 10
+              <div className="p-3 md:p-4 border-b border-slate-100 flex justify-between items-center">
+                <span className="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                  Stage {currentStage + 1}
                 </span>
-                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
-                  STAGE {currentStage + 1}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-slate-400">Multiple Choice</span>
                 </div>
               </div>
 
-              {/* Question + instant-reveal options */}
-              <div className="p-4 md:p-5 relative z-10 flex-1 flex flex-col overflow-y-auto min-h-0">
-                <h2 className="text-base md:text-xl font-bold text-white mb-3 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
+              {/* Question + options with letter labels */}
+              <div className="p-4 md:p-5 flex-1 flex flex-col overflow-y-auto min-h-0">
+                <h2 className="text-base md:text-xl font-bold text-slate-800 mb-4 leading-relaxed">
                   {currentQ.content}
                 </h2>
 
-                <div className="space-y-2">
-                  {currentQ.options.map(opt => {
+                <div className="space-y-2.5">
+                  {currentQ.options.map((opt, idx) => {
+                    const letter = String.fromCharCode(65 + idx); // A, B, C, D
                     const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
-                    const isSelected = teacherSelectedAnswer === opt.id;
                     const hasRevealed = teacherSelectedAnswer !== null;
 
-                    let btnClass = "bg-white text-slate-700 hover:bg-green-50 border-2 border-transparent shadow-sm cursor-pointer";
+                    let optClass = 'bg-white border-2 border-slate-200 hover:border-cyan-300 text-slate-700';
+                    let letterClass = 'bg-slate-100 text-slate-500';
 
                     if (hasRevealed) {
                       if (isCorrectAnswer) {
-                        // Always show the correct answer in green
-                        btnClass = "bg-[#dcfce7] border-2 border-[#15803D] text-[#14532D]";
-                      } else if (isSelected && !isCorrectAnswer) {
-                        // Wrong selection
-                        btnClass = "bg-red-50 border-2 border-[#DC2626] text-[#991B1B]";
+                        optClass = 'bg-green-500 border-2 border-green-500 text-white';
+                        letterClass = 'bg-white/30 text-white';
                       } else {
-                        btnClass = "bg-white/90 text-slate-400 opacity-75";
+                        optClass = 'bg-white border-2 border-slate-100 text-slate-400';
+                        letterClass = 'bg-slate-50 text-slate-300';
                       }
                     }
 
                     return (
-                      <button
+                      <div
                         key={opt.id}
-                        onClick={() => handleTeacherAnswerSelect(opt.id)}
-                        className={`w-full p-3 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center`}
+                        className={`w-full p-3 md:p-3.5 rounded-xl transition-all duration-300 ${optClass} flex items-center gap-3`}
                       >
-                        <span className="text-sm md:text-lg" style={{ fontWeight: 500 }}>{opt.text}</span>
-                        {hasRevealed && isCorrectAnswer && <CheckCircle2 size={20} className="text-[#15803D]" />}
-                        {hasRevealed && isSelected && !isCorrectAnswer && <XCircle size={20} className="text-[#DC2626]" />}
-                      </button>
+                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${letterClass}`}>
+                          {hasRevealed && isCorrectAnswer ? <CheckCircle2 size={18} /> : letter}
+                        </span>
+                        <span className="text-sm md:text-lg font-medium">{opt.text}</span>
+                      </div>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Footer: PREV / NEXT / EXIT */}
-              <div className="p-3 bg-black/10 border-t border-white/10 backdrop-blur-sm relative z-10">
-                <div className="flex items-center gap-2">
+              {/* Footer: REVEAL / ANSWER BAR + NEXT */}
+              <div className="p-3 border-t border-slate-100 bg-slate-50">
+                {!teacherSelectedAnswer ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setTeacherSelectedAnswer(currentQ.correctAnswerId)}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition-colors shadow-md"
+                    >
+                      <span className="w-3 h-3 rounded-full bg-white/40"></span> REVEAL
+                    </button>
+                    <button
+                      onClick={teacherNextStage}
+                      disabled={currentStage === 9}
+                      className="flex-1 flex items-center justify-center gap-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      NEXT →
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 flex items-center gap-2 py-2.5 px-4 rounded-xl bg-[#0F766E] text-white text-sm font-bold">
+                      <CheckCircle2 size={16} className="shrink-0" />
+                      <span className="truncate">ANSWER: {currentQ.options.find(o => o.id === currentQ.correctAnswerId)?.text?.toUpperCase()}</span>
+                    </div>
+                    <button
+                      onClick={teacherNextStage}
+                      disabled={currentStage === 9}
+                      className="flex items-center justify-center gap-1 py-2.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      NEXT →
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center justify-between mt-2">
                   <button
                     onClick={teacherPrevStage}
                     disabled={currentStage === 0}
-                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="text-xs text-slate-400 hover:text-slate-600 font-semibold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <ChevronLeft size={18} /> PREV
-                  </button>
-                  <button
-                    onClick={teacherNextStage}
-                    disabled={currentStage === 9}
-                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    NEXT <ChevronRight size={18} />
+                    ← PREV
                   </button>
                   <button
                     onClick={exitTeacherMode}
-                    className="flex items-center justify-center gap-1 py-2.5 px-4 rounded-xl bg-red-500/80 hover:bg-red-600 text-white font-bold text-sm transition-colors"
+                    className="text-xs text-red-400 hover:text-red-600 font-semibold transition-colors flex items-center gap-1"
                   >
-                    <LogOut size={16} /> EXIT
+                    <LogOut size={12} /> EXIT
                   </button>
                 </div>
               </div>
@@ -866,10 +885,19 @@ const App: React.FC = () => {
     const secs = timeSpent % 60;
     const timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-    // Badge logic
-    let badge = '🌱 AI Explorer';
-    if (accuracy >= 90) badge = '🏆 AI Reading Pro';
-    else if (accuracy >= 70) badge = '🔬 AI Analyst';
+    // Badge logic — accuracy-based
+    let badge = '🌿 Healthy Starter';
+    let badgeColor = 'bg-green-50 border-green-200 text-green-700';
+    if (accuracy === 100) {
+      badge = '🏆 Lifestyle Champion';
+      badgeColor = 'bg-yellow-50 border-yellow-300 text-yellow-700';
+    } else if (accuracy >= 80) {
+      badge = '💪 Wellness Achiever';
+      badgeColor = 'bg-blue-50 border-blue-200 text-blue-700';
+    } else if (accuracy < 60) {
+      badge = '';
+      badgeColor = '';
+    }
 
     return (
       <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
@@ -896,11 +924,14 @@ const App: React.FC = () => {
             </div>
           </div>
 
+
           {/* Badge */}
-          <div className="bg-yellow-50 rounded-xl p-3 mb-6 border border-yellow-200">
-            <div className="text-[10px] font-bold text-yellow-600 uppercase tracking-widest mb-1">Badge Earned</div>
-            <div className="text-lg font-black text-yellow-700">{badge}</div>
-          </div>
+          {badge && (
+            <div className={`rounded-xl p-3 mb-6 border ${badgeColor}`}>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">Badge Earned</div>
+              <div className="text-lg font-black">{badge}</div>
+            </div>
+          )}
 
           {/* Waiting for Teacher */}
           <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 animate-pulse">
