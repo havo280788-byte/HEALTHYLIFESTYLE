@@ -19,7 +19,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
             if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
             if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
             if (line.trim() === '') return `<div class="h-4"></div>`;
-            return `<p class="mb-2 text-slate-700 leading-relaxed text-sm md:text-lg">${line}</p>`;
+            return `<p class="mb-2 text-slate-700 text-sm md:text-lg" style="line-height:1.6">${line}</p>`;
         }).join('');
 
         // Set innerHTML directly - React doesn't manage this anymore

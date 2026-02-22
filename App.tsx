@@ -326,15 +326,15 @@ const App: React.FC = () => {
         )}
 
         {/* 2. Main Split Content */}
-        <div className="flex-1 w-full max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden">
+        <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 overflow-hidden">
 
           {/* LEFT: Reading Passage */}
-          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 p-6 overflow-hidden relative">
+          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 overflow-hidden relative md:flex-1 reading-passage-container" style={{ maxHeight: '60vh', overflowY: 'auto', padding: '20px' }}>
             <ReadingPassage content={READING_PASSAGE} />
           </div>
 
           {/* RIGHT: Question Interface (Compact Green Card) */}
-          <div className="flex flex-col overflow-y-auto">
+          <div className="flex flex-col overflow-y-auto md:flex-1">
             <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 flex-shrink-0 relative">
 
               {/* Decorative Overlay */}
@@ -352,7 +352,7 @@ const App: React.FC = () => {
               </div>
 
               <div className="p-6 md:p-8 relative z-10">
-                <h2 className="text-lg md:text-2xl font-bold text-white mb-6 leading-relaxed drop-shadow-sm">
+                <h2 className="text-base md:text-2xl font-bold text-white mb-6 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
                   {currentQ.content}
                 </h2>
 
@@ -398,7 +398,7 @@ const App: React.FC = () => {
                         disabled={isAnswerConfirmed}
                         className={`w-full p-4 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center group`}
                       >
-                        <span className="text-sm md:text-lg">{opt.text}</span>
+                        <span className="text-sm md:text-lg" style={{ fontWeight: 500 }}>{opt.text}</span>
                         {statusIcon}
                         {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-3 h-3 rounded-full bg-[#22C55E]" />}
                       </button>
