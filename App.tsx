@@ -876,7 +876,6 @@ const App: React.FC = () => {
   };
 
   const renderResult = () => {
-    // Calculate accuracy
     const totalQuestions = questions.length || 10;
     const correctCount = Object.values(userAnswers).filter(Boolean).length;
     const accuracy = Math.round((correctCount / totalQuestions) * 100);
@@ -885,61 +884,261 @@ const App: React.FC = () => {
     const secs = timeSpent % 60;
     const timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-    // Badge logic — accuracy-based
-    let badge = '🌿 Healthy Starter';
-    let badgeColor = 'bg-green-50 border-green-200 text-green-700';
+    // Badge logic
+    let badge = '';
+    let badgeGrad = '';
     if (accuracy === 100) {
-      badge = '🏆 Lifestyle Champion';
-      badgeColor = 'bg-yellow-50 border-yellow-300 text-yellow-700';
+      badge = '🏆 Digital Quest Champion 👑';
+      badgeGrad = 'from-yellow-500 to-amber-400';
     } else if (accuracy >= 80) {
-      badge = '💪 Wellness Achiever';
-      badgeColor = 'bg-blue-50 border-blue-200 text-blue-700';
-    } else if (accuracy < 60) {
-      badge = '';
-      badgeColor = '';
+      badge = '💎 Reading Pro';
+      badgeGrad = 'from-blue-500 to-cyan-400';
+    } else if (accuracy >= 60) {
+      badge = '⚡ AI Explorer';
+      badgeGrad = 'from-violet-500 to-purple-400';
     }
 
     return (
-      <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
-        <div className="max-w-md w-full mx-auto bg-white p-6 md:p-8 rounded-3xl shadow-2xl text-center animate-fade-in relative overflow-hidden">
-
-          <div className="w-20 h-20 md:w-24 md:h-24 bg-green-100/50 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner ring-4 ring-green-200">
-            <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-green-600" />
-          </div>
-
-          <h2 className="text-xl md:text-2xl font-black text-[#0F766E] mb-1 uppercase tracking-wide">Challenge Completed!</h2>
-          <p className="text-[#14B8A6] font-medium mb-6 text-sm">Great work! Here's your summary.</p>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-[#f0fdfa] rounded-xl p-4 border border-[#ccfbf1]">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Accuracy</div>
-              <div className="text-2xl md:text-3xl font-black text-[#0F766E]">{accuracy}%</div>
-              <div className="text-xs text-slate-500 font-medium">{correctCount}/{totalQuestions}</div>
-            </div>
-            <div className="bg-[#f0fdfa] rounded-xl p-4 border border-[#ccfbf1]">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Time</div>
-              <div className="text-2xl md:text-3xl font-black text-[#0F766E]">{timeString}</div>
-              <div className="text-xs text-slate-500 font-medium">minutes</div>
+      <div className="min-h-screen w-full flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+        <div className="max-w-md w-full mx-auto animate-fade-in">
+          {/* Glowing header circle */}
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 0 40px rgba(102,126,234,0.6)' }}>
+                <CheckCircle2 className="w-12 h-12 text-white" />
+              </div>
+              <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
             </div>
           </div>
 
+          {/* Title */}
+          <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-1 uppercase tracking-widest">Challenge Complete!</h2>
+          <p className="text-center text-slate-400 text-sm mb-8">Your performance summary</p>
+
+          {/* Stats card */}
+          <div className="rounded-2xl p-5 mb-4" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Score</div>
+                <div className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{correctCount}/{totalQuestions}</div>
+                <div className="text-xs text-slate-400 mt-1">{accuracy}% accuracy</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Time</div>
+                <div className="text-4xl font-black font-mono" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{timeString}</div>
+                <div className="text-xs text-slate-400 mt-1">minutes used</div>
+              </div>
+            </div>
+          </div>
 
           {/* Badge */}
           {badge && (
-            <div className={`rounded-xl p-3 mb-6 border ${badgeColor}`}>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">Badge Earned</div>
-              <div className="text-lg font-black">{badge}</div>
+            <div className={`rounded-xl p-3 mb-6 text-center bg-gradient-to-r ${badgeGrad}`} style={{ boxShadow: '0 0 20px rgba(102,126,234,0.4)' }}>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5 text-white/70">Badge Earned</div>
+              <div className="text-lg font-black text-white">{badge}</div>
             </div>
           )}
 
-          {/* Waiting for Teacher */}
-          <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 animate-pulse">
-            <div className="flex items-center justify-center gap-2 text-blue-700 font-bold text-sm">
-              <Clock size={16} className="animate-spin" style={{ animationDuration: '3s' }} />
-              WAITING FOR TEACHER REVIEW…
+          {/* CTAs */}
+          <div className="space-y-3">
+            {/* Primary: View Leaderboard */}
+            <button
+              onClick={() => setAppState(AppState.LEADERBOARD)}
+              className="w-full py-4 rounded-2xl font-black text-white text-lg tracking-wide flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02]"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 4px 24px rgba(102,126,234,0.5)'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 32px rgba(102,126,234,0.75)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(102,126,234,0.5)')}
+            >
+              <Trophy size={22} /> View Leaderboard
+            </button>
+
+            {/* Secondary: Review Answers */}
+            <button
+              onClick={() => {
+                setReviewQuestionIdx(0);
+                setAppState(AppState.STUDENT_REVIEW);
+              }}
+              className="w-full py-3.5 rounded-2xl font-bold text-slate-200 text-base flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.01]"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.18)',
+                boxShadow: '0 0 0 0 rgba(102,126,234,0)'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(102,126,234,0.35)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 0 0 0 rgba(102,126,234,0)')}
+            >
+              <Eye size={20} /> Review Answers
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =====================================================
+  // STUDENT REVIEW — Read-only
+  // =====================================================
+  const renderStudentReview = () => {
+    const gameQuestions = questions.length > 0 ? questions : FALLBACK_QUESTIONS.slice(0, 10);
+    const totalQ = gameQuestions.length;
+    const currentQ = gameQuestions[reviewQuestionIdx];
+    if (!currentQ) return null;
+
+    const studentSelectedId = selectedAnswerMap[currentQ.id];
+    const isAnsweredCorrectly = userAnswers[currentQ.id] === true;
+
+    return (
+      <div className="min-h-screen md:h-screen flex flex-col font-['Poppins']" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+
+        {/* HEADER */}
+        <div className="shrink-0 z-50" style={{ background: 'rgba(15,12,41,0.95)', borderBottom: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}>
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                <Eye size={14} className="text-white" />
+                <span className="text-white">REVIEW MODE</span>
+              </div>
+              <span className="text-slate-400 text-sm hidden md:block">{user.name}</span>
             </div>
-            <p className="text-xs text-blue-500 mt-2">Your answers have been submitted.<br />Please wait patiently for your teacher to review the results.</p>
+            <div className="flex items-center gap-3">
+              <span className="text-slate-400 text-sm font-mono">
+                Q<span className="text-white font-bold">{reviewQuestionIdx + 1}</span>/{totalQ}
+              </span>
+              <button
+                onClick={() => { setReviewQuestionIdx(0); setAppState(AppState.RESULT); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold text-slate-300 hover:text-white transition-colors"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+              >
+                <ChevronLeft size={16} /> Back to Results
+              </button>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-1 w-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+            <div
+              className="h-full transition-all duration-500"
+              style={{
+                width: `${((reviewQuestionIdx + 1) / totalQ) * 100}%`,
+                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)'
+              }}
+            />
+          </div>
+        </div>
+
+        {/* MAIN CONTENT */}
+        <div className="flex-1 max-w-7xl mx-auto w-full p-4 flex flex-col md:flex-row gap-4 min-h-0 overflow-hidden">
+
+          {/* LEFT: Reading Passage */}
+          <div
+            className="md:flex-1 rounded-2xl overflow-y-auto"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '20px',
+              maxHeight: '45vh'
+            }}
+          >
+            <div className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <BookOpen size={12} /> Reading Passage
+            </div>
+            <ReadingPassage content={READING_PASSAGE} />
+          </div>
+
+          {/* RIGHT: Question + Answers (read-only) */}
+          <div className="md:flex-1 flex flex-col min-h-0">
+            <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)' }}>
+
+              {/* Question header */}
+              <div className="shrink-0 p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ background: 'rgba(102,126,234,0.2)', color: '#a5b4fc' }}>
+                    Question {reviewQuestionIdx + 1}
+                  </span>
+                  {userAnswers[currentQ.id] !== undefined && (
+                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${isAnsweredCorrectly
+                      ? 'bg-green-900/40 text-green-400'
+                      : 'bg-red-900/40 text-red-400'
+                      }`}>
+                      {isAnsweredCorrectly ? '✓ Correct' : '✗ Incorrect'}
+                    </span>
+                  )}
+                </div>
+                <p className="text-white font-semibold text-base md:text-lg leading-relaxed">{currentQ.content}</p>
+              </div>
+
+              {/* Answer options — read-only, no hover */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+                {currentQ.options.map(opt => {
+                  const isCorrect = opt.id === currentQ.correctAnswerId;
+                  const isStudentPick = opt.id === studentSelectedId;
+                  const hasData = userAnswers[currentQ.id] !== undefined;
+
+                  // Determine display style
+                  let optStyle: React.CSSProperties = {};
+                  let icon = null;
+
+                  if (!hasData) {
+                    // No answer recorded
+                    optStyle = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', opacity: 0.7 };
+                  } else if (isCorrect && isStudentPick) {
+                    // Student picked the correct answer
+                    optStyle = { background: 'rgba(22,101,52,0.6)', border: '2px solid #16a34a', boxShadow: '0 0 12px rgba(22,163,74,0.3)' };
+                    icon = <CheckCircle2 size={20} className="text-green-400 shrink-0" />;
+                  } else if (isCorrect && !isStudentPick) {
+                    // This is the correct answer (student didn't pick it — show in dark green)
+                    optStyle = { background: 'rgba(22,101,52,0.4)', border: '2px solid rgba(22,163,74,0.6)' };
+                    icon = <CheckCircle2 size={20} className="text-green-500 shrink-0" />;
+                  } else if (!isCorrect && isStudentPick) {
+                    // Student's wrong pick
+                    optStyle = { background: 'rgba(153,27,27,0.5)', border: '2px solid #dc2626', boxShadow: '0 0 12px rgba(220,38,38,0.25)' };
+                    icon = <XCircle size={20} className="text-red-400 shrink-0" />;
+                  } else {
+                    // Other wrong options — dimmed
+                    optStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.45 };
+                  }
+
+                  return (
+                    <div
+                      key={opt.id}
+                      className="w-full p-3.5 rounded-xl flex items-center justify-between gap-3 cursor-default"
+                      style={optStyle}
+                    >
+                      <span className={`text-sm md:text-base font-semibold ${isCorrect ? 'text-green-200' :
+                        isStudentPick && !isCorrect ? 'text-red-200' :
+                          'text-slate-400'
+                        }`}>{opt.text}</span>
+                      {icon}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* PREV / NEXT */}
+              <div className="shrink-0 p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
+                    disabled={reviewQuestionIdx === 0}
+                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#e2e8f0' }}
+                  >
+                    <ChevronLeft size={18} /> PREV
+                  </button>
+                  <button
+                    onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
+                    disabled={reviewQuestionIdx === totalQ - 1}
+                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: reviewQuestionIdx === totalQ - 1 ? 'none' : '0 2px 12px rgba(102,126,234,0.4)' }}
+                  >
+                    NEXT <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -950,9 +1149,11 @@ const App: React.FC = () => {
     <LeaderboardDashboard
       entries={leaderboard}
       onReset={resetLeaderboard}
-      onExit={() => isTeacherMode ? setAppState(AppState.TEACHER_PLAYING) : setAppState(AppState.LOGIN)}
+      onExit={() => isTeacherMode ? setAppState(AppState.TEACHER_PLAYING) : setAppState(AppState.RESULT)}
       isSyncing={isSyncing}
       isTeacherMode={isTeacherMode}
+      currentUserName={isTeacherMode ? '' : user.name}
+      onViewMyAttempt={isTeacherMode ? undefined : () => { setReviewQuestionIdx(0); setAppState(AppState.STUDENT_REVIEW); }}
     />
   );
 
@@ -970,6 +1171,7 @@ const App: React.FC = () => {
       {appState === AppState.LOGIN && renderLogin()}
       {appState === AppState.PLAYING && renderPlaying()}
       {appState === AppState.RESULT && renderResult()}
+      {appState === AppState.STUDENT_REVIEW && renderStudentReview()}
       {appState === AppState.LEADERBOARD && renderLeaderboard()}
       {appState === AppState.TEACHER_PLAYING && renderTeacherPlaying()}
       {appState === AppState.TEACHER_REVIEW && renderTeacherReview()}

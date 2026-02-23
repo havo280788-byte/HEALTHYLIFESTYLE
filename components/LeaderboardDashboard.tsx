@@ -10,9 +10,11 @@ interface LeaderboardDashboardProps {
     onExit: () => void;
     isSyncing?: boolean;
     isTeacherMode?: boolean;
+    currentUserName?: string;
+    onViewMyAttempt?: () => void;
 }
 
-const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, onReset, onExit, isSyncing = false, isTeacherMode = false }) => {
+const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, onReset, onExit, isSyncing = false, isTeacherMode = false, currentUserName = '', onViewMyAttempt }) => {
     const [viewMode, setViewMode] = useState<'student' | 'teacher'>(isTeacherMode ? 'teacher' : 'student');
 
     // Question IDs in order
@@ -72,11 +74,10 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
             return { correct, possible, rate: possible > 0 ? Math.round((correct / possible) * 100) : 0 };
         };
 
+        // Q1=tf1, Q2=mc1, Q3=tf2, Q4=mc3, Q5=tf3, Q6=mc2, Q7=mc4, Q8=tf4, Q9=tf5, Q10=mc5
         const skills = [
-            { label: 'Fact Retrieval', icon: '📖', ...getSkillStats(['tf1', 'mc1']), color: '#22c55e' },
-            { label: 'Reference', icon: '🔗', ...getSkillStats(['mc3', 'mc4']), color: '#3b82f6' },
-            { label: 'Inference', icon: '🧠', ...getSkillStats(['tf2', 'tf3', 'tf5']), color: '#a855f7' },
-            { label: 'Detail / Scanning', icon: '🔍', ...getSkillStats(['mc2', 'mc5', 'tf4']), color: '#f59e0b' },
+            { label: 'Scanning', icon: '🔍', ...getSkillStats(['tf1', 'mc1', 'tf2', 'mc3', 'mc2', 'mc4', 'tf4', 'mc5']), color: '#3b82f6' },
+            { label: 'Recognizing / Classifying Supporting Details', icon: '🧩', ...getSkillStats(['tf3', 'tf5']), color: '#a855f7' },
         ];
 
         return { total, avgAccuracy, fastestTime, questionInsights, hardest, skills };
@@ -364,27 +365,44 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                             {entries.length === 0 ? (
                                 <div className="text-center text-slate-400 py-10">Waiting for players...</div>
                             ) : (
-                                entries.slice(0, 10).map((entry, idx) => (
-                                    <div key={idx} className="flex items-center bg-white border border-slate-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                        <div className={`
-                                            w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm mr-3
-                                            ${idx === 0 ? 'bg-yellow-400 text-yellow-900' :
-                                                idx === 1 ? 'bg-slate-200 text-slate-600' :
-                                                    idx === 2 ? 'bg-orange-300 text-orange-800' : 'bg-slate-50 text-slate-400'}
-                                        `}>
-                                            {idx + 1}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="font-bold text-slate-800 truncate">{entry.name}</div>
-                                        </div>
-                                        <div className="text-right flex items-center gap-2">
-                                            <div className="text-sm font-bold text-[#0F766E]">{entry.score * 10} pts</div>
-                                            <div className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-xs font-mono font-bold">
-                                                {fmtTime(entry.timeSpent)}
+                                entries.slice(0, 10).map((entry, idx) => {
+                                    const isMe = currentUserName && entry.name === currentUserName;
+                                    return (
+                                        <div key={idx} className={`flex items-center p-3 rounded-xl shadow-sm transition-all ${isMe
+                                                ? 'bg-indigo-50 border-2 border-indigo-400 shadow-indigo-100 shadow-md'
+                                                : 'bg-white border border-slate-100 hover:shadow-md'
+                                            }`}>
+                                            <div className={`
+                                                w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm mr-3
+                                                ${idx === 0 ? 'bg-yellow-400 text-yellow-900' :
+                                                    idx === 1 ? 'bg-slate-200 text-slate-600' :
+                                                        idx === 2 ? 'bg-orange-300 text-orange-800' : 'bg-slate-50 text-slate-400'}
+                                            `}>
+                                                {idx + 1}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className={`font-bold truncate flex items-center gap-1.5 ${isMe ? 'text-indigo-700' : 'text-slate-800'}`}>
+                                                    {entry.name}
+                                                    {isMe && <span className="text-[10px] font-black bg-indigo-500 text-white px-1.5 py-0.5 rounded-full">YOU</span>}
+                                                </div>
+                                            </div>
+                                            <div className="text-right flex items-center gap-2">
+                                                <div className={`text-sm font-bold ${isMe ? 'text-indigo-600' : 'text-[#0F766E]'}`}>{entry.score * 10} pts</div>
+                                                <div className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-xs font-mono font-bold">
+                                                    {fmtTime(entry.timeSpent)}
+                                                </div>
+                                                {isMe && onViewMyAttempt && (
+                                                    <button
+                                                        onClick={onViewMyAttempt}
+                                                        className="ml-1 text-[10px] font-bold bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded-lg transition-colors whitespace-nowrap"
+                                                    >
+                                                        View My Attempt
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
                     </div>
