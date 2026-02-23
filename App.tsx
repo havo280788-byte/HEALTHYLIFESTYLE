@@ -399,34 +399,93 @@ const App: React.FC = () => {
     const currentQ = questions[currentStage];
     if (!currentQ) return null;
 
-    // Format Timer mm:ss
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     const timerString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    const isUrgent = timeLeft < 60; // Red color if under 1 minute
+    const isUrgent = timeLeft < 60;
 
     return (
-      <div className="min-h-screen w-full flex flex-col bg-slate-50 md:h-screen md:overflow-hidden font-['Poppins']">
-        {/* === HEADER SECTION === */}
-        <div className="bg-white border-b border-slate-100 shadow-sm z-50">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            {/* Left: Titles */}
-            <div className="flex flex-col">
-              <h1 className="text-base md:text-xl font-bold text-[#0F766E] flex items-center gap-2 font-['Montserrat']">
-                <span>🥗</span> English 11 – Healthy Lifestyle
+      <div
+        className="w-full flex flex-col font-['Poppins']"
+        style={{
+          background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+          minHeight: '100dvh',
+          height: '100dvh',
+          overflow: 'hidden'
+        }}
+      >
+        {/* === HEADER === */}
+        <div
+          className="shrink-0 z-50"
+          style={{
+            background: 'rgba(15,12,41,0.95)',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(10px)'
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-3 md:px-4 py-2.5 flex items-center justify-between gap-2">
+            {/* Left: Title */}
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-sm md:text-base font-bold text-white flex items-center gap-1.5 truncate">
+                <span>🥗</span>
+                <span className="truncate">English 11 – Healthy Lifestyle</span>
               </h1>
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">Reading Challenge</span>
             </div>
 
-            {/* Right: Countdown Timer */}
-            <div className={`
-                 flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-xl border-2 font-mono font-bold text-lg md:text-2xl shadow-inner
-                 ${isUrgent ? 'bg-red-50 text-red-600 border-red-100 animate-pulse' : 'bg-green-50 text-[#0F766E] border-green-100'}
-              `}>
-              <Clock size={20} className="md:w-6 md:h-6" />
+            {/* Right: Timer */}
+            <div
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono font-black text-base md:text-xl shrink-0 ${isUrgent ? 'animate-pulse' : ''}`}
+              style={{
+                background: isUrgent ? 'rgba(220,38,38,0.2)' : 'rgba(102,126,234,0.15)',
+                border: isUrgent ? '1.5px solid rgba(220,38,38,0.5)' : '1.5px solid rgba(102,126,234,0.4)',
+                color: isUrgent ? '#f87171' : '#a5b4fc'
+              }}
+            >
+              <Clock size={16} />
               {timerString}
             </div>
           </div>
-          <ProgressNavigation currentStage={currentStage} />
+
+          {/* Stage progress bar */}
+          <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)' }}>
+            <div
+              className="h-full transition-all duration-500"
+              style={{
+                width: `${((currentStage + 1) / 10) * 100}%`,
+                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)'
+              }}
+            />
+          </div>
+
+          {/* Stage dots */}
+          <div className="overflow-x-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+            <div className="max-w-4xl mx-auto px-3 py-2 flex items-center justify-between min-w-[360px]">
+              {Array.from({ length: 10 }, (_, i) => {
+                const isCompleted = i < currentStage;
+                const isActive = i === currentStage;
+                return (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${isActive ? 'scale-125' : 'scale-100'}`}
+                      style={{
+                        background: isActive
+                          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                          : isCompleted
+                            ? 'rgba(102,126,234,0.35)'
+                            : 'rgba(255,255,255,0.08)',
+                        border: isActive ? '2px solid rgba(165,180,252,0.6)' : '1.5px solid rgba(255,255,255,0.1)',
+                        boxShadow: isActive ? '0 0 10px rgba(102,126,234,0.5)' : 'none',
+                        color: isCompleted || isActive ? '#e0e7ff' : 'rgba(255,255,255,0.3)'
+                      }}
+                    >
+                      {isCompleted ? '✓' : i + 1}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Feedback Overlay */}
@@ -439,96 +498,143 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* 2. Main Split Content */}
-        <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 md:overflow-hidden">
+        {/* === MAIN CONTENT === */}
+        <div className="flex-1 w-full max-w-7xl mx-auto p-2.5 md:p-4 flex flex-col md:flex-row gap-2.5 md:gap-4 min-h-0 overflow-hidden">
 
           {/* LEFT: Reading Passage */}
-          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '50vh', overflowY: 'auto', padding: '20px' }}>
+          <div
+            className="review-passage-dark rounded-2xl overflow-y-auto md:flex-1 shrink-0"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '14px 16px',
+              maxHeight: '38vh',
+              minHeight: '120px'
+            }}
+          >
+            <style>{`
+              .review-passage-dark p { color: rgba(255,255,255,0.82) !important; }
+              .review-passage-dark h2 { color: #a5b4fc !important; border-color: rgba(165,180,252,0.2) !important; }
+              .review-passage-dark h3 { color: #7dd3fc !important; }
+            `}</style>
+            <div className="text-[9px] font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <BookOpen size={11} /> Reading Passage
+            </div>
             <ReadingPassage content={READING_PASSAGE} />
           </div>
 
-          {/* RIGHT: Question Interface (Compact Green Card) */}
-          <div className="flex flex-col min-h-0 md:flex-1">
-            <div className="bg-gradient-to-br from-[#14532D] via-[#15803D] to-[#22C55E] rounded-3xl shadow-2xl overflow-hidden border border-green-600 relative flex flex-col flex-1 min-h-0">
-
-              {/* Decorative Overlay */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-10 -mb-10 blur-xl pointer-events-none"></div>
-
-              {/* Card Header */}
-              <div className="bg-black/10 p-3 md:p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-sm relative z-10">
-                <span className="font-bold text-green-50 uppercase tracking-wider text-sm">
-                  Question {currentStage + 1} / 10
-                </span>
-                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
-                  STAGE {currentStage + 1}
+          {/* RIGHT: Question Card — no inner scroll */}
+          <div className="md:flex-1 flex flex-col min-h-0 overflow-hidden">
+            <div
+              className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.12)'
+              }}
+            >
+              {/* Question header */}
+              <div
+                className="shrink-0 p-3 md:p-4"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full"
+                    style={{ background: 'rgba(102,126,234,0.2)', color: '#a5b4fc' }}
+                  >
+                    Question {currentStage + 1} / 10
+                  </span>
                 </div>
+                <p className="text-white font-bold text-sm md:text-base leading-snug">{currentQ.content}</p>
               </div>
 
-              <div className="p-4 md:p-5 relative z-10 flex-1 flex flex-col overflow-y-auto min-h-0">
-                <h2 className="text-base md:text-xl font-bold text-white mb-3 leading-relaxed drop-shadow-sm" style={{ fontWeight: 700 }}>
-                  {currentQ.content}
-                </h2>
+              {/* Options — shrink to fit, no scroll */}
+              <div className="flex-1 flex flex-col justify-center p-3 md:p-4 gap-2 min-h-0">
+                {currentQ.options.map(opt => {
+                  const isSelected = selectedAnswer === opt.id;
+                  const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
+                  const isWrongSelection = isSelected && !isCorrectAnswer && isAnswerConfirmed;
+                  const isCorrectSelection = isSelected && isCorrectAnswer && isAnswerConfirmed;
 
-                <div className="space-y-2">
-                  {currentQ.options.map(opt => {
-                    const isSelected = selectedAnswer === opt.id;
-                    const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
-                    const isWrongSelection = isSelected && !isCorrectAnswer && isAnswerConfirmed;
-                    const isCorrectSelection = isSelected && isCorrectAnswer && isAnswerConfirmed;
+                  let optStyle: React.CSSProperties = {};
+                  let textClass = 'text-white/80';
+                  let statusIcon = null;
 
-                    let btnClass = "bg-white text-slate-700 hover:bg-green-50 border-2 border-transparent shadow-sm";
-                    let statusIcon = null;
-
+                  if (!isAnswerConfirmed) {
                     if (isSelected) {
-                      btnClass = "bg-green-100 text-green-800 border-2 border-green-500 shadow-md transform scale-[1.01]";
+                      optStyle = {
+                        background: 'rgba(102,126,234,0.3)',
+                        border: '2px solid rgba(102,126,234,0.8)',
+                        boxShadow: '0 0 12px rgba(102,126,234,0.3)'
+                      };
+                      textClass = 'text-white font-bold';
+                    } else {
+                      optStyle = {
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1.5px solid rgba(255,255,255,0.12)'
+                      };
                     }
-
-                    if (isAnswerConfirmed) {
-                      if (isCorrectSelection) {
-                        btnClass = "bg-[#dcfce7] border-2 border-[#15803D] text-[#14532D]";
-                        statusIcon = <CheckCircle2 size={20} className="text-[#15803D]" />;
-                      } else if (isWrongSelection) {
-                        btnClass = "bg-red-50 border-2 border-[#DC2626] text-[#991B1B]";
-                        statusIcon = <XCircle size={20} className="text-[#DC2626]" />;
-                      } else {
-                        btnClass = "bg-white/90 text-slate-400 opacity-75";
-                      }
-                    } else if (isSelected) {
-                      btnClass = "bg-white border-2 border-[#22C55E] text-[#15803D] shadow-md ring-2 ring-green-400/30";
+                  } else {
+                    if (isCorrectSelection) {
+                      optStyle = { background: 'rgba(22,101,52,0.6)', border: '2px solid #16a34a', boxShadow: '0 0 12px rgba(22,163,74,0.3)' };
+                      textClass = 'text-green-200 font-bold';
+                      statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
+                    } else if (isWrongSelection) {
+                      optStyle = { background: 'rgba(153,27,27,0.5)', border: '2px solid #dc2626', boxShadow: '0 0 12px rgba(220,38,38,0.25)' };
+                      textClass = 'text-red-200 font-bold';
+                      statusIcon = <XCircle size={18} className="text-red-400 shrink-0" />;
+                    } else if (isCorrectAnswer) {
+                      optStyle = { background: 'rgba(22,101,52,0.35)', border: '2px solid rgba(22,163,74,0.5)' };
+                      textClass = 'text-green-300';
+                      statusIcon = <CheckCircle2 size={18} className="text-green-500 shrink-0" />;
+                    } else {
+                      optStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.45 };
+                      textClass = 'text-white/50';
                     }
+                  }
 
-                    return (
-                      <button
-                        key={opt.id}
-                        onClick={() => handleAnswerSelect(opt.id)}
-                        disabled={isAnswerConfirmed}
-                        className={`w-full p-3 rounded-xl text-left font-semibold transition-all duration-200 ${btnClass} flex justify-between items-center group`}
-                      >
-                        <span className="text-sm md:text-lg" style={{ fontWeight: 500 }}>{opt.text}</span>
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => handleAnswerSelect(opt.id)}
+                      disabled={isAnswerConfirmed}
+                      className={`w-full px-4 py-2.5 md:py-3 rounded-xl text-left flex justify-between items-center transition-all duration-200 ${!isAnswerConfirmed && !isSelected ? 'hover:brightness-125' : ''}`}
+                      style={optStyle}
+                    >
+                      <span className={`text-sm md:text-base ${textClass}`}>{opt.text}</span>
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {statusIcon}
-                        {!isAnswerConfirmed && selectedAnswer === opt.id && <div className="w-3 h-3 rounded-full bg-[#22C55E]" />}
-                      </button>
-                    );
-                  })}
-                </div>
+                        {!isAnswerConfirmed && isSelected && (
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#818cf8' }} />
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Footer Actions */}
-              <div className="p-3 bg-black/10 border-t border-white/10 text-center backdrop-blur-sm relative z-10">
-                {!isAnswerConfirmed && (
-                  <Button
+              {/* Footer: CHECK ANSWER */}
+              <div
+                className="shrink-0 p-3 md:p-4"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                {!isAnswerConfirmed ? (
+                  <button
                     onClick={checkAnswer}
                     disabled={!selectedAnswer}
-                    fullWidth
-                    className="bg-orange-500 text-white hover:bg-orange-600 font-bold py-3 md:py-4 text-base shadow-lg hover:shadow-xl transition-all"
+                    className="w-full py-3 rounded-xl font-black text-white text-sm md:text-base tracking-wide transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{
+                      background: selectedAnswer
+                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                        : 'rgba(255,255,255,0.08)',
+                      boxShadow: selectedAnswer ? '0 4px 20px rgba(102,126,234,0.45)' : 'none'
+                    }}
                   >
                     CHECK ANSWER
-                  </Button>
-                )}
-                {isAnswerConfirmed && (
-                  <div className="text-white/80 text-sm font-medium py-2 animate-pulse">
-                    Listen to the feedback...
+                  </button>
+                ) : (
+                  <div className="text-center text-white/50 text-xs font-medium py-1 animate-pulse">
+                    Listening to feedback…
                   </div>
                 )}
               </div>
@@ -1113,8 +1219,8 @@ const App: React.FC = () => {
                       style={optStyle}
                     >
                       <span className={`text-sm md:text-base font-semibold ${isCorrect ? 'text-green-200' :
-                          isStudentPick && !isCorrect ? 'text-red-200' :
-                            'text-slate-300'
+                        isStudentPick && !isCorrect ? 'text-red-200' :
+                          'text-slate-300'
                         }`}>{opt.text}</span>
                       {icon}
                     </div>
