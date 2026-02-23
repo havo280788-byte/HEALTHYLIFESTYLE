@@ -7,19 +7,19 @@ export const GEMINI_MODELS = [
 ];
 
 export const GAME_STAGES = [
-  "Energy Spark",
-  "Fuel Your Body",
-  "Move & Burn",
-  "Power Up",
-  "Stay Strong",
-  "Mind Matters",
-  "Healthy Moves",
-  "Boost Zone",
-  "Challenge Peak",
-  "Wellness Champion"
+  "Getting Started",
+  "Mini Workouts",
+  "Home Exercise",
+  "Fitness Apps",
+  "Healthy Diet",
+  "Tracking Progress",
+  "Smart Mirror",
+  "Fitness Technology",
+  "Outdoor Activities",
+  "Champion"
 ];
 
-export const STAGE_ICONS = ["🌱", "🥗", "💧", "🏃", "💪", "🧠", "🌙", "🚴", "❤️", "🏆"];
+export const STAGE_ICONS = ["🏃", "⏱", "🏠", "📱", "🥗", "⭐", "🪞", "💪", "🌳", "🏆"];
 
 export const THEME_COLORS = {
   primary: '#0F766E', // Deep Teal

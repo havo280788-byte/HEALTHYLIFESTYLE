@@ -257,157 +257,204 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
     );
 
     // ===========================
-    // STUDENT VIEW (existing layout)
+    // STUDENT VIEW — Dark Theme
     // ===========================
     const renderStudentView = () => (
-        <div className="flex bg-gradient-to-br from-[#a5b4fc] to-[#c084fc] min-h-screen p-4 md:p-8 font-sans">
-            <div className="flex-1 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-w-7xl mx-auto">
-
-                {/* LEFT PANEL: Class Performance */}
-                <div className="flex-[2] p-4 md:p-8 bg-slate-50 overflow-y-auto">
-                    <div className="mb-6 md:mb-8">
-                        <h1 className="text-xl md:text-3xl font-black text-[#1e1b4b]">Class Performance</h1>
-                        <p className="text-slate-500 text-sm">Real-time statistics from all players</p>
+        <div
+            className="min-h-screen font-['Poppins'] flex flex-col"
+            style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}
+        >
+            {/* Header */}
+            <div
+                className="shrink-0 z-50"
+                style={{
+                    background: 'rgba(15,12,41,0.95)',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(10px)'
+                }}
+            >
+                <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+                    <div>
+                        <h1 className="text-base md:text-xl font-black text-white flex items-center gap-2">
+                            <Trophy size={18} className="text-yellow-400" /> Leaderboard
+                        </h1>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-widest">Top 10 Players</p>
                     </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        {/* Bar Chart Card */}
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                            <h3 className="text-[#1e1b4b] font-bold mb-4 border-l-4 border-indigo-500 pl-3">Correct Answer Rate</h3>
-                            <div className="h-40">
-                                {studentStats ? <BarChart data={studentStats.questionRates} color="#6366f1" /> : <div className="h-full flex items-center justify-center text-slate-300">No Data</div>}
-                            </div>
-                            <div className="flex justify-between text-xs text-slate-400 mt-2 px-2">
-                                {studentStats?.questionRates.map(d => <span key={d.label}>{d.label}</span>)}
-                            </div>
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-green-400 uppercase tracking-wider">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                            Live
                         </div>
-
-                        {/* Donut Chart Card */}
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                            <h3 className="text-[#1e1b4b] font-bold mb-4 border-l-4 border-purple-500 pl-3">Skills Breakdown</h3>
-                            <div className="h-40 flex items-center justify-center gap-6">
-                                {studentStats ? (
-                                    <>
-                                        <div className="w-32 h-32">
-                                            <DonutChart data={studentStats.skillsData} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            {studentStats.skillsData.map((d, i) => (
-                                                <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                                                    <span className="w-2 h-2 rounded-full" style={{ background: d.color }} />
-                                                    {d.label}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                ) : <div className="text-slate-300">No Data</div>}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-indigo-50 p-4 md:p-5 rounded-2xl">
-                            <div className="text-xs font-bold text-indigo-400 uppercase mb-1">TOTAL PLAYERS</div>
-                            <div className="text-2xl md:text-4xl font-black text-indigo-900">{studentStats?.totalPlayers || 0}</div>
-                        </div>
-                        <div className="bg-green-50 p-4 md:p-5 rounded-2xl">
-                            <div className="text-xs font-bold text-green-500 uppercase mb-1">FASTEST TIME</div>
-                            <div className="text-2xl md:text-4xl font-black text-green-900">{studentStats ? `${studentStats.fastestTime}s` : '--'}</div>
-                        </div>
-                        <div className="bg-orange-50 p-4 md:p-5 rounded-2xl">
-                            <div className="text-xs font-bold text-orange-400 uppercase mb-1">COMPLETION RATE</div>
-                            <div className="text-2xl md:text-4xl font-black text-orange-900">100%</div>
-                        </div>
+                        <button
+                            onClick={onExit}
+                            className="p-2 rounded-xl text-slate-400 hover:text-white transition-colors"
+                            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        >
+                            <X size={16} />
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                {/* RIGHT PANEL: Leaderboard List */}
-                <div className="flex-1 bg-indigo-600 flex flex-col text-white relative">
-                    {/* Header */}
-                    <div className="p-4 md:p-8 pb-4">
-                        <div className="flex justify-between items-start mb-2">
-                            <div>
-                                <h2 className="text-lg md:text-2xl font-black uppercase tracking-wide">LEADERBOARD</h2>
-                                <p className="text-indigo-200 text-xs md:text-sm font-bold">TOP 10 PLAYERS</p>
+            {/* Main Content */}
+            <div className="flex-1 max-w-7xl mx-auto w-full p-3 md:p-6 flex flex-col md:flex-row gap-4 overflow-hidden">
+
+                {/* LEFT: Class stats + charts */}
+                <div className="md:flex-[2] flex flex-col gap-4 overflow-y-auto">
+                    <div
+                        className="rounded-2xl p-4 md:p-5"
+                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                        <h2 className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: 'rgba(165,180,252,0.7)' }}>
+                            <Users size={12} /> Class Performance
+                        </h2>
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                            <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.25)' }}>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-1">Players</div>
+                                <div className="text-2xl font-black text-white">{studentStats?.totalPlayers || 0}</div>
                             </div>
-                            <button onClick={onExit} className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors">
-                                <X size={20} />
-                            </button>
+                            <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-green-400 mb-1">Fastest</div>
+                                <div className="text-2xl font-black text-white font-mono">{studentStats ? fmtTime(studentStats.fastestTime) : '--'}</div>
+                            </div>
+                            <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(251,146,60,0.12)', border: '1px solid rgba(251,146,60,0.2)' }}>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1">Done</div>
+                                <div className="text-2xl font-black text-white">100%</div>
+                            </div>
                         </div>
 
-                        {isTeacherMode && (
-                            <div className="mt-4">
-                                <div className="bg-indigo-500/50 rounded-lg p-0.5 flex text-xs font-bold">
-                                    <button
-                                        onClick={() => setViewMode('student')}
-                                        className={`flex-1 px-3 py-1.5 rounded-md transition-all ${viewMode === 'student' ? 'bg-white text-indigo-700 shadow-sm' : 'text-indigo-200 hover:text-white'}`}
-                                    >STUDENT</button>
-                                    <button
-                                        onClick={() => setViewMode('teacher')}
-                                        className={`flex-1 px-3 py-1.5 rounded-md transition-all ${viewMode === 'teacher' ? 'bg-white text-indigo-700 shadow-sm' : 'text-indigo-200 hover:text-white'}`}
-                                    >TEACHER</button>
-                                </div>
+                        {/* Bar chart */}
+                        <h3 className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Correct Answer Rate by Question</h3>
+                        <div className="h-36">
+                            {studentStats
+                                ? <BarChart data={studentStats.questionRates} color="#818cf8" />
+                                : <div className="h-full flex items-center justify-center text-slate-600 text-sm">No Data</div>
+                            }
+                        </div>
+                        {studentStats && (
+                            <div className="flex justify-between text-[10px] text-slate-600 mt-1 px-1">
+                                {studentStats.questionRates.map(d => <span key={d.label}>{d.label}</span>)}
                             </div>
                         )}
-
-                        <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-green-300 uppercase tracking-wider">
-                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
-                            LIVE SYNC ACTIVE
-                        </div>
                     </div>
 
-                    {/* List */}
-                    <div className="flex-1 bg-white overflow-y-auto rounded-tl-3xl p-2 relative">
-                        <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-b from-slate-100 to-transparent pointer-events-none z-10" />
-
-                        <div className="space-y-2 p-2 pt-4">
-                            {entries.length === 0 ? (
-                                <div className="text-center text-slate-400 py-10">Waiting for players...</div>
-                            ) : (
-                                entries.slice(0, 10).map((entry, idx) => {
-                                    const isMe = currentUserName && entry.name === currentUserName;
-                                    return (
-                                        <div key={idx} className={`flex items-center p-3 rounded-xl shadow-sm transition-all ${isMe
-                                                ? 'bg-indigo-50 border-2 border-indigo-400 shadow-indigo-100 shadow-md'
-                                                : 'bg-white border border-slate-100 hover:shadow-md'
-                                            }`}>
-                                            <div className={`
-                                                w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm mr-3
-                                                ${idx === 0 ? 'bg-yellow-400 text-yellow-900' :
-                                                    idx === 1 ? 'bg-slate-200 text-slate-600' :
-                                                        idx === 2 ? 'bg-orange-300 text-orange-800' : 'bg-slate-50 text-slate-400'}
-                                            `}>
-                                                {idx + 1}
+                    {/* Donut / skills */}
+                    <div
+                        className="rounded-2xl p-4 md:p-5"
+                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                        <h3 className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>Skills Breakdown</h3>
+                        <div className="flex items-center gap-6">
+                            {studentStats ? (
+                                <>
+                                    <div className="w-28 h-28 shrink-0"><DonutChart data={studentStats.skillsData} /></div>
+                                    <div className="space-y-2">
+                                        {studentStats.skillsData.map((d, i) => (
+                                            <div key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                                                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
+                                                {d.label}
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className={`font-bold truncate flex items-center gap-1.5 ${isMe ? 'text-indigo-700' : 'text-slate-800'}`}>
-                                                    {entry.name}
-                                                    {isMe && <span className="text-[10px] font-black bg-indigo-500 text-white px-1.5 py-0.5 rounded-full">YOU</span>}
-                                                </div>
-                                            </div>
-                                            <div className="text-right flex items-center gap-2">
-                                                <div className={`text-sm font-bold ${isMe ? 'text-indigo-600' : 'text-[#0F766E]'}`}>{entry.score * 10} pts</div>
-                                                <div className="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-xs font-mono font-bold">
-                                                    {fmtTime(entry.timeSpent)}
-                                                </div>
-                                                {isMe && onViewMyAttempt && (
-                                                    <button
-                                                        onClick={onViewMyAttempt}
-                                                        className="ml-1 text-[10px] font-bold bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded-lg transition-colors whitespace-nowrap"
-                                                    >
-                                                        View My Attempt
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            )}
+                                        ))}
+                                    </div>
+                                </>
+                            ) : <div className="text-slate-600 text-sm">No Data</div>}
                         </div>
                     </div>
                 </div>
 
+                {/* RIGHT: Rankings list */}
+                <div
+                    className="md:flex-[3] flex flex-col rounded-2xl overflow-hidden"
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                >
+                    {/* Teacher toggle (if applicable) */}
+                    {isTeacherMode && (
+                        <div className="p-3 shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                            <div className="flex rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <button
+                                    onClick={() => setViewMode('student')}
+                                    className="flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-all"
+                                    style={viewMode === 'student'
+                                        ? { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff' }
+                                        : { color: 'rgba(255,255,255,0.4)' }}
+                                >Student</button>
+                                <button
+                                    onClick={() => setViewMode('teacher')}
+                                    className="flex-1 py-2 text-xs font-bold uppercase tracking-widest transition-all"
+                                    style={viewMode === 'teacher'
+                                        ? { background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff' }
+                                        : { color: 'rgba(255,255,255,0.4)' }}
+                                >Teacher</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* List */}
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                        {entries.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-48 text-slate-600">
+                                <Users size={36} className="mb-3 opacity-30" />
+                                <p className="text-sm font-medium">Waiting for players...</p>
+                            </div>
+                        ) : (
+                            entries.slice(0, 10).map((entry, idx) => {
+                                const isMe = !!(currentUserName && entry.name === currentUserName);
+                                const rankColors: Record<number, { bg: string; text: string }> = {
+                                    0: { bg: 'rgba(251,191,36,0.25)', text: '#fbbf24' },
+                                    1: { bg: 'rgba(148,163,184,0.2)', text: '#94a3b8' },
+                                    2: { bg: 'rgba(251,146,60,0.2)', text: '#fb923c' },
+                                };
+                                const rank = rankColors[idx] || { bg: 'rgba(255,255,255,0.06)', text: 'rgba(255,255,255,0.3)' };
+
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="flex items-center gap-3 p-3 rounded-xl transition-all"
+                                        style={isMe
+                                            ? { background: 'rgba(102,126,234,0.2)', border: '2px solid rgba(102,126,234,0.6)', boxShadow: '0 0 12px rgba(102,126,234,0.2)' }
+                                            : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }
+                                        }
+                                    >
+                                        {/* Rank badge */}
+                                        <div
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm shrink-0"
+                                            style={{ background: rank.bg, color: rank.text }}
+                                        >
+                                            {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
+                                        </div>
+
+                                        {/* Name */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-sm truncate flex items-center gap-1.5" style={{ color: isMe ? '#a5b4fc' : 'rgba(255,255,255,0.9)' }}>
+                                                {entry.name}
+                                                {isMe && <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(102,126,234,0.6)', color: '#e0e7ff' }}>YOU</span>}
+                                            </div>
+                                            <div className="text-[10px] text-slate-500">{entry.className}</div>
+                                        </div>
+
+                                        {/* Score + Time */}
+                                        <div className="text-right flex items-center gap-2 shrink-0">
+                                            <div className="text-sm font-black" style={{ color: isMe ? '#a5b4fc' : 'rgba(255,255,255,0.8)' }}>{entry.score * 10} pts</div>
+                                            <div
+                                                className="text-xs font-mono font-bold px-2 py-1 rounded-lg"
+                                                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
+                                            >{fmtTime(entry.timeSpent)}</div>
+                                            {isMe && onViewMyAttempt && (
+                                                <button
+                                                    onClick={onViewMyAttempt}
+                                                    className="text-[10px] font-bold px-2 py-1 rounded-lg transition-all whitespace-nowrap"
+                                                    style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff' }}
+                                                >
+                                                    View My Attempt
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

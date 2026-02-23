@@ -319,71 +319,128 @@ const App: React.FC = () => {
   );
 
   const renderLogin = () => (
-    <div className="flex bg-gradient-to-br from-[#0F766E] to-[#14B8A6] min-h-screen items-center justify-center p-4">
-      <div className="max-w-md w-full mx-auto bg-white/95 backdrop-blur shadow-2xl rounded-3xl p-8 border-4 border-[#14B8A6] animate-fade-in relative overflow-hidden">
-        {/* Decorative Icons */}
-        <Leaf className="absolute -top-4 -right-4 text-[#5EEAD4]/30 w-24 h-24 rotate-12" />
-        <Heart className="absolute bottom-4 -left-4 text-[#5EEAD4]/30 w-16 h-16 -rotate-12" />
+    <div
+      className="min-h-screen w-full flex flex-col items-center justify-center p-4 font-['Poppins']"
+      style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}
+    >
+      {/* Ambient glow blobs */}
+      <div className="fixed top-[-80px] left-[-80px] w-64 h-64 rounded-full opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #667eea, transparent 70%)' }} />
+      <div className="fixed bottom-[-80px] right-[-80px] w-72 h-72 rounded-full opacity-15 pointer-events-none" style={{ background: 'radial-gradient(circle, #764ba2, transparent 70%)' }} />
 
-        <div className="text-center mb-8 relative z-10">
-          <div className="w-20 h-20 rounded-full bg-[#0F766E] flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
-            <Activity size={40} />
+      <div
+        className="max-w-md w-full mx-auto rounded-3xl p-8 animate-fade-in relative"
+        style={{
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 8px 48px rgba(0,0,0,0.4)'
+        }}
+      >
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div
+            className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 relative"
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              boxShadow: '0 0 36px rgba(102,126,234,0.55)'
+            }}
+          >
+            <Activity size={38} className="text-white" />
+            <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-[#0F766E] mb-2 uppercase tracking-wide">English 11<br />Healthy Lifestyle</h1>
-          <p className="text-[#14B8A6] font-medium">Ready to test your knowledge?</p>
+          <h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-widest leading-tight mb-2">
+            English 11<br />
+            <span style={{ background: 'linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Healthy Lifestyle</span>
+          </h1>
+          <p className="text-slate-400 text-sm font-medium">🥗 Ready to test your knowledge?</p>
         </div>
 
-        <div className="space-y-5 relative z-10">
-          <Input
-            label="FULL NAME"
-            placeholder="Enter your name"
-            value={user.name}
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
-            icon={<UserIcon size={18} />}
-          />
-          <Input
-            label="CLASS"
-            placeholder="e.g. 11A1"
-            value={user.className}
-            onChange={(e) => setUser({ ...user, className: e.target.value })}
-            icon={<BookOpen size={18} />}
-          />
+        {/* Form */}
+        <div className="space-y-4">
+          {/* Name field */}
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(165,180,252,0.7)' }}>Full Name</label>
+            <div
+              className="flex items-center gap-3 px-4 py-3 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.15)' }}
+            >
+              <UserIcon size={16} className="text-slate-400 shrink-0" />
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={user.name}
+                onChange={(e) => setUser({ ...user, name: e.target.value })}
+                className="flex-1 bg-transparent text-white text-sm font-medium outline-none placeholder-slate-500"
+              />
+            </div>
+          </div>
 
-          <Button
-            fullWidth
+          {/* Class field */}
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(165,180,252,0.7)' }}>Class</label>
+            <div
+              className="flex items-center gap-3 px-4 py-3 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.15)' }}
+            >
+              <BookOpen size={16} className="text-slate-400 shrink-0" />
+              <input
+                type="text"
+                placeholder="e.g. 11A1"
+                value={user.className}
+                onChange={(e) => setUser({ ...user, className: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && startGame()}
+                className="flex-1 bg-transparent text-white text-sm font-medium outline-none placeholder-slate-500"
+              />
+            </div>
+          </div>
+
+          {/* Start button */}
+          <button
             onClick={startGame}
             disabled={!user.name || !user.className}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+            className="w-full py-4 rounded-2xl font-black text-white text-base tracking-wide flex items-center justify-center gap-3 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed mt-2"
+            style={{
+              background: (user.name && user.className)
+                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                : 'rgba(255,255,255,0.08)',
+              boxShadow: (user.name && user.className) ? '0 4px 24px rgba(102,126,234,0.5)' : 'none'
+            }}
+            onMouseEnter={e => { if (user.name && user.className) e.currentTarget.style.boxShadow = '0 6px 32px rgba(102,126,234,0.7)'; }}
+            onMouseLeave={e => { if (user.name && user.className) e.currentTarget.style.boxShadow = '0 4px 24px rgba(102,126,234,0.5)'; }}
           >
-            START CHALLENGE <Play size={20} className="ml-2" />
-          </Button>
+            <Play size={20} /> START CHALLENGE
+          </button>
         </div>
 
-        {/* Teacher Button — Desktop only */}
-        <div className="mt-6 hidden md:flex justify-center">
+        {/* Teacher button */}
+        <div className="mt-6 flex justify-center">
           <button
             onClick={() => setShowPinDialog(true)}
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#0F766E] transition-colors px-4 py-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200"
+            className="hidden md:flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors px-3 py-1.5 rounded-lg"
+            style={{ border: '1px solid rgba(255,255,255,0.08)' }}
           >
-            <Lock size={14} /> Teacher
+            <Lock size={12} /> Teacher Mode
           </button>
         </div>
 
-        {/* Settings Toggle */}
-        <div className="mt-4 text-center">
+        {/* Settings */}
+        <div className="mt-3 text-center">
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="text-xs text-slate-400 hover:text-[#0F766E] flex items-center justify-center gap-1 mx-auto"
+            className="text-xs text-slate-600 hover:text-slate-400 flex items-center justify-center gap-1 mx-auto transition-colors"
           >
-            <Settings size={14} /> Settings
+            <Settings size={13} /> Settings
           </button>
           {showSettings && (
-            <div className="mt-4 p-4 bg-slate-50 rounded-xl space-y-3 text-left border border-slate-200">
-              <Input
-                label="API Key (Optional)"
+            <div className="mt-3 p-4 rounded-xl space-y-3 text-left" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(165,180,252,0.6)' }}>API Key (Optional)</label>
+              <input
                 type="password"
                 value={settings.apiKey}
                 onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
+                className="w-full bg-transparent text-white text-sm outline-none px-3 py-2 rounded-lg"
+                style={{ border: '1px solid rgba(255,255,255,0.12)' }}
+                placeholder="sk-..."
               />
             </div>
           )}
@@ -394,6 +451,7 @@ const App: React.FC = () => {
       {showPinDialog && renderPinDialog()}
     </div>
   );
+
 
   const renderPlaying = () => {
     const currentQ = questions[currentStage];
@@ -992,16 +1050,24 @@ const App: React.FC = () => {
 
     // Badge logic
     let badge = '';
+    let badgeMsg = '';
     let badgeGrad = '';
     if (accuracy === 100) {
-      badge = '🏆 Digital Quest Champion 👑';
-      badgeGrad = 'from-yellow-500 to-amber-400';
-    } else if (accuracy >= 80) {
-      badge = '💎 Reading Pro';
-      badgeGrad = 'from-blue-500 to-cyan-400';
-    } else if (accuracy >= 60) {
-      badge = '⚡ AI Explorer';
-      badgeGrad = 'from-violet-500 to-purple-400';
+      badge = '👑 Challenge Champion';
+      badgeMsg = "Outstanding! You've mastered the challenge.";
+      badgeGrad = 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
+    } else if (accuracy >= 85) {
+      badge = '🥇 Skillful Reader';
+      badgeMsg = 'Excellent performance!';
+      badgeGrad = 'linear-gradient(135deg, #d97706 0%, #fbbf24 100%)';
+    } else if (accuracy >= 70) {
+      badge = '🥈 Active Achiever';
+      badgeMsg = "Well done! You're on the right track.";
+      badgeGrad = 'linear-gradient(135deg, #64748b 0%, #94a3b8 100%)';
+    } else if (accuracy >= 50) {
+      badge = '🥉 Rising Learner';
+      badgeMsg = 'Good effort! Keep improving.';
+      badgeGrad = 'linear-gradient(135deg, #92400e 0%, #b45309 100%)';
     }
 
     return (
@@ -1039,9 +1105,13 @@ const App: React.FC = () => {
 
           {/* Badge */}
           {badge && (
-            <div className={`rounded-xl p-3 mb-6 text-center bg-gradient-to-r ${badgeGrad}`} style={{ boxShadow: '0 0 20px rgba(102,126,234,0.4)' }}>
+            <div
+              className="rounded-xl p-3 mb-6 text-center"
+              style={{ background: badgeGrad, boxShadow: '0 0 20px rgba(102,126,234,0.3)' }}
+            >
               <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5 text-white/70">Badge Earned</div>
               <div className="text-lg font-black text-white">{badge}</div>
+              <div className="text-xs text-white/80 mt-0.5 font-medium">{badgeMsg}</div>
             </div>
           )}
 
@@ -1272,10 +1342,16 @@ const App: React.FC = () => {
   return (
     <div>
       {appState === AppState.LOADING && (
-        <div className="min-h-screen bg-[#0F766E] flex items-center justify-center text-center text-white animate-pulse">
-          <div>
-            <div className="w-16 h-16 border-4 border-[#5EEAD4] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <h2 className="text-xl font-bold">{loadingText}</h2>
+        <div
+          className="min-h-screen flex items-center justify-center text-center font-['Poppins']"
+          style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}
+        >
+          <div className="flex flex-col items-center gap-5">
+            <div
+              className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin"
+              style={{ borderColor: 'rgba(165,180,252,0.3)', borderTopColor: '#667eea' }}
+            />
+            <p className="text-white/70 text-base font-semibold tracking-wide animate-pulse">{loadingText}</p>
           </div>
         </div>
       )}
