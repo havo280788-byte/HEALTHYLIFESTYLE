@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Question, AppState, LeaderboardEntry, GameSettings, QuestionType } from './types';
-import { GEMINI_MODELS, FALLBACK_QUESTIONS, GAME_STAGES, THEME_COLORS, READING_PASSAGE, SOUND_EFFECTS } from './constants';
+import { GEMINI_MODELS, FALLBACK_QUESTIONS, GAME_STAGES, STAGE_ICONS, THEME_COLORS, READING_PASSAGE, SOUND_EFFECTS } from './constants';
 import { generateQuestions } from './services/geminiService';
 import Button from './components/Button';
 import Input from './components/Input';
@@ -516,7 +516,6 @@ const App: React.FC = () => {
             />
           </div>
 
-          {/* Stage dots */}
           <div className="overflow-x-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
             <div className="max-w-4xl mx-auto px-3 py-2 flex items-center justify-between min-w-[360px]">
               {Array.from({ length: 10 }, (_, i) => {
@@ -525,7 +524,7 @@ const App: React.FC = () => {
                 return (
                   <div key={i} className="flex flex-col items-center gap-1">
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${isActive ? 'scale-125' : 'scale-100'}`}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? 'scale-125' : 'scale-100'}`}
                       style={{
                         background: isActive
                           ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
@@ -534,10 +533,11 @@ const App: React.FC = () => {
                             : 'rgba(255,255,255,0.08)',
                         border: isActive ? '2px solid rgba(165,180,252,0.6)' : '1.5px solid rgba(255,255,255,0.1)',
                         boxShadow: isActive ? '0 0 10px rgba(102,126,234,0.5)' : 'none',
-                        color: isCompleted || isActive ? '#e0e7ff' : 'rgba(255,255,255,0.3)'
                       }}
                     >
-                      {isCompleted ? '✓' : i + 1}
+                      <span className="text-sm leading-none" style={{ filter: isCompleted ? 'grayscale(0.3)' : 'none', opacity: isCompleted ? 0.6 : 1 }}>
+                        {isCompleted ? '✓' : STAGE_ICONS[i]}
+                      </span>
                     </div>
                   </div>
                 );
@@ -546,15 +546,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Feedback Overlay */}
-        {isAnswerConfirmed && (
-          <FeedbackOverlay
-            isCorrect={feedbackMessage === 'CORRECT!'}
-            correctAnswer={currentQ.options.find(opt => opt.id === currentQ.correctAnswerId)?.text || ''}
-            onNext={nextStage}
-            stage={currentStage + 1}
-          />
-        )}
+
 
         {/* === MAIN CONTENT === */}
         <div className="flex-1 w-full max-w-7xl mx-auto p-2.5 md:p-4 flex flex-col md:flex-row gap-2.5 md:gap-4 min-h-0 overflow-hidden">
@@ -671,7 +663,7 @@ const App: React.FC = () => {
                 })}
               </div>
 
-              {/* Footer: CHECK ANSWER */}
+              {/* Footer: CHECK ANSWER or inline feedback */}
               <div
                 className="shrink-0 p-3 md:p-4"
                 style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
@@ -690,11 +682,56 @@ const App: React.FC = () => {
                   >
                     CHECK ANSWER
                   </button>
-                ) : (
-                  <div className="text-center text-white/50 text-xs font-medium py-1 animate-pulse">
-                    Listening to feedback…
-                  </div>
-                )}
+                ) : (() => {
+                  const isCorrect = feedbackMessage === 'CORRECT!';
+                  const successMessages: Record<number, string> = {
+                    1: '🏃 Great start!', 2: '⏱ Smart choice!', 3: '🏠 Well done!',
+                    4: '📱 Stay active!', 5: '🥗 Strong work!', 6: '⭐ Brilliant!',
+                    7: '🪞 Nice balance!', 8: '💪 Great progress!', 9: '🌳 Fantastic!', 10: '🏆 Outstanding!'
+                  };
+                  return (
+                    <div className="space-y-2 animate-fade-in">
+                      {/* Feedback banner */}
+                      <div
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                        style={isCorrect
+                          ? { background: 'rgba(22,101,52,0.5)', border: '1.5px solid rgba(22,163,74,0.6)' }
+                          : { background: 'rgba(153,27,27,0.45)', border: '1.5px solid rgba(220,38,38,0.55)' }
+                        }
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                          style={isCorrect ? { background: 'rgba(22,163,74,0.4)' } : { background: 'rgba(220,38,38,0.4)' }}
+                        >
+                          {isCorrect
+                            ? <CheckCircle2 size={18} className="text-green-400" />
+                            : <XCircle size={18} className="text-red-400" />
+                          }
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-black text-sm" style={isCorrect ? { color: '#4ade80' } : { color: '#f87171' }}>
+                            {isCorrect ? 'Correct!' : 'Incorrect'}
+                          </div>
+                          <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                            {isCorrect
+                              ? successMessages[currentStage + 1] || 'Well done!'
+                              : 'Incorrect. Please review the passage.'
+                            }
+                          </div>
+                        </div>
+                      </div>
+                      {/* Next Stage button */}
+                      <button
+                        onClick={nextStage}
+                        className="w-full py-3 rounded-xl font-black text-white text-sm tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110"
+                        style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 4px 20px rgba(102,126,234,0.4)' }}
+                      >
+                        <Play size={16} className="fill-current" />
+                        {currentStage < 9 ? 'NEXT STAGE' : 'SEE RESULTS'}
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
