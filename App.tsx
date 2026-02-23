@@ -1034,7 +1034,7 @@ const App: React.FC = () => {
 
           {/* LEFT: Reading Passage */}
           <div
-            className="md:flex-1 rounded-2xl overflow-y-auto"
+            className="md:flex-1 rounded-2xl overflow-y-auto review-passage-dark"
             style={{
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.1)',
@@ -1042,6 +1042,11 @@ const App: React.FC = () => {
               maxHeight: '45vh'
             }}
           >
+            <style>{`
+              .review-passage-dark p { color: rgba(255,255,255,0.85) !important; }
+              .review-passage-dark h2 { color: #a5b4fc !important; border-color: rgba(165,180,252,0.2) !important; }
+              .review-passage-dark h3 { color: #7dd3fc !important; }
+            `}</style>
             <div className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
               <BookOpen size={12} /> Reading Passage
             </div>
@@ -1098,7 +1103,7 @@ const App: React.FC = () => {
                     icon = <XCircle size={20} className="text-red-400 shrink-0" />;
                   } else {
                     // Other wrong options — dimmed
-                    optStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.45 };
+                    optStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.5 };
                   }
 
                   return (
@@ -1108,8 +1113,8 @@ const App: React.FC = () => {
                       style={optStyle}
                     >
                       <span className={`text-sm md:text-base font-semibold ${isCorrect ? 'text-green-200' :
-                        isStudentPick && !isCorrect ? 'text-red-200' :
-                          'text-slate-400'
+                          isStudentPick && !isCorrect ? 'text-red-200' :
+                            'text-slate-300'
                         }`}>{opt.text}</span>
                       {icon}
                     </div>
