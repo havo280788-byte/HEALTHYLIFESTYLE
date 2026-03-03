@@ -301,11 +301,11 @@ const App: React.FC = () => {
     <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-xs">
         <div className="text-center mb-4">
-          <div className="w-14 h-14 rounded-full bg-[#0F766E]/10 flex items-center justify-center mx-auto mb-3">
-            <Lock size={28} className="text-[#0F766E]" />
+          <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: 'var(--primary-light)' }}>
+            <Lock size={28} style={{ color: 'var(--primary)' }} />
           </div>
-          <h3 className="text-lg font-bold text-slate-800">Teacher Access</h3>
-          <p className="text-sm text-slate-500 mt-1">Enter PIN to continue</p>
+          <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Teacher Access</h3>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Enter PIN to continue</p>
         </div>
         <input
           type="password"
@@ -313,7 +313,8 @@ const App: React.FC = () => {
           value={pinInput}
           onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
           onKeyDown={(e) => e.key === 'Enter' && startTeacherMode()}
-          className={`w-full text-center text-2xl tracking-[0.5em] font-bold py-3 border-2 rounded-xl outline-none transition-colors ${pinError ? 'border-red-400 bg-red-50 text-red-600' : 'border-slate-200 focus:border-[#0F766E]'}`}
+          className={`w-full text-center text-2xl tracking-[0.5em] font-bold py-3 border-2 rounded-xl outline-none transition-colors ${pinError ? 'border-red-400 bg-red-50 text-red-600' : 'border-slate-200'}`}
+          style={{ borderColor: pinError ? undefined : 'var(--card-border)' }}
           placeholder="••••"
           autoFocus
         />
@@ -321,13 +322,15 @@ const App: React.FC = () => {
         <div className="flex gap-3 mt-4">
           <button
             onClick={() => { setShowPinDialog(false); setPinInput(''); setPinError(false); }}
-            className="flex-1 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-colors"
+            className="flex-1 py-2.5 rounded-xl border-2 font-semibold hover:bg-slate-50 transition-colors"
+            style={{ borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}
           >
             Cancel
           </button>
           <button
             onClick={startTeacherMode}
-            className="flex-1 py-2.5 rounded-xl bg-[#0F766E] text-white font-semibold hover:bg-[#0d9488] transition-colors"
+            className="flex-1 py-2.5 rounded-xl text-white font-semibold transition-colors"
+            style={{ background: 'var(--primary)' }}
           >
             Enter
           </button>
@@ -339,19 +342,18 @@ const App: React.FC = () => {
   const renderLogin = () => (
     <div
       className="min-h-screen w-full flex flex-col items-center justify-center p-4 font-['Poppins']"
-      style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}
+      style={{ background: 'var(--bg-primary)' }}
     >
-      {/* Ambient glow blobs */}
-      <div className="fixed top-[-80px] left-[-80px] w-64 h-64 rounded-full opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #667eea, transparent 70%)' }} />
-      <div className="fixed bottom-[-80px] right-[-80px] w-72 h-72 rounded-full opacity-15 pointer-events-none" style={{ background: 'radial-gradient(circle, #764ba2, transparent 70%)' }} />
+      {/* Ambient soft blobs */}
+      <div className="fixed top-[-80px] left-[-80px] w-64 h-64 rounded-full opacity-30 pointer-events-none" style={{ background: 'radial-gradient(circle, #20B486, transparent 70%)' }} />
+      <div className="fixed bottom-[-80px] right-[-80px] w-72 h-72 rounded-full opacity-20 pointer-events-none" style={{ background: 'radial-gradient(circle, #3B82F6, transparent 70%)' }} />
 
       <div
         className="max-w-md w-full mx-auto rounded-3xl p-8 animate-fade-in relative"
         style={{
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 48px rgba(0,0,0,0.4)'
+          background: 'var(--card-bg)',
+          border: '1.5px solid var(--card-border)',
+          boxShadow: '0 8px 40px rgba(32,180,134,0.12)'
         }}
       >
         {/* Header */}
@@ -359,55 +361,57 @@ const App: React.FC = () => {
           <div
             className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5 relative"
             style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              boxShadow: '0 0 36px rgba(102,126,234,0.55)'
+              background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)',
+              boxShadow: '0 0 36px rgba(32,180,134,0.45)'
             }}
           >
             <Activity size={38} className="text-white" />
-            <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
+            <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)' }} />
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-widest leading-tight mb-2">
+          <h1 className="text-2xl md:text-3xl font-black uppercase tracking-widest leading-tight mb-2" style={{ color: 'var(--text-primary)' }}>
             English 11<br />
-            <span style={{ background: 'linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Healthy Lifestyle</span>
+            <span style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Healthy Lifestyle</span>
           </h1>
-          <p className="text-slate-400 text-sm font-medium">🥗 Ready to test your knowledge?</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>🥗 Ready to test your knowledge?</p>
         </div>
 
         {/* Form */}
         <div className="space-y-4">
           {/* Name field */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(165,180,252,0.7)' }}>Full Name</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>Full Name</label>
             <div
               className="flex items-center gap-3 px-4 py-3 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.15)' }}
+              style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--card-border)' }}
             >
-              <UserIcon size={16} className="text-slate-400 shrink-0" />
+              <UserIcon size={16} style={{ color: 'var(--text-muted)' }} className="shrink-0" />
               <input
                 type="text"
                 placeholder="Enter your name"
                 value={user.name}
                 onChange={(e) => setUser({ ...user, name: e.target.value })}
-                className="flex-1 bg-transparent text-white text-sm font-medium outline-none placeholder-slate-500"
+                className="flex-1 bg-transparent text-sm font-medium outline-none"
+                style={{ color: 'var(--text-primary)' }}
               />
             </div>
           </div>
 
           {/* Class field */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(165,180,252,0.7)' }}>Class</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>Class</label>
             <div
               className="flex items-center gap-3 px-4 py-3 rounded-xl"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.15)' }}
+              style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--card-border)' }}
             >
-              <BookOpen size={16} className="text-slate-400 shrink-0" />
+              <BookOpen size={16} style={{ color: 'var(--text-muted)' }} className="shrink-0" />
               <input
                 type="text"
                 placeholder="e.g. 11A1"
                 value={user.className}
                 onChange={(e) => setUser({ ...user, className: e.target.value })}
                 onKeyDown={(e) => e.key === 'Enter' && startGame()}
-                className="flex-1 bg-transparent text-white text-sm font-medium outline-none placeholder-slate-500"
+                className="flex-1 bg-transparent text-sm font-medium outline-none"
+                style={{ color: 'var(--text-primary)' }}
               />
             </div>
           </div>
@@ -419,12 +423,12 @@ const App: React.FC = () => {
             className="w-full py-4 rounded-2xl font-black text-white text-base tracking-wide flex items-center justify-center gap-3 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed mt-2"
             style={{
               background: (user.name && user.className)
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'rgba(255,255,255,0.08)',
-              boxShadow: (user.name && user.className) ? '0 4px 24px rgba(102,126,234,0.5)' : 'none'
+                ? 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)'
+                : 'var(--card-border)',
+              boxShadow: (user.name && user.className) ? '0 4px 24px rgba(32,180,134,0.4)' : 'none'
             }}
-            onMouseEnter={e => { if (user.name && user.className) e.currentTarget.style.boxShadow = '0 6px 32px rgba(102,126,234,0.7)'; }}
-            onMouseLeave={e => { if (user.name && user.className) e.currentTarget.style.boxShadow = '0 4px 24px rgba(102,126,234,0.5)'; }}
+            onMouseEnter={e => { if (user.name && user.className) e.currentTarget.style.boxShadow = '0 6px 32px rgba(32,180,134,0.6)'; }}
+            onMouseLeave={e => { if (user.name && user.className) e.currentTarget.style.boxShadow = '0 4px 24px rgba(32,180,134,0.4)'; }}
           >
             <Play size={20} /> START CHALLENGE
           </button>
@@ -434,8 +438,8 @@ const App: React.FC = () => {
         <div className="mt-6 flex justify-center">
           <button
             onClick={() => setShowPinDialog(true)}
-            className="hidden md:flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors px-3 py-1.5 rounded-lg"
-            style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+            className="hidden md:flex items-center gap-2 text-xs transition-colors px-3 py-1.5 rounded-lg"
+            style={{ color: 'var(--text-muted)', border: '1px solid var(--card-border)' }}
           >
             <Lock size={12} /> Teacher Mode
           </button>
@@ -445,19 +449,20 @@ const App: React.FC = () => {
         <div className="mt-3 text-center">
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="text-xs text-slate-600 hover:text-slate-400 flex items-center justify-center gap-1 mx-auto transition-colors"
+            className="text-xs flex items-center justify-center gap-1 mx-auto transition-colors"
+            style={{ color: 'var(--text-muted)' }}
           >
             <Settings size={13} /> Settings
           </button>
           {showSettings && (
-            <div className="mt-3 p-4 rounded-xl space-y-3 text-left" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgba(165,180,252,0.6)' }}>API Key (Optional)</label>
+            <div className="mt-3 p-4 rounded-xl space-y-3 text-left" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)' }}>
+              <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>API Key (Optional)</label>
               <input
                 type="password"
                 value={settings.apiKey}
                 onChange={(e) => saveSettings({ ...settings, apiKey: e.target.value })}
-                className="w-full bg-transparent text-white text-sm outline-none px-3 py-2 rounded-lg"
-                style={{ border: '1px solid rgba(255,255,255,0.12)' }}
+                className="w-full text-sm outline-none px-3 py-2 rounded-lg"
+                style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-primary)' }}
                 placeholder="sk-..."
               />
             </div>
@@ -484,7 +489,7 @@ const App: React.FC = () => {
       <div
         className="w-full flex flex-col font-['Poppins']"
         style={{
-          background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+          background: 'var(--bg-primary)',
           minHeight: '100dvh',
           height: '100dvh',
           overflow: 'hidden'
@@ -494,30 +499,30 @@ const App: React.FC = () => {
         <div
           className="shrink-0 z-50"
           style={{
-            background: 'rgba(15,12,41,0.95)',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(10px)'
+            background: 'var(--card-bg)',
+            borderBottom: '1px solid var(--card-border)',
+            boxShadow: '0 1px 8px rgba(32,180,134,0.08)'
           }}
         >
           <div className="max-w-7xl mx-auto px-3 md:px-4 py-2.5 flex items-center justify-between gap-2">
             {/* Left: Title */}
             <div className="flex flex-col min-w-0">
-              <h1 className="text-sm md:text-base font-bold text-white flex items-center gap-1.5 truncate">
+              <h1 className="text-sm md:text-base font-bold flex items-center gap-1.5 truncate" style={{ color: 'var(--text-primary)' }}>
                 <span>🥗</span>
                 <span className="truncate">English 11 – Healthy Lifestyle</span>
               </h1>
-              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">Reading Challenge</span>
+              <span className="text-[10px] uppercase tracking-widest font-medium" style={{ color: 'var(--text-muted)' }}>Reading Challenge</span>
             </div>
 
             {/* Right: Fullscreen (desktop only) + Timer */}
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={toggleFullscreen}
-                className="hidden md:flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 hover:brightness-125"
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 hover:brightness-110"
                 style={{
-                  background: 'rgba(102,126,234,0.15)',
-                  border: '1.5px solid rgba(102,126,234,0.4)',
-                  color: '#a5b4fc'
+                  background: 'var(--primary-light)',
+                  border: '1.5px solid var(--primary)',
+                  color: 'var(--primary)'
                 }}
                 title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
               >
@@ -526,9 +531,9 @@ const App: React.FC = () => {
               <div
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono font-black text-base md:text-xl shrink-0 ${isUrgent ? 'animate-pulse' : ''}`}
                 style={{
-                  background: isUrgent ? 'rgba(220,38,38,0.2)' : 'rgba(102,126,234,0.15)',
-                  border: isUrgent ? '1.5px solid rgba(220,38,38,0.5)' : '1.5px solid rgba(102,126,234,0.4)',
-                  color: isUrgent ? '#f87171' : '#a5b4fc'
+                  background: isUrgent ? 'rgba(239,68,68,0.1)' : 'var(--primary-light)',
+                  border: isUrgent ? '1.5px solid var(--error)' : '1.5px solid var(--primary)',
+                  color: isUrgent ? 'var(--error)' : 'var(--primary)'
                 }}
               >
                 <Clock size={16} />
@@ -538,17 +543,17 @@ const App: React.FC = () => {
           </div>
 
           {/* Stage progress bar */}
-          <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)' }}>
+          <div style={{ height: '3px', background: 'var(--bg-secondary)' }}>
             <div
               className="h-full transition-all duration-500"
               style={{
                 width: `${((currentStage + 1) / 10) * 100}%`,
-                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)'
+                background: 'linear-gradient(90deg, #20B486 0%, #3B82F6 100%)'
               }}
             />
           </div>
 
-          <div className="overflow-x-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+          <div className="overflow-x-auto" style={{ borderTop: '1px solid var(--card-border)' }}>
             <div className="max-w-4xl mx-auto px-3 py-2 flex items-center justify-between min-w-[360px]">
               {Array.from({ length: 10 }, (_, i) => {
                 const isCompleted = i < currentStage;
@@ -559,12 +564,12 @@ const App: React.FC = () => {
                       className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? 'scale-125' : 'scale-100'}`}
                       style={{
                         background: isActive
-                          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                          ? 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)'
                           : isCompleted
-                            ? 'rgba(102,126,234,0.35)'
-                            : 'rgba(255,255,255,0.08)',
-                        border: isActive ? '2px solid rgba(165,180,252,0.6)' : '1.5px solid rgba(255,255,255,0.1)',
-                        boxShadow: isActive ? '0 0 10px rgba(102,126,234,0.5)' : 'none',
+                            ? 'rgba(32,180,134,0.25)'
+                            : 'var(--bg-secondary)',
+                        border: isActive ? '2px solid var(--primary)' : '1.5px solid var(--card-border)',
+                        boxShadow: isActive ? '0 0 10px rgba(32,180,134,0.5)' : 'none',
                       }}
                     >
                       <span className="text-sm leading-none" style={{ filter: isCompleted ? 'grayscale(0.3)' : 'none', opacity: isCompleted ? 0.6 : 1 }}>
@@ -585,21 +590,17 @@ const App: React.FC = () => {
 
           {/* LEFT: Reading Passage */}
           <div
-            className="review-passage-dark rounded-2xl overflow-y-auto md:flex-1 shrink-0"
+            className="rounded-2xl overflow-y-auto md:flex-1 shrink-0"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
               padding: '14px 16px',
               maxHeight: '38vh',
-              minHeight: '120px'
+              minHeight: '120px',
+              boxShadow: '0 2px 8px rgba(32,180,134,0.06)'
             }}
           >
-            <style>{`
-              .review-passage-dark p { color: rgba(255,255,255,0.82) !important; }
-              .review-passage-dark h2 { color: #a5b4fc !important; border-color: rgba(165,180,252,0.2) !important; }
-              .review-passage-dark h3 { color: #7dd3fc !important; }
-            `}</style>
-            <div className="text-[9px] font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <div className="text-[9px] font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: 'var(--primary)' }}>
               <BookOpen size={11} /> Reading Passage
             </div>
             <ReadingPassage content={READING_PASSAGE} />
@@ -610,24 +611,25 @@ const App: React.FC = () => {
             <div
               className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden"
               style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.12)'
+                background: 'var(--card-bg)',
+                border: '1px solid var(--card-border)',
+                boxShadow: '0 2px 12px rgba(32,180,134,0.08)'
               }}
             >
               {/* Question header */}
               <div
                 className="shrink-0 p-3 md:p-4"
-                style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+                style={{ borderBottom: '1px solid var(--card-border)' }}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span
                     className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full"
-                    style={{ background: 'rgba(102,126,234,0.2)', color: '#a5b4fc' }}
+                    style={{ background: 'var(--tag-bg)', color: 'var(--tag-text)' }}
                   >
                     Question {currentStage + 1} / 10
                   </span>
                 </div>
-                <p className="text-white font-bold text-sm md:text-2xl leading-snug">{currentQ.content}</p>
+                <p className="font-bold text-sm md:text-2xl leading-snug" style={{ color: 'var(--text-primary)' }}>{currentQ.content}</p>
               </div>
 
               {/* Options — shrink to fit, no scroll */}
@@ -639,39 +641,39 @@ const App: React.FC = () => {
                   const isCorrectSelection = isSelected && isCorrectAnswer && isAnswerConfirmed;
 
                   let optStyle: React.CSSProperties = {};
-                  let textClass = 'text-white/80';
+                  let textClass = '';
                   let statusIcon = null;
 
                   if (!isAnswerConfirmed) {
                     if (isSelected) {
                       optStyle = {
-                        background: 'rgba(102,126,234,0.3)',
-                        border: '2px solid rgba(102,126,234,0.8)',
-                        boxShadow: '0 0 12px rgba(102,126,234,0.3)'
+                        background: 'rgba(32,180,134,0.12)',
+                        border: '2px solid var(--primary)',
+                        boxShadow: '0 0 12px rgba(32,180,134,0.2)'
                       };
-                      textClass = 'text-white font-bold';
+                      textClass = 'font-bold';
                     } else {
                       optStyle = {
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1.5px solid rgba(255,255,255,0.12)'
+                        background: 'var(--bg-secondary)',
+                        border: '1.5px solid var(--card-border)'
                       };
                     }
                   } else {
                     if (isCorrectSelection) {
-                      optStyle = { background: 'rgba(22,101,52,0.6)', border: '2px solid #16a34a', boxShadow: '0 0 12px rgba(22,163,74,0.3)' };
-                      textClass = 'text-green-200 font-bold';
-                      statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
-                    } else if (isWrongSelection) {
-                      optStyle = { background: 'rgba(153,27,27,0.5)', border: '2px solid #dc2626', boxShadow: '0 0 12px rgba(220,38,38,0.25)' };
-                      textClass = 'text-red-200 font-bold';
-                      statusIcon = <XCircle size={18} className="text-red-400 shrink-0" />;
-                    } else if (isCorrectAnswer) {
-                      optStyle = { background: 'rgba(22,101,52,0.35)', border: '2px solid rgba(22,163,74,0.5)' };
-                      textClass = 'text-green-300';
+                      optStyle = { background: 'rgba(34,197,94,0.15)', border: '2px solid var(--success)', boxShadow: '0 0 12px rgba(34,197,94,0.2)' };
+                      textClass = 'font-bold';
                       statusIcon = <CheckCircle2 size={18} className="text-green-500 shrink-0" />;
+                    } else if (isWrongSelection) {
+                      optStyle = { background: 'rgba(239,68,68,0.1)', border: '2px solid var(--error)', boxShadow: '0 0 12px rgba(239,68,68,0.15)' };
+                      textClass = 'font-bold';
+                      statusIcon = <XCircle size={18} className="text-red-500 shrink-0" />;
+                    } else if (isCorrectAnswer) {
+                      optStyle = { background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.5)' };
+                      textClass = '';
+                      statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
                     } else {
-                      optStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.45 };
-                      textClass = 'text-white/50';
+                      optStyle = { background: 'var(--card-soft)', border: '1px solid var(--card-border)', opacity: 0.5 };
+                      textClass = '';
                     }
                   }
 
@@ -680,14 +682,14 @@ const App: React.FC = () => {
                       key={opt.id}
                       onClick={() => handleAnswerSelect(opt.id)}
                       disabled={isAnswerConfirmed}
-                      className={`w-full px-4 py-2.5 md:py-3 rounded-xl text-left flex justify-between items-center transition-all duration-200 ${!isAnswerConfirmed && !isSelected ? 'hover:brightness-125' : ''}`}
+                      className={`w-full px-4 py-2.5 md:py-3 rounded-xl text-left flex justify-between items-center transition-all duration-200 ${!isAnswerConfirmed && !isSelected ? 'hover:brightness-95' : ''}`}
                       style={optStyle}
                     >
-                      <span className={`text-sm md:text-[17px] ${textClass}`}>{opt.text}</span>
+                      <span className={`text-sm md:text-[17px] ${textClass}`} style={{ color: isAnswerConfirmed ? undefined : (isSelected ? 'var(--primary-active)' : 'var(--text-secondary)') }}>{opt.text}</span>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {statusIcon}
                         {!isAnswerConfirmed && isSelected && (
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#818cf8' }} />
+                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--primary)' }} />
                         )}
                       </div>
                     </button>
@@ -698,7 +700,7 @@ const App: React.FC = () => {
               {/* Footer: CHECK ANSWER or inline feedback */}
               <div
                 className="shrink-0 p-3 md:p-4"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+                style={{ borderTop: '1px solid var(--card-border)' }}
               >
                 {!isAnswerConfirmed ? (
                   <button
@@ -707,9 +709,9 @@ const App: React.FC = () => {
                     className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
                     style={{
                       background: selectedAnswer
-                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                        : 'rgba(255,255,255,0.08)',
-                      boxShadow: selectedAnswer ? '0 4px 20px rgba(102,126,234,0.45)' : 'none'
+                        ? 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)'
+                        : 'var(--card-border)',
+                      boxShadow: selectedAnswer ? '0 4px 20px rgba(32,180,134,0.35)' : 'none'
                     }}
                   >
                     CHECK ANSWER
@@ -727,24 +729,24 @@ const App: React.FC = () => {
                       <div
                         className="flex items-center gap-3 px-4 py-3 rounded-xl"
                         style={isCorrect
-                          ? { background: 'rgba(22,101,52,0.5)', border: '1.5px solid rgba(22,163,74,0.6)' }
-                          : { background: 'rgba(153,27,27,0.45)', border: '1.5px solid rgba(220,38,38,0.55)' }
+                          ? { background: 'rgba(34,197,94,0.12)', border: '1.5px solid var(--success)' }
+                          : { background: 'rgba(239,68,68,0.08)', border: '1.5px solid var(--error)' }
                         }
                       >
                         <div
                           className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                          style={isCorrect ? { background: 'rgba(22,163,74,0.4)' } : { background: 'rgba(220,38,38,0.4)' }}
+                          style={isCorrect ? { background: 'rgba(34,197,94,0.2)' } : { background: 'rgba(239,68,68,0.15)' }}
                         >
                           {isCorrect
-                            ? <CheckCircle2 size={18} className="text-green-400" />
-                            : <XCircle size={18} className="text-red-400" />
+                            ? <CheckCircle2 size={18} className="text-green-500" />
+                            : <XCircle size={18} className="text-red-500" />
                           }
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-black text-sm" style={isCorrect ? { color: '#4ade80' } : { color: '#f87171' }}>
+                          <div className="font-black text-sm" style={isCorrect ? { color: 'var(--success)' } : { color: 'var(--error)' }}>
                             {isCorrect ? 'Correct!' : 'Incorrect'}
                           </div>
-                          <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                          <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                             {isCorrect
                               ? successMessages[currentStage + 1] || 'Well done!'
                               : 'Incorrect. Please review the passage.'
@@ -756,7 +758,7 @@ const App: React.FC = () => {
                       <button
                         onClick={nextStage}
                         className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110"
-                        style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 4px 20px rgba(102,126,234,0.4)' }}
+                        style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: '0 4px 20px rgba(32,180,134,0.35)' }}
                       >
                         <Play size={16} className="fill-current" />
                         {currentStage < 9 ? 'NEXT STAGE' : 'SEE RESULTS'}
@@ -780,27 +782,28 @@ const App: React.FC = () => {
     if (!currentQ) return null;
 
     return (
-      <div className="min-h-screen w-full flex flex-col bg-slate-50 md:h-screen md:overflow-hidden font-['Poppins']">
+      <div className="min-h-screen w-full flex flex-col md:h-screen md:overflow-hidden font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
         {/* === TEACHER HEADER === */}
-        <div className="bg-white border-b border-slate-100 shadow-sm z-50">
+        <div style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(32,180,134,0.08)' }} className="z-50">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             {/* Left: Titles */}
             <div className="flex flex-col">
-              <h1 className="text-base md:text-xl font-bold text-[#0F766E] flex items-center gap-2 font-['Montserrat']">
+              <h1 className="text-base md:text-xl font-bold flex items-center gap-2 font-['Montserrat']" style={{ color: 'var(--primary)' }}>
                 <span>🥗</span> English 11 – Healthy Lifestyle
               </h1>
-              <span className="text-xs text-slate-400 font-medium tracking-wide">READING CHALLENGE</span>
+              <span className="text-xs font-medium tracking-wide" style={{ color: 'var(--text-muted)' }}>READING CHALLENGE</span>
             </div>
 
             {/* Right: Teacher Mode badge + buttons */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
-                <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>
+              <div className="flex items-center gap-1.5 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md" style={{ background: 'var(--primary)' }}>
+                <span className="w-2 h-2 rounded-full bg-green-200 animate-pulse"></span>
                 TEACHER MODE
               </div>
               <button
                 onClick={toggleFullscreen}
-                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors border border-slate-200"
+                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg transition-colors border"
+                style={{ background: 'var(--primary-light)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
                 title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
               >
                 {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -1147,34 +1150,34 @@ const App: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen w-full flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+      <div className="min-h-screen w-full flex items-center justify-center p-4" style={{ background: 'var(--bg-primary)' }}>
         <div className="max-w-md w-full mx-auto animate-fade-in">
-          {/* Glowing header circle */}
+          {/* Header circle */}
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 0 40px rgba(102,126,234,0.6)' }}>
+              <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: '0 0 40px rgba(32,180,134,0.5)' }}>
                 <CheckCircle2 className="w-12 h-12 text-white" />
               </div>
-              <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
+              <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)' }} />
             </div>
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-black text-white text-center mb-1 uppercase tracking-widest">Challenge Complete!</h2>
-          <p className="text-center text-slate-400 text-sm mb-8">Your performance summary</p>
+          <h2 className="text-2xl md:text-3xl font-black text-center mb-1 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Challenge Complete!</h2>
+          <p className="text-center text-sm mb-8" style={{ color: 'var(--text-muted)' }}>Your performance summary</p>
 
           {/* Stats card */}
-          <div className="rounded-2xl p-5 mb-4" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}>
+          <div className="rounded-2xl p-5 mb-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: '0 4px 20px rgba(32,180,134,0.1)' }}>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Score</div>
-                <div className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{correctCount}/{totalQuestions}</div>
-                <div className="text-xs text-slate-400 mt-1">{accuracy}% accuracy</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Score</div>
+                <div className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{correctCount}/{totalQuestions}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{accuracy}% accuracy</div>
               </div>
               <div className="text-center">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Time</div>
-                <div className="text-4xl font-black font-mono" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{timeString}</div>
-                <div className="text-xs text-slate-400 mt-1">minutes used</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Time</div>
+                <div className="text-4xl font-black font-mono" style={{ background: 'linear-gradient(135deg, #20B486 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{timeString}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>minutes used</div>
               </div>
             </div>
           </div>
@@ -1183,7 +1186,7 @@ const App: React.FC = () => {
           {badge && (
             <div
               className="rounded-xl p-3 mb-6 text-center"
-              style={{ background: badgeGrad, boxShadow: '0 0 20px rgba(102,126,234,0.3)' }}
+              style={{ background: badgeGrad, boxShadow: '0 0 20px rgba(32,180,134,0.25)' }}
             >
               <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5 text-white/70">Badge Earned</div>
               <div className="text-lg font-black text-white">{badge}</div>
@@ -1198,11 +1201,11 @@ const App: React.FC = () => {
               onClick={() => setAppState(AppState.LEADERBOARD)}
               className="w-full py-4 rounded-2xl font-black text-white text-lg tracking-wide flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02]"
               style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 24px rgba(102,126,234,0.5)'
+                background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)',
+                boxShadow: '0 4px 24px rgba(32,180,134,0.4)'
               }}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 32px rgba(102,126,234,0.75)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(102,126,234,0.5)')}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 32px rgba(32,180,134,0.6)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(32,180,134,0.4)')}
             >
               <Trophy size={22} /> View Leaderboard
             </button>
@@ -1213,14 +1216,14 @@ const App: React.FC = () => {
                 setReviewQuestionIdx(0);
                 setAppState(AppState.STUDENT_REVIEW);
               }}
-              className="w-full py-3.5 rounded-2xl font-bold text-slate-200 text-base flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.01]"
+              className="w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.01]"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.18)',
-                boxShadow: '0 0 0 0 rgba(102,126,234,0)'
+                background: 'var(--card-bg)',
+                border: '1.5px solid var(--card-border)',
+                color: 'var(--text-secondary)'
               }}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(102,126,234,0.35)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 0 0 0 rgba(102,126,234,0)')}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(32,180,134,0.2)')}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
             >
               <Eye size={20} /> Review Answers
             </button>
@@ -1243,26 +1246,26 @@ const App: React.FC = () => {
     const isAnsweredCorrectly = userAnswers[currentQ.id] === true;
 
     return (
-      <div className="min-h-screen md:h-screen flex flex-col font-['Poppins']" style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
+      <div className="min-h-screen md:h-screen flex flex-col font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
 
         {/* HEADER */}
-        <div className="shrink-0 z-50" style={{ background: 'rgba(15,12,41,0.95)', borderBottom: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}>
+        <div className="shrink-0 z-50" style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(32,180,134,0.08)' }}>
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                <Eye size={14} className="text-white" />
-                <span className="text-white">REVIEW MODE</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)' }}>
+                <Eye size={14} />
+                <span>REVIEW MODE</span>
               </div>
-              <span className="text-slate-400 text-sm hidden md:block">{user.name}</span>
+              <span className="text-sm hidden md:block" style={{ color: 'var(--text-muted)' }}>{user.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-slate-400 text-sm font-mono">
-                Q<span className="text-white font-bold">{reviewQuestionIdx + 1}</span>/{totalQ}
+              <span className="text-sm font-mono" style={{ color: 'var(--text-muted)' }}>
+                Q<span className="font-bold" style={{ color: 'var(--text-primary)' }}>{reviewQuestionIdx + 1}</span>/{totalQ}
               </span>
               <button
                 onClick={() => { setReviewQuestionIdx(0); setAppState(AppState.RESULT); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold text-slate-300 hover:text-white transition-colors"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold transition-colors"
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
               >
                 <ChevronLeft size={16} /> Back to Results
               </button>
@@ -1270,12 +1273,12 @@ const App: React.FC = () => {
           </div>
 
           {/* Progress bar */}
-          <div className="h-1 w-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+          <div className="h-1 w-full" style={{ background: 'var(--bg-secondary)' }}>
             <div
               className="h-full transition-all duration-500"
               style={{
                 width: `${((reviewQuestionIdx + 1) / totalQ) * 100}%`,
-                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)'
+                background: 'linear-gradient(90deg, #20B486 0%, #3B82F6 100%)'
               }}
             />
           </div>
@@ -1286,20 +1289,16 @@ const App: React.FC = () => {
 
           {/* LEFT: Reading Passage */}
           <div
-            className="md:flex-1 rounded-2xl overflow-y-auto review-passage-dark"
+            className="md:flex-1 rounded-2xl overflow-y-auto"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--card-bg)',
+              border: '1px solid var(--card-border)',
               padding: '20px',
-              maxHeight: '45vh'
+              maxHeight: '45vh',
+              boxShadow: '0 2px 8px rgba(32,180,134,0.06)'
             }}
           >
-            <style>{`
-              .review-passage-dark p { color: rgba(255,255,255,0.85) !important; }
-              .review-passage-dark h2 { color: #a5b4fc !important; border-color: rgba(165,180,252,0.2) !important; }
-              .review-passage-dark h3 { color: #7dd3fc !important; }
-            `}</style>
-            <div className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <div className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: 'var(--primary)' }}>
               <BookOpen size={12} /> Reading Passage
             </div>
             <ReadingPassage content={READING_PASSAGE} />
@@ -1307,24 +1306,24 @@ const App: React.FC = () => {
 
           {/* RIGHT: Question + Answers (read-only) */}
           <div className="md:flex-1 flex flex-col min-h-0">
-            <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)' }}>
+            <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: '0 2px 12px rgba(32,180,134,0.08)' }}>
 
               {/* Question header */}
-              <div className="shrink-0 p-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="shrink-0 p-4" style={{ borderBottom: '1px solid var(--card-border)' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ background: 'rgba(102,126,234,0.2)', color: '#a5b4fc' }}>
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ background: 'var(--tag-bg)', color: 'var(--tag-text)' }}>
                     Question {reviewQuestionIdx + 1}
                   </span>
                   {userAnswers[currentQ.id] !== undefined && (
                     <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${isAnsweredCorrectly
-                      ? 'bg-green-900/40 text-green-400'
-                      : 'bg-red-900/40 text-red-400'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-red-100 text-red-600'
                       }`}>
                       {isAnsweredCorrectly ? '✓ Correct' : '✗ Incorrect'}
                     </span>
                   )}
                 </div>
-                <p className="text-white font-semibold text-base md:text-lg leading-relaxed">{currentQ.content}</p>
+                <p className="font-semibold text-base md:text-lg leading-relaxed" style={{ color: 'var(--text-primary)' }}>{currentQ.content}</p>
               </div>
 
               {/* Answer options — read-only, no hover */}
@@ -1339,23 +1338,18 @@ const App: React.FC = () => {
                   let icon = null;
 
                   if (!hasData) {
-                    // No answer recorded
-                    optStyle = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', opacity: 0.7 };
+                    optStyle = { background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', opacity: 0.8 };
                   } else if (isCorrect && isStudentPick) {
-                    // Student picked the correct answer
-                    optStyle = { background: 'rgba(22,101,52,0.6)', border: '2px solid #16a34a', boxShadow: '0 0 12px rgba(22,163,74,0.3)' };
-                    icon = <CheckCircle2 size={20} className="text-green-400 shrink-0" />;
-                  } else if (isCorrect && !isStudentPick) {
-                    // This is the correct answer (student didn't pick it — show in dark green)
-                    optStyle = { background: 'rgba(22,101,52,0.4)', border: '2px solid rgba(22,163,74,0.6)' };
+                    optStyle = { background: 'rgba(34,197,94,0.15)', border: '2px solid var(--success)', boxShadow: '0 0 12px rgba(34,197,94,0.2)' };
                     icon = <CheckCircle2 size={20} className="text-green-500 shrink-0" />;
+                  } else if (isCorrect && !isStudentPick) {
+                    optStyle = { background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.5)' };
+                    icon = <CheckCircle2 size={20} className="text-green-400 shrink-0" />;
                   } else if (!isCorrect && isStudentPick) {
-                    // Student's wrong pick
-                    optStyle = { background: 'rgba(153,27,27,0.5)', border: '2px solid #dc2626', boxShadow: '0 0 12px rgba(220,38,38,0.25)' };
-                    icon = <XCircle size={20} className="text-red-400 shrink-0" />;
+                    optStyle = { background: 'rgba(239,68,68,0.1)', border: '2px solid var(--error)', boxShadow: '0 0 12px rgba(239,68,68,0.15)' };
+                    icon = <XCircle size={20} className="text-red-500 shrink-0" />;
                   } else {
-                    // Other wrong options — dimmed
-                    optStyle = { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.5 };
+                    optStyle = { background: 'var(--card-soft)', border: '1px solid var(--card-border)', opacity: 0.5 };
                   }
 
                   return (
@@ -1364,10 +1358,7 @@ const App: React.FC = () => {
                       className="w-full p-3.5 rounded-xl flex items-center justify-between gap-3 cursor-default"
                       style={optStyle}
                     >
-                      <span className={`text-sm md:text-base font-semibold ${isCorrect ? 'text-green-200' :
-                        isStudentPick && !isCorrect ? 'text-red-200' :
-                          'text-slate-300'
-                        }`}>{opt.text}</span>
+                      <span className={`text-sm md:text-base font-semibold`} style={{ color: isCorrect ? 'var(--primary-active)' : (isStudentPick && !isCorrect ? 'var(--error)' : 'var(--text-secondary)') }}>{opt.text}</span>
                       {icon}
                     </div>
                   );
@@ -1375,13 +1366,13 @@ const App: React.FC = () => {
               </div>
 
               {/* PREV / NEXT */}
-              <div className="shrink-0 p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="shrink-0 p-3" style={{ borderTop: '1px solid var(--card-border)' }}>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
                     disabled={reviewQuestionIdx === 0}
                     className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#e2e8f0' }}
+                    style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
                   >
                     <ChevronLeft size={18} /> PREV
                   </button>
@@ -1389,7 +1380,7 @@ const App: React.FC = () => {
                     onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
                     disabled={reviewQuestionIdx === totalQ - 1}
                     className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
-                    style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: reviewQuestionIdx === totalQ - 1 ? 'none' : '0 2px 12px rgba(102,126,234,0.4)' }}
+                    style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: reviewQuestionIdx === totalQ - 1 ? 'none' : '0 2px 12px rgba(32,180,134,0.35)' }}
                   >
                     NEXT <ChevronRight size={18} />
                   </button>
@@ -1420,14 +1411,14 @@ const App: React.FC = () => {
       {appState === AppState.LOADING && (
         <div
           className="min-h-screen flex items-center justify-center text-center font-['Poppins']"
-          style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}
+          style={{ background: 'var(--bg-primary)' }}
         >
           <div className="flex flex-col items-center gap-5">
             <div
               className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin"
-              style={{ borderColor: 'rgba(165,180,252,0.3)', borderTopColor: '#667eea' }}
+              style={{ borderColor: 'rgba(32,180,134,0.25)', borderTopColor: 'var(--primary)' }}
             />
-            <p className="text-white/70 text-base font-semibold tracking-wide animate-pulse">{loadingText}</p>
+            <p className="text-base font-semibold tracking-wide animate-pulse" style={{ color: 'var(--text-muted)' }}>{loadingText}</p>
           </div>
         </div>
       )}

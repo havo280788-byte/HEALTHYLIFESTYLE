@@ -1,48 +1,119 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>Healthy Lifestyle Quest</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Be Vietnam Pro', sans-serif;
-        background-color: #f8fafc;
-      }
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      /* Reading passage thin scrollbar */
-      .reading-passage-container::-webkit-scrollbar { width: 4px; }
-      .reading-passage-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-      .reading-passage-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-out forwards;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <title>Healthy Lifestyle Quest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* BACKGROUND */
+      --bg-primary: #F4FBF8;
+      --bg-secondary: #EAF7F3;
+
+      /* CARD */
+      --card-bg: #FFFFFF;
+      --card-soft: #F8FAFC;
+      --card-border: #E2E8F0;
+
+      /* PRIMARY */
+      --primary: #20B486;
+      --primary-hover: #1AA376;
+      --primary-active: #158F66;
+      --primary-light: #D1FAE5;
+
+      /* SECONDARY */
+      --secondary: #3B82F6;
+      --secondary-hover: #2563EB;
+      --secondary-light: #DBEAFE;
+
+      /* ACCENT */
+      --accent: #F97316;
+      --accent-hover: #EA580C;
+      --accent-light: #FFEDD5;
+
+      /* TEXT */
+      --text-primary: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+
+      /* STATUS */
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #06B6D4;
+
+      /* TAG */
+      --tag-bg: #DFF5EF;
+      --tag-text: #0F766E;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg-primary);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Reading passage thin scrollbar */
+    .reading-passage-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .reading-passage-container::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    .reading-passage-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
       }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
-    </style>
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -54,10 +125,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
+
+<body>
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>
