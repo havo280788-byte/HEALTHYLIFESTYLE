@@ -118,27 +118,29 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
     // TEACHER VIEW
     // ===========================
     const renderTeacherView = () => (
-        <div className="min-h-screen bg-slate-50 font-['Poppins']">
+        <div className="min-h-screen font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
             {/* Header */}
-            <div className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-50">
+            <div className="sticky top-0 z-50" style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
                 <div className="max-w-5xl mx-auto px-3 md:px-6 py-3 flex items-center justify-between">
                     <div>
-                        <h1 className="text-lg md:text-2xl font-black text-[#0F766E]">📊 Teacher Dashboard</h1>
-                        <p className="text-xs text-slate-400">Class analytics & question insights</p>
+                        <h1 className="text-lg md:text-2xl font-black" style={{ color: 'var(--primary)' }}>📊 Teacher Dashboard</h1>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Class analytics & question insights</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {/* Toggle */}
-                        <div className="bg-slate-100 rounded-lg p-0.5 flex text-xs font-bold border border-slate-200">
+                        <div className="rounded-lg p-0.5 flex text-xs font-bold" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)' }}>
                             <button
                                 onClick={() => setViewMode('student')}
-                                className={`px-3 py-1.5 rounded-md transition-all ${viewMode === 'student' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                className="px-3 py-1.5 rounded-md transition-all"
+                                style={viewMode === 'student' ? { background: 'var(--card-bg)', color: 'var(--text-primary)', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' } : { color: 'var(--text-muted)' }}
                             >STUDENT</button>
                             <button
                                 onClick={() => setViewMode('teacher')}
-                                className={`px-3 py-1.5 rounded-md transition-all ${viewMode === 'teacher' ? 'bg-[#0F766E] text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                className="px-3 py-1.5 rounded-md transition-all"
+                                style={viewMode === 'teacher' ? { background: 'var(--primary)', color: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' } : { color: 'var(--text-muted)' }}
                             >TEACHER</button>
                         </div>
-                        <button onClick={onExit} className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors border border-slate-200">
+                        <button onClick={onExit} className="p-2 rounded-lg transition-colors" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-muted)' }}>
                             <X size={18} />
                         </button>
                     </div>
@@ -147,7 +149,7 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
 
             <div className="max-w-5xl mx-auto px-3 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
                 {!teacherStats ? (
-                    <div className="bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200">
+                    <div className="rounded-2xl p-12 text-center" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted)' }}>
                         <Users size={48} className="mx-auto mb-3 opacity-40" />
                         <p className="font-medium text-lg">No submissions yet</p>
                     </div>
@@ -155,25 +157,25 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                     <>
                         {/* CLASS SNAPSHOT */}
                         <div>
-                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
                                 <Zap size={14} /> Class Snapshot
                             </h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Teams Joined</div>
-                                    <div className="text-2xl md:text-3xl font-black text-indigo-600">{teacherStats.total}</div>
+                                <div className="rounded-xl p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Teams Joined</div>
+                                    <div className="text-2xl md:text-3xl font-black" style={{ color: '#818cf8' }}>{teacherStats.total}</div>
                                 </div>
-                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Completion</div>
-                                    <div className="text-2xl md:text-3xl font-black text-green-600">100%</div>
+                                <div className="rounded-xl p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Completion</div>
+                                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--success)' }}>100%</div>
                                 </div>
-                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Avg Accuracy</div>
-                                    <div className="text-2xl md:text-3xl font-black text-[#0F766E]">{teacherStats.avgAccuracy}%</div>
+                                <div className="rounded-xl p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Avg Accuracy</div>
+                                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--primary)' }}>{teacherStats.avgAccuracy}%</div>
                                 </div>
-                                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Fastest (≥80%)</div>
-                                    <div className="text-2xl md:text-3xl font-black text-amber-600">
+                                <div className="rounded-xl p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+                                    <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Fastest (≥80%)</div>
+                                    <div className="text-2xl md:text-3xl font-black" style={{ color: 'var(--warning)' }}>
                                         {teacherStats.fastestTime !== null ? fmtTime(teacherStats.fastestTime) : '—'}
                                     </div>
                                 </div>
@@ -182,27 +184,27 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
 
                         {/* QUESTION INSIGHTS */}
                         <div>
-                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
                                 <Target size={14} /> Question Insights
                             </h2>
-                            <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                            <div className="rounded-xl p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                                 <div className="space-y-2.5">
                                     {teacherStats.questionInsights.map((q) => (
                                         <div key={q.label} className="flex items-center gap-3">
-                                            <span className="text-xs font-bold text-slate-500 w-8 shrink-0">{q.label}</span>
-                                            <div className="flex-1 bg-slate-100 rounded-full h-5 overflow-hidden">
+                                            <span className="text-xs font-bold w-8 shrink-0" style={{ color: 'var(--text-muted)' }}>{q.label}</span>
+                                            <div className="flex-1 rounded-full h-5 overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
                                                 <div
                                                     className={`h-full rounded-full transition-all duration-500 ${q.rate >= 70 ? 'bg-green-500' : q.rate >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
                                                     style={{ width: `${Math.max(q.rate, 2)}%` }}
                                                 />
                                             </div>
-                                            <span className="text-xs font-bold text-slate-600 w-12 text-right">{q.rate}%</span>
-                                            <span className="text-[10px] text-slate-400 w-10 text-right">{q.correctCount}/{q.total}</span>
+                                            <span className="text-xs font-bold w-12 text-right" style={{ color: 'var(--text-secondary)' }}>{q.rate}%</span>
+                                            <span className="text-[10px] w-10 text-right" style={{ color: 'var(--text-muted)' }}>{q.correctCount}/{q.total}</span>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2">
-                                    <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+                                <div className="mt-3 pt-3 flex items-center gap-2" style={{ borderTop: '1px solid var(--card-border)' }}>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(248,113,113,0.15)', color: 'var(--error)' }}>
                                         Hardest: {teacherStats.hardest.join(', ')}
                                     </span>
                                 </div>
@@ -211,25 +213,25 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
 
                         {/* SKILLS BREAKDOWN */}
                         <div>
-                            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
                                 <BookOpen size={14} /> AI Reading Skills
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {teacherStats.skills.map((skill) => (
-                                    <div key={skill.label} className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                    <div key={skill.label} className="rounded-xl p-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                            <span className="text-sm font-bold flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
                                                 <span>{skill.icon}</span> {skill.label}
                                             </span>
                                             <span className="text-lg font-black" style={{ color: skill.color }}>{skill.rate}%</span>
                                         </div>
-                                        <div className="bg-slate-100 rounded-full h-3 overflow-hidden mb-1.5">
+                                        <div className="rounded-full h-3 overflow-hidden mb-1.5" style={{ background: 'rgba(255,255,255,0.08)' }}>
                                             <div
                                                 className="h-full rounded-full transition-all duration-500"
                                                 style={{ width: `${Math.max(skill.rate, 2)}%`, backgroundColor: skill.color }}
                                             />
                                         </div>
-                                        <span className="text-[10px] text-slate-400 font-medium">{skill.correct}/{skill.possible} correct</span>
+                                        <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>{skill.correct}/{skill.possible} correct</span>
                                     </div>
                                 ))}
                             </div>
@@ -239,13 +241,15 @@ const LeaderboardDashboard: React.FC<LeaderboardDashboardProps> = ({ entries, on
                         <div className="flex items-center gap-3 pt-2">
                             <button
                                 onClick={onExit}
-                                className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors border border-slate-200"
+                                className="flex-1 py-3 rounded-xl font-bold text-sm transition-colors"
+                                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
                             >
                                 BACK TO START
                             </button>
                             <button
                                 onClick={onReset}
-                                className="py-3 px-6 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-colors shadow-md"
+                                className="py-3 px-6 rounded-xl text-white font-bold text-sm transition-colors shadow-md"
+                                style={{ background: 'var(--error)' }}
                             >
                                 RESET DATA
                             </button>

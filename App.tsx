@@ -298,8 +298,8 @@ const App: React.FC = () => {
   // --- Renderers ---
 
   const renderPinDialog = () => (
-    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-xs">
+    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+      <div className="rounded-2xl shadow-2xl p-6 w-full max-w-xs" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
         <div className="text-center mb-4">
           <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: 'var(--primary-light)' }}>
             <Lock size={28} style={{ color: 'var(--primary)' }} />
@@ -313,8 +313,12 @@ const App: React.FC = () => {
           value={pinInput}
           onChange={(e) => { setPinInput(e.target.value); setPinError(false); }}
           onKeyDown={(e) => e.key === 'Enter' && startTeacherMode()}
-          className={`w-full text-center text-2xl tracking-[0.5em] font-bold py-3 border-2 rounded-xl outline-none transition-colors ${pinError ? 'border-red-400 bg-red-50 text-red-600' : 'border-slate-200'}`}
-          style={{ borderColor: pinError ? undefined : 'var(--card-border)' }}
+          className={`w-full text-center text-2xl tracking-[0.5em] font-bold py-3 border-2 rounded-xl outline-none transition-colors ${pinError ? 'border-red-500' : ''}`}
+          style={{
+            background: 'var(--bg-secondary)',
+            borderColor: pinError ? '#f87171' : 'var(--card-border)',
+            color: pinError ? '#f87171' : 'var(--text-primary)'
+          }}
           placeholder="••••"
           autoFocus
         />
@@ -322,8 +326,8 @@ const App: React.FC = () => {
         <div className="flex gap-3 mt-4">
           <button
             onClick={() => { setShowPinDialog(false); setPinInput(''); setPinError(false); }}
-            className="flex-1 py-2.5 rounded-xl border-2 font-semibold hover:bg-slate-50 transition-colors"
-            style={{ borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}
+            className="flex-1 py-2.5 rounded-xl border-2 font-semibold transition-colors"
+            style={{ background: 'var(--bg-secondary)', borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}
           >
             Cancel
           </button>
@@ -501,7 +505,7 @@ const App: React.FC = () => {
           style={{
             background: 'var(--card-bg)',
             borderBottom: '1px solid var(--card-border)',
-            boxShadow: '0 1px 8px rgba(32,180,134,0.08)'
+            boxShadow: '0 1px 12px rgba(0,0,0,0.4)'
           }}
         >
           <div className="max-w-7xl mx-auto px-3 md:px-4 py-2.5 flex items-center justify-between gap-2">
@@ -564,12 +568,12 @@ const App: React.FC = () => {
                       className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${isActive ? 'scale-125' : 'scale-100'}`}
                       style={{
                         background: isActive
-                          ? 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)'
+                          ? 'linear-gradient(135deg, #20B486 0%, #178a68 100%)'
                           : isCompleted
-                            ? 'rgba(32,180,134,0.25)'
+                            ? 'rgba(32,180,134,0.3)'
                             : 'var(--bg-secondary)',
                         border: isActive ? '2px solid var(--primary)' : '1.5px solid var(--card-border)',
-                        boxShadow: isActive ? '0 0 10px rgba(32,180,134,0.5)' : 'none',
+                        boxShadow: isActive ? '0 0 15px rgba(32,180,134,0.4)' : 'none',
                       }}
                     >
                       <span className="text-sm leading-none" style={{ filter: isCompleted ? 'grayscale(0.3)' : 'none', opacity: isCompleted ? 0.6 : 1 }}>
@@ -597,7 +601,7 @@ const App: React.FC = () => {
               padding: '14px 16px',
               maxHeight: '38vh',
               minHeight: '120px',
-              boxShadow: '0 2px 8px rgba(32,180,134,0.06)'
+              boxShadow: '0 2px 12px rgba(0,0,0,0.2)'
             }}
           >
             <div className="text-[9px] font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: 'var(--primary)' }}>
@@ -613,7 +617,7 @@ const App: React.FC = () => {
               style={{
                 background: 'var(--card-bg)',
                 border: '1px solid var(--card-border)',
-                boxShadow: '0 2px 12px rgba(32,180,134,0.08)'
+                boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
               }}
             >
               {/* Question header */}
@@ -647,9 +651,9 @@ const App: React.FC = () => {
                   if (!isAnswerConfirmed) {
                     if (isSelected) {
                       optStyle = {
-                        background: 'rgba(32,180,134,0.12)',
+                        background: 'rgba(32,180,134,0.2)',
                         border: '2px solid var(--primary)',
-                        boxShadow: '0 0 12px rgba(32,180,134,0.2)'
+                        boxShadow: '0 0 15px rgba(32,180,134,0.25)'
                       };
                       textClass = 'font-bold';
                     } else {
@@ -660,15 +664,15 @@ const App: React.FC = () => {
                     }
                   } else {
                     if (isCorrectSelection) {
-                      optStyle = { background: 'rgba(34,197,94,0.15)', border: '2px solid var(--success)', boxShadow: '0 0 12px rgba(34,197,94,0.2)' };
+                      optStyle = { background: 'rgba(34,197,94,0.2)', border: '2px solid var(--success)', boxShadow: '0 0 15px rgba(34,197,94,0.3)' };
                       textClass = 'font-bold';
-                      statusIcon = <CheckCircle2 size={18} className="text-green-500 shrink-0" />;
+                      statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
                     } else if (isWrongSelection) {
-                      optStyle = { background: 'rgba(239,68,68,0.1)', border: '2px solid var(--error)', boxShadow: '0 0 12px rgba(239,68,68,0.15)' };
+                      optStyle = { background: 'rgba(239,68,68,0.15)', border: '2px solid var(--error)', boxShadow: '0 0 15px rgba(239,68,68,0.2)' };
                       textClass = 'font-bold';
-                      statusIcon = <XCircle size={18} className="text-red-500 shrink-0" />;
+                      statusIcon = <XCircle size={18} className="text-red-400 shrink-0" />;
                     } else if (isCorrectAnswer) {
-                      optStyle = { background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.5)' };
+                      optStyle = { background: 'rgba(34,197,94,0.12)', border: '2px solid rgba(34,197,94,0.4)' };
                       textClass = '';
                       statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
                     } else {

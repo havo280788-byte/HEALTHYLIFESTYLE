@@ -17,10 +17,10 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
 
         // Parse Markdown
         const initialHtml = content.split('\n').map(line => {
-            if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#0F766E] mt-6 mb-3 border-b border-green-200 pb-2">${line.replace('## ', '')}</h2>`;
-            if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#0d9488] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
+            if (line.startsWith('## ')) return `<h2 class="text-lg md:text-xl font-bold text-[#4ade80] mt-6 mb-3 border-b border-white/10 pb-2">${line.replace('## ', '')}</h2>`;
+            if (line.startsWith('**')) return `<h3 class="text-base md:text-lg font-bold text-[#5eead4] mt-4 mb-2">${line.replace(/\*\*/g, '')}</h3>`;
             if (line.trim() === '') return `<div class="h-4"></div>`;
-            return `<p class="mb-2 text-slate-700 text-sm md:text-lg" style="line-height:1.6">${line}</p>`;
+            return `<p class="mb-2 text-slate-300 text-sm md:text-lg" style="line-height:1.6">${line}</p>`;
         }).join('');
 
         // Set innerHTML directly - React doesn't manage this anymore
@@ -71,12 +71,12 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
     return (
         <div className="relative flex flex-col">
             {/* Floating Toolbar */}
-            <div className="absolute top-4 right-4 z-10 flex gap-1.5 bg-white/90 backdrop-blur p-1.5 rounded-lg shadow-md border border-slate-200">
+            <div className="absolute top-4 right-4 z-10 flex gap-1.5 backdrop-blur p-1.5 rounded-lg shadow-md" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                 <button
                     onClick={() => setIsHighlightMode(!isHighlightMode)}
                     className={`p-2 rounded-md transition-all ${isHighlightMode
-                        ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400 shadow-inner'
-                        : 'hover:bg-slate-100 text-slate-500'
+                        ? 'bg-yellow-500/20 text-yellow-400 ring-2 ring-yellow-500/50 shadow-inner'
+                        : 'hover:bg-white/5 text-slate-400'
                         }`}
                     title={isHighlightMode ? "Disable Highlight Mode" : "Enable Highlight Mode"}
                 >
@@ -84,10 +84,10 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                 </button>
                 <button
                     onClick={() => setHighlightColor(highlightColor === '#FFF3B0' ? '#CFFAFE' : '#FFF3B0')}
-                    className="p-2 rounded-md hover:bg-slate-100 text-slate-500 transition-all"
+                    className="p-2 rounded-md hover:bg-white/5 text-slate-400 transition-all"
                     title={`Switch color (${highlightColor === '#FFF3B0' ? 'Yellow → Cyan' : 'Cyan → Yellow'})`}
                 >
-                    <Palette size={18} style={{ color: highlightColor === '#FFF3B0' ? '#F59E0B' : '#06B6D4' }} />
+                    <Palette size={18} style={{ color: highlightColor === '#FFF3B0' ? '#fbbf24' : '#38bdf8' }} />
                 </button>
                 <button
                     onClick={() => {
@@ -100,7 +100,7 @@ const ReadingPassage: React.FC<ReadingPassageProps> = ({ content }) => {
                             });
                         }
                     }}
-                    className="p-2 rounded-md hover:bg-red-50 text-slate-500 hover:text-red-500 transition-all"
+                    className="p-2 rounded-md hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-all"
                     title="Clear all highlights"
                 >
                     <Eraser size={18} />

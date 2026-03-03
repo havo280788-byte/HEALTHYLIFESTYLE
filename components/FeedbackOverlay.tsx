@@ -59,10 +59,11 @@ const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ isCorrect, correctAns
                     {/* Button */}
                     <button
                         onClick={onNext}
-                        className="w-full bg-white text-slate-900 font-bold py-4 rounded-xl shadow-xl hover:bg-slate-50 transform transition-all active:scale-95 flex items-center justify-center gap-2 group"
+                        className="w-full font-bold py-4 rounded-xl shadow-xl transform transition-all active:scale-95 flex items-center justify-center gap-2 group hover:brightness-110"
+                        style={{ background: 'var(--primary)', color: '#fff' }}
                     >
                         Next Stage
-                        <Play size={20} className="text-slate-400 group-hover:text-slate-600 transition-colors fill-current" />
+                        <Play size={20} className="text-white/70 group-hover:text-white transition-colors fill-current" />
                     </button>
                 </div>
             </div>
