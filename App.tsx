@@ -491,14 +491,13 @@ const App: React.FC = () => {
 
     return (
       <div
-        className="w-full flex flex-col font-['Poppins']"
+        className="w-full h-auto min-h-[100dvh] md:h-screen md:overflow-hidden flex flex-col font-['Poppins']"
         style={{
           background: 'var(--bg-primary)',
-          minHeight: '100dvh',
-          height: '100dvh',
-          overflow: 'hidden'
+          overflowX: 'hidden'
         }}
       >
+        {/* === HEADER === */}
         {/* === HEADER === */}
         <div
           className="shrink-0 z-50"
@@ -590,18 +589,18 @@ const App: React.FC = () => {
 
 
         {/* === MAIN CONTENT === */}
-        <div className="flex-1 w-full max-w-7xl mx-auto p-2.5 md:p-4 flex flex-col md:flex-row gap-2.5 md:gap-4 min-h-0 overflow-hidden">
+        <div className="flex-1 w-full max-w-7xl mx-auto p-2.5 md:p-4 flex flex-col md:flex-row gap-2.5 md:gap-4 min-h-0 md:overflow-hidden">
 
           {/* LEFT: Reading Passage */}
           <div
-            className="rounded-2xl overflow-y-auto md:flex-1 shrink-0"
+            className="rounded-2xl md:overflow-y-auto md:flex-1 shrink-0"
             style={{
               background: 'var(--card-bg)',
               border: '1px solid var(--card-border)',
-              padding: '14px 16px',
-              maxHeight: '38vh',
-              minHeight: '120px',
-              boxShadow: '0 2px 12px rgba(0,0,0,0.2)'
+              padding: '16px',
+              maxHeight: 'none',
+              minHeight: '150px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
             }}
           >
             <div className="text-[9px] font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5" style={{ color: 'var(--primary)' }}>
@@ -613,11 +612,11 @@ const App: React.FC = () => {
           {/* RIGHT: Question Card — no inner scroll */}
           <div className="md:flex-1 flex flex-col min-h-0 overflow-hidden">
             <div
-              className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden"
+              className="flex flex-col flex-1 rounded-2xl md:overflow-hidden"
               style={{
                 background: 'var(--card-bg)',
                 border: '1px solid var(--card-border)',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
+                boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
               }}
             >
               {/* Question header */}
@@ -775,666 +774,667 @@ const App: React.FC = () => {
           </div>
         </div>
       </div>
+      </div >
     );
   };
 
-  // =====================================================
-  // TEACHER MODE PLAYING
-  // =====================================================
-  const renderTeacherPlaying = () => {
-    const currentQ = questions[currentStage];
-    if (!currentQ) return null;
+// =====================================================
+// TEACHER MODE PLAYING
+// =====================================================
+const renderTeacherPlaying = () => {
+  const currentQ = questions[currentStage];
+  if (!currentQ) return null;
 
-    return (
-      <div className="min-h-screen w-full flex flex-col md:h-screen md:overflow-hidden font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
-        {/* === TEACHER HEADER === */}
-        <div style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(32,180,134,0.08)' }} className="z-50">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            {/* Left: Titles */}
-            <div className="flex flex-col">
-              <h1 className="text-base md:text-xl font-bold flex items-center gap-2 font-['Montserrat']" style={{ color: 'var(--primary)' }}>
-                <span>🥗</span> English 11 – Healthy Lifestyle
-              </h1>
-              <span className="text-xs font-medium tracking-wide" style={{ color: 'var(--text-muted)' }}>READING CHALLENGE</span>
-            </div>
-
-            {/* Right: Teacher Mode badge + buttons */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md" style={{ background: 'var(--primary)' }}>
-                <span className="w-2 h-2 rounded-full bg-green-200 animate-pulse"></span>
-                TEACHER MODE
-              </div>
-              <button
-                onClick={toggleFullscreen}
-                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg transition-colors border"
-                style={{ background: 'var(--primary-light)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
-                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-              >
-                {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-              </button>
-              <button
-                onClick={() => setAppState(AppState.TEACHER_REVIEW)}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
-              >
-                REVIEW
-              </button>
-              <button
-                onClick={() => setAppState(AppState.LEADERBOARD)}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
-              >
-                LEADERBOARD
-              </button>
-            </div>
-          </div>
-          <ProgressNavigation currentStage={currentStage} />
-        </div>
-
-        {/* Main Split Content */}
-        <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 md:overflow-hidden">
-
-          {/* LEFT: Reading Passage */}
-          <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '50vh', overflowY: 'auto', padding: '20px' }}>
-            <ReadingPassage content={READING_PASSAGE} />
+  return (
+    <div className="min-h-screen w-full flex flex-col md:h-screen md:overflow-hidden font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
+      {/* === TEACHER HEADER === */}
+      <div style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(32,180,134,0.08)' }} className="z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          {/* Left: Titles */}
+          <div className="flex flex-col">
+            <h1 className="text-base md:text-xl font-bold flex items-center gap-2 font-['Montserrat']" style={{ color: 'var(--primary)' }}>
+              <span>🥗</span> English 11 – Healthy Lifestyle
+            </h1>
+            <span className="text-xs font-medium tracking-wide" style={{ color: 'var(--text-muted)' }}>READING CHALLENGE</span>
           </div>
 
-          {/* RIGHT: Question (Teacher Mode) */}
-          <div className="flex flex-col min-h-0 md:flex-1">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 relative flex flex-col flex-1 min-h-0">
-
-              {/* Card Header */}
-              <div className="p-3 md:p-4 border-b border-slate-100 flex justify-between items-center">
-                <span className="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                  Stage {currentStage + 1}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-slate-400">Multiple Choice</span>
-                </div>
-              </div>
-
-              {/* Question + options with letter labels */}
-              <div className="p-4 md:p-5 flex-1 flex flex-col overflow-y-auto min-h-0">
-                <h2 className="text-base md:text-xl font-bold text-slate-800 mb-4 leading-relaxed">
-                  {currentQ.content}
-                </h2>
-
-                <div className="space-y-2.5">
-                  {currentQ.options.map((opt, idx) => {
-                    const letter = String.fromCharCode(65 + idx); // A, B, C, D
-                    const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
-                    const hasRevealed = teacherSelectedAnswer !== null;
-
-                    let optClass = 'bg-white border-2 border-slate-200 hover:border-cyan-300 text-slate-700';
-                    let letterClass = 'bg-slate-100 text-slate-500';
-
-                    if (hasRevealed) {
-                      if (isCorrectAnswer) {
-                        optClass = 'bg-green-500 border-2 border-green-500 text-white';
-                        letterClass = 'bg-white/30 text-white';
-                      } else {
-                        optClass = 'bg-white border-2 border-slate-100 text-slate-400';
-                        letterClass = 'bg-slate-50 text-slate-300';
-                      }
-                    }
-
-                    return (
-                      <div
-                        key={opt.id}
-                        className={`w-full p-3 md:p-3.5 rounded-xl transition-all duration-300 ${optClass} flex items-center gap-3`}
-                      >
-                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${letterClass}`}>
-                          {hasRevealed && isCorrectAnswer ? <CheckCircle2 size={18} /> : letter}
-                        </span>
-                        <span className="text-sm md:text-lg font-medium">{opt.text}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Footer: REVEAL / ANSWER BAR + NEXT */}
-              <div className="p-3 border-t border-slate-100 bg-slate-50">
-                {!teacherSelectedAnswer ? (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setTeacherSelectedAnswer(currentQ.correctAnswerId)}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition-colors shadow-md"
-                    >
-                      <span className="w-3 h-3 rounded-full bg-white/40"></span> REVEAL
-                    </button>
-                    <button
-                      onClick={teacherNextStage}
-                      disabled={currentStage === 9}
-                      className="flex-1 flex items-center justify-center gap-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      NEXT →
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 flex items-center gap-2 py-2.5 px-4 rounded-xl bg-[#0F766E] text-white text-sm font-bold">
-                      <CheckCircle2 size={16} className="shrink-0" />
-                      <span className="truncate">ANSWER: {currentQ.options.find(o => o.id === currentQ.correctAnswerId)?.text?.toUpperCase()}</span>
-                    </div>
-                    <button
-                      onClick={teacherNextStage}
-                      disabled={currentStage === 9}
-                      className="flex items-center justify-center gap-1 py-2.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      NEXT →
-                    </button>
-                  </div>
-                )}
-                <div className="flex items-center justify-between mt-2">
-                  <button
-                    onClick={teacherPrevStage}
-                    disabled={currentStage === 0}
-                    className="text-xs text-slate-400 hover:text-slate-600 font-semibold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    ← PREV
-                  </button>
-                  <button
-                    onClick={exitTeacherMode}
-                    className="text-xs text-red-400 hover:text-red-600 font-semibold transition-colors flex items-center gap-1"
-                  >
-                    <LogOut size={12} /> EXIT
-                  </button>
-                </div>
-              </div>
+          {/* Right: Teacher Mode badge + buttons */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md" style={{ background: 'var(--primary)' }}>
+              <span className="w-2 h-2 rounded-full bg-green-200 animate-pulse"></span>
+              TEACHER MODE
             </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // =====================================================
-  // TEACHER REVIEW — Per-student per-question review
-  // =====================================================
-  const renderTeacherReview = () => {
-    const sortedEntries = [...leaderboard].sort((a, b) => a.name.localeCompare(b.name, 'vi-VN'));
-    const gameQuestions = questions.length > 0 ? questions : FALLBACK_QUESTIONS.slice(0, 10);
-    const totalQ = gameQuestions.length;
-    const currentQ = gameQuestions[reviewQuestionIdx];
-
-    const studentAnswerCorrect = reviewStudent?.answers?.[currentQ?.id];
-    const studentSelectedId = reviewStudent?.selectedAnswers?.[currentQ?.id];
-    const isCorrectAnswer = studentAnswerCorrect === true;
-
-    const fmtTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
-
-    return (
-      <div className="min-h-screen md:h-screen bg-slate-50 font-['Poppins'] flex flex-col overflow-hidden">
-        {/* REVIEW HEADER */}
-        <div className="bg-white border-b border-slate-100 shadow-sm z-50 shrink-0">
-          <div className="max-w-7xl mx-auto px-3 md:px-4 py-2 md:py-3 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-bold shadow-md">
-                <Eye size={14} />
-                <span className="hidden md:inline">REVIEW MODE</span><span className="md:hidden">REVIEW</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3">
-              <span className="text-xs md:text-sm font-semibold text-slate-500">
-                Question <span className="text-[#0F766E] font-bold">{reviewQuestionIdx + 1}</span> of {totalQ}
-              </span>
-              <button
-                onClick={() => { setReviewStudent(null); setReviewQuestionIdx(0); setAppState(AppState.TEACHER_PLAYING); }}
-                className="p-1.5 md:p-2 rounded-lg bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-600 transition-colors border border-slate-200"
-                title="Close"
-              >
-                <XCircle size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* STUDENT DROPDOWN */}
-        <div className="max-w-7xl mx-auto w-full px-3 md:px-4 pt-3 shrink-0">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">Student:</label>
-            <select
-              value={reviewStudent ? `${reviewStudent.name}|${reviewStudent.timestamp}` : ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (!val) { setReviewStudent(null); return; }
-                const [name, ts] = val.split('|');
-                const student = sortedEntries.find(s => s.name === name && s.timestamp === Number(ts));
-                setReviewStudent(student || null);
-                setReviewQuestionIdx(0);
-              }}
-              className="w-full p-2 md:p-2.5 rounded-lg border-2 border-slate-200 focus:border-[#0F766E] focus:outline-none text-sm font-medium text-slate-700 bg-slate-50 transition-colors"
+            <button
+              onClick={toggleFullscreen}
+              className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg transition-colors border"
+              style={{ background: 'var(--primary-light)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
-              <option value="">— Select a student —</option>
-              {sortedEntries.map((entry, idx) => {
-                const correct = entry.answers ? Object.values(entry.answers).filter(Boolean).length : 0;
-                const total = entry.answers ? Object.keys(entry.answers).length : 0;
-                return (
-                  <option key={idx} value={`${entry.name}|${entry.timestamp}`}>
-                    {entry.name} ({entry.className}) — {correct}/{total} — {fmtTime(entry.timeSpent)}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-        </div>
-
-        {/* MAIN CONTENT */}
-        {!reviewStudent ? (
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="text-center text-slate-400">
-              <UserIcon size={48} className="mx-auto mb-3 opacity-40" />
-              <p className="font-medium text-lg">Select a student to review</p>
-              <p className="text-sm mt-1">{sortedEntries.length} student(s) submitted</p>
-            </div>
-          </div>
-        ) : currentQ ? (
-          <div className="flex-1 max-w-7xl mx-auto w-full px-3 md:px-4 py-3 flex flex-col md:flex-row gap-3 md:gap-4 min-h-0 overflow-hidden">
-            {/* LEFT: Reading Passage */}
-            <div className="md:w-1/2 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0 max-h-[40vh] md:max-h-none">
-              <div className="p-2.5 bg-slate-50 border-b border-slate-200 shrink-0">
-                <span className="text-[10px] md:text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-                  <BookOpen size={14} /> READING PASSAGE
-                </span>
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                <ReadingPassage content={READING_PASSAGE} />
-              </div>
-            </div>
-
-            {/* RIGHT: Question + Answers */}
-            <div className="md:w-1/2 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0">
-              {/* Question header */}
-              <div className="p-3 md:p-4 bg-gradient-to-r from-[#0F766E] to-[#14B8A6] text-white shrink-0">
-                <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                    Stage {reviewQuestionIdx + 1}
-                  </span>
-                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                    Multiple Choice
-                  </span>
-                  {studentAnswerCorrect !== undefined && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${isCorrectAnswer ? 'bg-green-400/30 text-green-100' : 'bg-red-400/30 text-red-100'
-                      }`}>
-                      {isCorrectAnswer ? '✅ Correct' : '❌ Incorrect'}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-sm md:text-base font-bold leading-relaxed">{currentQ.content}</h3>
-              </div>
-
-              {/* Answer options */}
-              <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2">
-                {currentQ.options.map(opt => {
-                  const isCorrect = opt.id === currentQ.correctAnswerId;
-                  const isStudentPick = opt.id === studentSelectedId;
-                  const hasData = studentAnswerCorrect !== undefined;
-
-                  let bgClass = 'bg-slate-50 border-slate-200 text-slate-600';
-                  if (hasData) {
-                    if (isCorrect) bgClass = 'bg-green-50 border-green-400 text-green-800';
-                    else if (isStudentPick && !isCorrect) bgClass = 'bg-red-50 border-red-400 text-red-700';
-                    else bgClass = 'bg-slate-50 border-slate-100 text-slate-400';
-                  }
-
-                  return (
-                    <div key={opt.id} className={`p-3 rounded-xl border-2 ${bgClass} flex items-center justify-between`}>
-                      <span className="text-sm font-medium">{opt.text}</span>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {hasData && isStudentPick && (
-                          <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">STUDENT</span>
-                        )}
-                        {hasData && isCorrect && <CheckCircle2 size={18} className="text-green-600" />}
-                        {hasData && isStudentPick && !isCorrect && <XCircle size={18} className="text-red-500" />}
-                      </div>
-                    </div>
-                  );
-                })}
-                {studentAnswerCorrect !== undefined && !studentSelectedId && (
-                  <div className="text-xs text-slate-400 text-center mt-2 bg-slate-50 p-2 rounded-lg">
-                    ℹ️ Detailed answer choice not available for older submissions
-                  </div>
-                )}
-              </div>
-
-              {/* PREV / NEXT */}
-              <div className="p-3 border-t border-slate-200 bg-slate-50 shrink-0">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
-                    disabled={reviewQuestionIdx === 0}
-                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft size={18} /> PREV
-                  </button>
-                  <button
-                    onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
-                    disabled={reviewQuestionIdx === totalQ - 1}
-                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0d9488] text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    NEXT <ChevronRight size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </div>
-    );
-  };
-
-  const renderResult = () => {
-    const totalQuestions = questions.length || 10;
-    const correctCount = Object.values(userAnswers).filter(Boolean).length;
-    const accuracy = Math.round((correctCount / totalQuestions) * 100);
-    const timeSpent = 480 - timeLeft;
-    const mins = Math.floor(timeSpent / 60);
-    const secs = timeSpent % 60;
-    const timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-
-    // Badge logic
-    let badge = '';
-    let badgeMsg = '';
-    let badgeGrad = '';
-    if (accuracy === 100) {
-      badge = '👑 Challenge Champion';
-      badgeMsg = "Outstanding! You've mastered the challenge.";
-      badgeGrad = 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
-    } else if (accuracy >= 85) {
-      badge = '🥇 Skillful Reader';
-      badgeMsg = 'Excellent performance!';
-      badgeGrad = 'linear-gradient(135deg, #d97706 0%, #fbbf24 100%)';
-    } else if (accuracy >= 70) {
-      badge = '🥈 Active Achiever';
-      badgeMsg = "Well done! You're on the right track.";
-      badgeGrad = 'linear-gradient(135deg, #64748b 0%, #94a3b8 100%)';
-    } else if (accuracy >= 50) {
-      badge = '🥉 Rising Learner';
-      badgeMsg = 'Good effort! Keep improving.';
-      badgeGrad = 'linear-gradient(135deg, #92400e 0%, #b45309 100%)';
-    }
-
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center p-4" style={{ background: 'var(--bg-primary)' }}>
-        <div className="max-w-md w-full mx-auto animate-fade-in">
-          {/* Header circle */}
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: '0 0 40px rgba(32,180,134,0.5)' }}>
-                <CheckCircle2 className="w-12 h-12 text-white" />
-              </div>
-              <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)' }} />
-            </div>
-          </div>
-
-          {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-black text-center mb-1 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Challenge Complete!</h2>
-          <p className="text-center text-sm mb-8" style={{ color: 'var(--text-muted)' }}>Your performance summary</p>
-
-          {/* Stats card */}
-          <div className="rounded-2xl p-5 mb-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: '0 4px 20px rgba(32,180,134,0.1)' }}>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Score</div>
-                <div className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{correctCount}/{totalQuestions}</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{accuracy}% accuracy</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Time</div>
-                <div className="text-4xl font-black font-mono" style={{ background: 'linear-gradient(135deg, #20B486 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{timeString}</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>minutes used</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Badge */}
-          {badge && (
-            <div
-              className="rounded-xl p-3 mb-6 text-center"
-              style={{ background: badgeGrad, boxShadow: '0 0 20px rgba(32,180,134,0.25)' }}
+              {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
+            <button
+              onClick={() => setAppState(AppState.TEACHER_REVIEW)}
+              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
             >
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5 text-white/70">Badge Earned</div>
-              <div className="text-lg font-black text-white">{badge}</div>
-              <div className="text-xs text-white/80 mt-0.5 font-medium">{badgeMsg}</div>
-            </div>
-          )}
-
-          {/* CTAs */}
-          <div className="space-y-3">
-            {/* Primary: View Leaderboard */}
+              REVIEW
+            </button>
             <button
               onClick={() => setAppState(AppState.LEADERBOARD)}
-              className="w-full py-4 rounded-2xl font-black text-white text-lg tracking-wide flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02]"
-              style={{
-                background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)',
-                boxShadow: '0 4px 24px rgba(32,180,134,0.4)'
-              }}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 32px rgba(32,180,134,0.6)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(32,180,134,0.4)')}
+              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
             >
-              <Trophy size={22} /> View Leaderboard
-            </button>
-
-            {/* Secondary: Review Answers */}
-            <button
-              onClick={() => {
-                setReviewQuestionIdx(0);
-                setAppState(AppState.STUDENT_REVIEW);
-              }}
-              className="w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.01]"
-              style={{
-                background: 'var(--card-bg)',
-                border: '1.5px solid var(--card-border)',
-                color: 'var(--text-secondary)'
-              }}
-              onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(32,180,134,0.2)')}
-              onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
-            >
-              <Eye size={20} /> Review Answers
+              LEADERBOARD
             </button>
           </div>
         </div>
+        <ProgressNavigation currentStage={currentStage} />
       </div>
-    );
-  };
 
-  // =====================================================
-  // STUDENT REVIEW — Read-only
-  // =====================================================
-  const renderStudentReview = () => {
-    const gameQuestions = questions.length > 0 ? questions : FALLBACK_QUESTIONS.slice(0, 10);
-    const totalQ = gameQuestions.length;
-    const currentQ = gameQuestions[reviewQuestionIdx];
-    if (!currentQ) return null;
+      {/* Main Split Content */}
+      <div className="flex-1 w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row gap-4 md:gap-5 md:overflow-hidden">
 
-    const studentSelectedId = selectedAnswerMap[currentQ.id];
-    const isAnsweredCorrectly = userAnswers[currentQ.id] === true;
-
-    return (
-      <div className="min-h-screen md:h-screen flex flex-col font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
-
-        {/* HEADER */}
-        <div className="shrink-0 z-50" style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(32,180,134,0.08)' }}>
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)' }}>
-                <Eye size={14} />
-                <span>REVIEW MODE</span>
-              </div>
-              <span className="text-sm hidden md:block" style={{ color: 'var(--text-muted)' }}>{user.name}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-mono" style={{ color: 'var(--text-muted)' }}>
-                Q<span className="font-bold" style={{ color: 'var(--text-primary)' }}>{reviewQuestionIdx + 1}</span>/{totalQ}
-              </span>
-              <button
-                onClick={() => { setReviewQuestionIdx(0); setAppState(AppState.RESULT); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold transition-colors"
-                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
-              >
-                <ChevronLeft size={16} /> Back to Results
-              </button>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div className="h-1 w-full" style={{ background: 'var(--bg-secondary)' }}>
-            <div
-              className="h-full transition-all duration-500"
-              style={{
-                width: `${((reviewQuestionIdx + 1) / totalQ) * 100}%`,
-                background: 'linear-gradient(90deg, #20B486 0%, #3B82F6 100%)'
-              }}
-            />
-          </div>
+        {/* LEFT: Reading Passage */}
+        <div className="bg-[#F0FDF4] rounded-3xl shadow-inner border border-green-100 relative md:flex-1 reading-passage-container" style={{ maxHeight: '50vh', overflowY: 'auto', padding: '20px' }}>
+          <ReadingPassage content={READING_PASSAGE} />
         </div>
 
-        {/* MAIN CONTENT */}
-        <div className="flex-1 max-w-7xl mx-auto w-full p-4 flex flex-col md:flex-row gap-4 min-h-0 overflow-hidden">
+        {/* RIGHT: Question (Teacher Mode) */}
+        <div className="flex flex-col min-h-0 md:flex-1">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 relative flex flex-col flex-1 min-h-0">
 
-          {/* LEFT: Reading Passage */}
-          <div
-            className="md:flex-1 rounded-2xl overflow-y-auto"
-            style={{
-              background: 'var(--card-bg)',
-              border: '1px solid var(--card-border)',
-              padding: '20px',
-              maxHeight: '45vh',
-              boxShadow: '0 2px 8px rgba(32,180,134,0.06)'
-            }}
-          >
-            <div className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: 'var(--primary)' }}>
-              <BookOpen size={12} /> Reading Passage
-            </div>
-            <ReadingPassage content={READING_PASSAGE} />
-          </div>
-
-          {/* RIGHT: Question + Answers (read-only) */}
-          <div className="md:flex-1 flex flex-col min-h-0">
-            <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: '0 2px 12px rgba(32,180,134,0.08)' }}>
-
-              {/* Question header */}
-              <div className="shrink-0 p-4" style={{ borderBottom: '1px solid var(--card-border)' }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ background: 'var(--tag-bg)', color: 'var(--tag-text)' }}>
-                    Question {reviewQuestionIdx + 1}
-                  </span>
-                  {userAnswers[currentQ.id] !== undefined && (
-                    <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${isAnsweredCorrectly
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-600'
-                      }`}>
-                      {isAnsweredCorrectly ? '✓ Correct' : '✗ Incorrect'}
-                    </span>
-                  )}
-                </div>
-                <p className="font-semibold text-base md:text-lg leading-relaxed" style={{ color: 'var(--text-primary)' }}>{currentQ.content}</p>
+            {/* Card Header */}
+            <div className="p-3 md:p-4 border-b border-slate-100 flex justify-between items-center">
+              <span className="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                Stage {currentStage + 1}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-slate-400">Multiple Choice</span>
               </div>
+            </div>
 
-              {/* Answer options — read-only, no hover */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
-                {currentQ.options.map(opt => {
-                  const isCorrect = opt.id === currentQ.correctAnswerId;
-                  const isStudentPick = opt.id === studentSelectedId;
-                  const hasData = userAnswers[currentQ.id] !== undefined;
+            {/* Question + options with letter labels */}
+            <div className="p-4 md:p-5 flex-1 flex flex-col overflow-y-auto min-h-0">
+              <h2 className="text-base md:text-xl font-bold text-slate-800 mb-4 leading-relaxed">
+                {currentQ.content}
+              </h2>
 
-                  // Determine display style
-                  let optStyle: React.CSSProperties = {};
-                  let icon = null;
+              <div className="space-y-2.5">
+                {currentQ.options.map((opt, idx) => {
+                  const letter = String.fromCharCode(65 + idx); // A, B, C, D
+                  const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
+                  const hasRevealed = teacherSelectedAnswer !== null;
 
-                  if (!hasData) {
-                    optStyle = { background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', opacity: 0.8 };
-                  } else if (isCorrect && isStudentPick) {
-                    optStyle = { background: 'rgba(34,197,94,0.15)', border: '2px solid var(--success)', boxShadow: '0 0 12px rgba(34,197,94,0.2)' };
-                    icon = <CheckCircle2 size={20} className="text-green-500 shrink-0" />;
-                  } else if (isCorrect && !isStudentPick) {
-                    optStyle = { background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.5)' };
-                    icon = <CheckCircle2 size={20} className="text-green-400 shrink-0" />;
-                  } else if (!isCorrect && isStudentPick) {
-                    optStyle = { background: 'rgba(239,68,68,0.1)', border: '2px solid var(--error)', boxShadow: '0 0 12px rgba(239,68,68,0.15)' };
-                    icon = <XCircle size={20} className="text-red-500 shrink-0" />;
-                  } else {
-                    optStyle = { background: 'var(--card-soft)', border: '1px solid var(--card-border)', opacity: 0.5 };
+                  let optClass = 'bg-white border-2 border-slate-200 hover:border-cyan-300 text-slate-700';
+                  let letterClass = 'bg-slate-100 text-slate-500';
+
+                  if (hasRevealed) {
+                    if (isCorrectAnswer) {
+                      optClass = 'bg-green-500 border-2 border-green-500 text-white';
+                      letterClass = 'bg-white/30 text-white';
+                    } else {
+                      optClass = 'bg-white border-2 border-slate-100 text-slate-400';
+                      letterClass = 'bg-slate-50 text-slate-300';
+                    }
                   }
 
                   return (
                     <div
                       key={opt.id}
-                      className="w-full p-3.5 rounded-xl flex items-center justify-between gap-3 cursor-default"
-                      style={optStyle}
+                      className={`w-full p-3 md:p-3.5 rounded-xl transition-all duration-300 ${optClass} flex items-center gap-3`}
                     >
-                      <span className={`text-sm md:text-base font-semibold`} style={{ color: isCorrect ? 'var(--primary-active)' : (isStudentPick && !isCorrect ? 'var(--error)' : 'var(--text-secondary)') }}>{opt.text}</span>
-                      {icon}
+                      <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${letterClass}`}>
+                        {hasRevealed && isCorrectAnswer ? <CheckCircle2 size={18} /> : letter}
+                      </span>
+                      <span className="text-sm md:text-lg font-medium">{opt.text}</span>
                     </div>
                   );
                 })}
               </div>
+            </div>
 
-              {/* PREV / NEXT */}
-              <div className="shrink-0 p-3" style={{ borderTop: '1px solid var(--card-border)' }}>
-                <div className="flex gap-2">
+            {/* Footer: REVEAL / ANSWER BAR + NEXT */}
+            <div className="p-3 border-t border-slate-100 bg-slate-50">
+              {!teacherSelectedAnswer ? (
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
-                    disabled={reviewQuestionIdx === 0}
-                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                    style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
+                    onClick={() => setTeacherSelectedAnswer(currentQ.correctAnswerId)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition-colors shadow-md"
                   >
-                    <ChevronLeft size={18} /> PREV
+                    <span className="w-3 h-3 rounded-full bg-white/40"></span> REVEAL
                   </button>
                   <button
-                    onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
-                    disabled={reviewQuestionIdx === totalQ - 1}
-                    className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
-                    style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: reviewQuestionIdx === totalQ - 1 ? 'none' : '0 2px 12px rgba(32,180,134,0.35)' }}
+                    onClick={teacherNextStage}
+                    disabled={currentStage === 9}
+                    className="flex-1 flex items-center justify-center gap-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    NEXT <ChevronRight size={18} />
+                    NEXT →
                   </button>
                 </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 flex items-center gap-2 py-2.5 px-4 rounded-xl bg-[#0F766E] text-white text-sm font-bold">
+                    <CheckCircle2 size={16} className="shrink-0" />
+                    <span className="truncate">ANSWER: {currentQ.options.find(o => o.id === currentQ.correctAnswerId)?.text?.toUpperCase()}</span>
+                  </div>
+                  <button
+                    onClick={teacherNextStage}
+                    disabled={currentStage === 9}
+                    className="flex items-center justify-center gap-1 py-2.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    NEXT →
+                  </button>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                <button
+                  onClick={teacherPrevStage}
+                  disabled={currentStage === 0}
+                  className="text-xs text-slate-400 hover:text-slate-600 font-semibold transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  ← PREV
+                </button>
+                <button
+                  onClick={exitTeacherMode}
+                  className="text-xs text-red-400 hover:text-red-600 font-semibold transition-colors flex items-center gap-1"
+                >
+                  <LogOut size={12} /> EXIT
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
-  };
-
-  const renderLeaderboard = () => (
-    <LeaderboardDashboard
-      entries={leaderboard}
-      onReset={resetLeaderboard}
-      onExit={() => isTeacherMode ? setAppState(AppState.TEACHER_PLAYING) : setAppState(AppState.RESULT)}
-      isSyncing={isSyncing}
-      isTeacherMode={isTeacherMode}
-      currentUserName={isTeacherMode ? '' : user.name}
-      onViewMyAttempt={isTeacherMode ? undefined : () => { setReviewQuestionIdx(0); setAppState(AppState.STUDENT_REVIEW); }}
-    />
-  );
-
-
-  return (
-    <div>
-      {appState === AppState.LOADING && (
-        <div
-          className="min-h-screen flex items-center justify-center text-center font-['Poppins']"
-          style={{ background: 'var(--bg-primary)' }}
-        >
-          <div className="flex flex-col items-center gap-5">
-            <div
-              className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin"
-              style={{ borderColor: 'rgba(32,180,134,0.25)', borderTopColor: 'var(--primary)' }}
-            />
-            <p className="text-base font-semibold tracking-wide animate-pulse" style={{ color: 'var(--text-muted)' }}>{loadingText}</p>
-          </div>
-        </div>
-      )}
-      {appState === AppState.LOGIN && renderLogin()}
-      {appState === AppState.PLAYING && renderPlaying()}
-      {appState === AppState.RESULT && renderResult()}
-      {appState === AppState.STUDENT_REVIEW && renderStudentReview()}
-      {appState === AppState.LEADERBOARD && renderLeaderboard()}
-      {appState === AppState.TEACHER_PLAYING && renderTeacherPlaying()}
-      {appState === AppState.TEACHER_REVIEW && renderTeacherReview()}
     </div>
   );
+};
+
+// =====================================================
+// TEACHER REVIEW — Per-student per-question review
+// =====================================================
+const renderTeacherReview = () => {
+  const sortedEntries = [...leaderboard].sort((a, b) => a.name.localeCompare(b.name, 'vi-VN'));
+  const gameQuestions = questions.length > 0 ? questions : FALLBACK_QUESTIONS.slice(0, 10);
+  const totalQ = gameQuestions.length;
+  const currentQ = gameQuestions[reviewQuestionIdx];
+
+  const studentAnswerCorrect = reviewStudent?.answers?.[currentQ?.id];
+  const studentSelectedId = reviewStudent?.selectedAnswers?.[currentQ?.id];
+  const isCorrectAnswer = studentAnswerCorrect === true;
+
+  const fmtTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
+
+  return (
+    <div className="min-h-screen md:h-screen bg-slate-50 font-['Poppins'] flex flex-col overflow-hidden">
+      {/* REVIEW HEADER */}
+      <div className="bg-white border-b border-slate-100 shadow-sm z-50 shrink-0">
+        <div className="max-w-7xl mx-auto px-3 md:px-4 py-2 md:py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-[#0F766E] text-white px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-bold shadow-md">
+              <Eye size={14} />
+              <span className="hidden md:inline">REVIEW MODE</span><span className="md:hidden">REVIEW</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="text-xs md:text-sm font-semibold text-slate-500">
+              Question <span className="text-[#0F766E] font-bold">{reviewQuestionIdx + 1}</span> of {totalQ}
+            </span>
+            <button
+              onClick={() => { setReviewStudent(null); setReviewQuestionIdx(0); setAppState(AppState.TEACHER_PLAYING); }}
+              className="p-1.5 md:p-2 rounded-lg bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-600 transition-colors border border-slate-200"
+              title="Close"
+            >
+              <XCircle size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* STUDENT DROPDOWN */}
+      <div className="max-w-7xl mx-auto w-full px-3 md:px-4 pt-3 shrink-0">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">Student:</label>
+          <select
+            value={reviewStudent ? `${reviewStudent.name}|${reviewStudent.timestamp}` : ''}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (!val) { setReviewStudent(null); return; }
+              const [name, ts] = val.split('|');
+              const student = sortedEntries.find(s => s.name === name && s.timestamp === Number(ts));
+              setReviewStudent(student || null);
+              setReviewQuestionIdx(0);
+            }}
+            className="w-full p-2 md:p-2.5 rounded-lg border-2 border-slate-200 focus:border-[#0F766E] focus:outline-none text-sm font-medium text-slate-700 bg-slate-50 transition-colors"
+          >
+            <option value="">— Select a student —</option>
+            {sortedEntries.map((entry, idx) => {
+              const correct = entry.answers ? Object.values(entry.answers).filter(Boolean).length : 0;
+              const total = entry.answers ? Object.keys(entry.answers).length : 0;
+              return (
+                <option key={idx} value={`${entry.name}|${entry.timestamp}`}>
+                  {entry.name} ({entry.className}) — {correct}/{total} — {fmtTime(entry.timeSpent)}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      {!reviewStudent ? (
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center text-slate-400">
+            <UserIcon size={48} className="mx-auto mb-3 opacity-40" />
+            <p className="font-medium text-lg">Select a student to review</p>
+            <p className="text-sm mt-1">{sortedEntries.length} student(s) submitted</p>
+          </div>
+        </div>
+      ) : currentQ ? (
+        <div className="flex-1 max-w-7xl mx-auto w-full px-3 md:px-4 py-3 flex flex-col md:flex-row gap-3 md:gap-4 min-h-0 overflow-hidden">
+          {/* LEFT: Reading Passage */}
+          <div className="md:w-1/2 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0 max-h-[40vh] md:max-h-none">
+            <div className="p-2.5 bg-slate-50 border-b border-slate-200 shrink-0">
+              <span className="text-[10px] md:text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                <BookOpen size={14} /> READING PASSAGE
+              </span>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <ReadingPassage content={READING_PASSAGE} />
+            </div>
+          </div>
+
+          {/* RIGHT: Question + Answers */}
+          <div className="md:w-1/2 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0">
+            {/* Question header */}
+            <div className="p-3 md:p-4 bg-gradient-to-r from-[#0F766E] to-[#14B8A6] text-white shrink-0">
+              <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                  Stage {reviewQuestionIdx + 1}
+                </span>
+                <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                  Multiple Choice
+                </span>
+                {studentAnswerCorrect !== undefined && (
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${isCorrectAnswer ? 'bg-green-400/30 text-green-100' : 'bg-red-400/30 text-red-100'
+                    }`}>
+                    {isCorrectAnswer ? '✅ Correct' : '❌ Incorrect'}
+                  </span>
+                )}
+              </div>
+              <h3 className="text-sm md:text-base font-bold leading-relaxed">{currentQ.content}</h3>
+            </div>
+
+            {/* Answer options */}
+            <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2">
+              {currentQ.options.map(opt => {
+                const isCorrect = opt.id === currentQ.correctAnswerId;
+                const isStudentPick = opt.id === studentSelectedId;
+                const hasData = studentAnswerCorrect !== undefined;
+
+                let bgClass = 'bg-slate-50 border-slate-200 text-slate-600';
+                if (hasData) {
+                  if (isCorrect) bgClass = 'bg-green-50 border-green-400 text-green-800';
+                  else if (isStudentPick && !isCorrect) bgClass = 'bg-red-50 border-red-400 text-red-700';
+                  else bgClass = 'bg-slate-50 border-slate-100 text-slate-400';
+                }
+
+                return (
+                  <div key={opt.id} className={`p-3 rounded-xl border-2 ${bgClass} flex items-center justify-between`}>
+                    <span className="text-sm font-medium">{opt.text}</span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {hasData && isStudentPick && (
+                        <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">STUDENT</span>
+                      )}
+                      {hasData && isCorrect && <CheckCircle2 size={18} className="text-green-600" />}
+                      {hasData && isStudentPick && !isCorrect && <XCircle size={18} className="text-red-500" />}
+                    </div>
+                  </div>
+                );
+              })}
+              {studentAnswerCorrect !== undefined && !studentSelectedId && (
+                <div className="text-xs text-slate-400 text-center mt-2 bg-slate-50 p-2 rounded-lg">
+                  ℹ️ Detailed answer choice not available for older submissions
+                </div>
+              )}
+            </div>
+
+            {/* PREV / NEXT */}
+            <div className="p-3 border-t border-slate-200 bg-slate-50 shrink-0">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
+                  disabled={reviewQuestionIdx === 0}
+                  className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={18} /> PREV
+                </button>
+                <button
+                  onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
+                  disabled={reviewQuestionIdx === totalQ - 1}
+                  className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0d9488] text-white font-bold text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  NEXT <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const renderResult = () => {
+  const totalQuestions = questions.length || 10;
+  const correctCount = Object.values(userAnswers).filter(Boolean).length;
+  const accuracy = Math.round((correctCount / totalQuestions) * 100);
+  const timeSpent = 480 - timeLeft;
+  const mins = Math.floor(timeSpent / 60);
+  const secs = timeSpent % 60;
+  const timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+  // Badge logic
+  let badge = '';
+  let badgeMsg = '';
+  let badgeGrad = '';
+  if (accuracy === 100) {
+    badge = '👑 Challenge Champion';
+    badgeMsg = "Outstanding! You've mastered the challenge.";
+    badgeGrad = 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
+  } else if (accuracy >= 85) {
+    badge = '🥇 Skillful Reader';
+    badgeMsg = 'Excellent performance!';
+    badgeGrad = 'linear-gradient(135deg, #d97706 0%, #fbbf24 100%)';
+  } else if (accuracy >= 70) {
+    badge = '🥈 Active Achiever';
+    badgeMsg = "Well done! You're on the right track.";
+    badgeGrad = 'linear-gradient(135deg, #64748b 0%, #94a3b8 100%)';
+  } else if (accuracy >= 50) {
+    badge = '🥉 Rising Learner';
+    badgeMsg = 'Good effort! Keep improving.';
+    badgeGrad = 'linear-gradient(135deg, #92400e 0%, #b45309 100%)';
+  }
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center p-4" style={{ background: 'var(--bg-primary)' }}>
+      <div className="max-w-md w-full mx-auto animate-fade-in">
+        {/* Header circle */}
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: '0 0 40px rgba(32,180,134,0.5)' }}>
+              <CheckCircle2 className="w-12 h-12 text-white" />
+            </div>
+            <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)' }} />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h2 className="text-2xl md:text-3xl font-black text-center mb-1 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Challenge Complete!</h2>
+        <p className="text-center text-sm mb-8" style={{ color: 'var(--text-muted)' }}>Your performance summary</p>
+
+        {/* Stats card */}
+        <div className="rounded-2xl p-5 mb-4" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: '0 4px 20px rgba(32,180,134,0.1)' }}>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Score</div>
+              <div className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{correctCount}/{totalQuestions}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{accuracy}% accuracy</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>Time</div>
+              <div className="text-4xl font-black font-mono" style={{ background: 'linear-gradient(135deg, #20B486 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{timeString}</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>minutes used</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Badge */}
+        {badge && (
+          <div
+            className="rounded-xl p-3 mb-6 text-center"
+            style={{ background: badgeGrad, boxShadow: '0 0 20px rgba(32,180,134,0.25)' }}
+          >
+            <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5 text-white/70">Badge Earned</div>
+            <div className="text-lg font-black text-white">{badge}</div>
+            <div className="text-xs text-white/80 mt-0.5 font-medium">{badgeMsg}</div>
+          </div>
+        )}
+
+        {/* CTAs */}
+        <div className="space-y-3">
+          {/* Primary: View Leaderboard */}
+          <button
+            onClick={() => setAppState(AppState.LEADERBOARD)}
+            className="w-full py-4 rounded-2xl font-black text-white text-lg tracking-wide flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02]"
+            style={{
+              background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)',
+              boxShadow: '0 4px 24px rgba(32,180,134,0.4)'
+            }}
+            onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 6px 32px rgba(32,180,134,0.6)')}
+            onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(32,180,134,0.4)')}
+          >
+            <Trophy size={22} /> View Leaderboard
+          </button>
+
+          {/* Secondary: Review Answers */}
+          <button
+            onClick={() => {
+              setReviewQuestionIdx(0);
+              setAppState(AppState.STUDENT_REVIEW);
+            }}
+            className="w-full py-3.5 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.01]"
+            style={{
+              background: 'var(--card-bg)',
+              border: '1.5px solid var(--card-border)',
+              color: 'var(--text-secondary)'
+            }}
+            onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 0 16px rgba(32,180,134,0.2)')}
+            onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
+          >
+            <Eye size={20} /> Review Answers
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// =====================================================
+// STUDENT REVIEW — Read-only
+// =====================================================
+const renderStudentReview = () => {
+  const gameQuestions = questions.length > 0 ? questions : FALLBACK_QUESTIONS.slice(0, 10);
+  const totalQ = gameQuestions.length;
+  const currentQ = gameQuestions[reviewQuestionIdx];
+  if (!currentQ) return null;
+
+  const studentSelectedId = selectedAnswerMap[currentQ.id];
+  const isAnsweredCorrectly = userAnswers[currentQ.id] === true;
+
+  return (
+    <div className="min-h-screen md:h-screen flex flex-col font-['Poppins']" style={{ background: 'var(--bg-primary)' }}>
+
+      {/* HEADER */}
+      <div className="shrink-0 z-50" style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)', boxShadow: '0 1px 8px rgba(32,180,134,0.08)' }}>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #20B486 0%, #3B82F6 100%)' }}>
+              <Eye size={14} />
+              <span>REVIEW MODE</span>
+            </div>
+            <span className="text-sm hidden md:block" style={{ color: 'var(--text-muted)' }}>{user.name}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-mono" style={{ color: 'var(--text-muted)' }}>
+              Q<span className="font-bold" style={{ color: 'var(--text-primary)' }}>{reviewQuestionIdx + 1}</span>/{totalQ}
+            </span>
+            <button
+              onClick={() => { setReviewQuestionIdx(0); setAppState(AppState.RESULT); }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold transition-colors"
+              style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
+            >
+              <ChevronLeft size={16} /> Back to Results
+            </button>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="h-1 w-full" style={{ background: 'var(--bg-secondary)' }}>
+          <div
+            className="h-full transition-all duration-500"
+            style={{
+              width: `${((reviewQuestionIdx + 1) / totalQ) * 100}%`,
+              background: 'linear-gradient(90deg, #20B486 0%, #3B82F6 100%)'
+            }}
+          />
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div className="flex-1 max-w-7xl mx-auto w-full p-4 flex flex-col md:flex-row gap-4 min-h-0 overflow-hidden">
+
+        {/* LEFT: Reading Passage */}
+        <div
+          className="md:flex-1 rounded-2xl overflow-y-auto"
+          style={{
+            background: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            padding: '20px',
+            maxHeight: '45vh',
+            boxShadow: '0 2px 8px rgba(32,180,134,0.06)'
+          }}
+        >
+          <div className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: 'var(--primary)' }}>
+            <BookOpen size={12} /> Reading Passage
+          </div>
+          <ReadingPassage content={READING_PASSAGE} />
+        </div>
+
+        {/* RIGHT: Question + Answers (read-only) */}
+        <div className="md:flex-1 flex flex-col min-h-0">
+          <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: '0 2px 12px rgba(32,180,134,0.08)' }}>
+
+            {/* Question header */}
+            <div className="shrink-0 p-4" style={{ borderBottom: '1px solid var(--card-border)' }}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ background: 'var(--tag-bg)', color: 'var(--tag-text)' }}>
+                  Question {reviewQuestionIdx + 1}
+                </span>
+                {userAnswers[currentQ.id] !== undefined && (
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${isAnsweredCorrectly
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-600'
+                    }`}>
+                    {isAnsweredCorrectly ? '✓ Correct' : '✗ Incorrect'}
+                  </span>
+                )}
+              </div>
+              <p className="font-semibold text-base md:text-lg leading-relaxed" style={{ color: 'var(--text-primary)' }}>{currentQ.content}</p>
+            </div>
+
+            {/* Answer options — read-only, no hover */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+              {currentQ.options.map(opt => {
+                const isCorrect = opt.id === currentQ.correctAnswerId;
+                const isStudentPick = opt.id === studentSelectedId;
+                const hasData = userAnswers[currentQ.id] !== undefined;
+
+                // Determine display style
+                let optStyle: React.CSSProperties = {};
+                let icon = null;
+
+                if (!hasData) {
+                  optStyle = { background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', opacity: 0.8 };
+                } else if (isCorrect && isStudentPick) {
+                  optStyle = { background: 'rgba(34,197,94,0.15)', border: '2px solid var(--success)', boxShadow: '0 0 12px rgba(34,197,94,0.2)' };
+                  icon = <CheckCircle2 size={20} className="text-green-500 shrink-0" />;
+                } else if (isCorrect && !isStudentPick) {
+                  optStyle = { background: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.5)' };
+                  icon = <CheckCircle2 size={20} className="text-green-400 shrink-0" />;
+                } else if (!isCorrect && isStudentPick) {
+                  optStyle = { background: 'rgba(239,68,68,0.1)', border: '2px solid var(--error)', boxShadow: '0 0 12px rgba(239,68,68,0.15)' };
+                  icon = <XCircle size={20} className="text-red-500 shrink-0" />;
+                } else {
+                  optStyle = { background: 'var(--card-soft)', border: '1px solid var(--card-border)', opacity: 0.5 };
+                }
+
+                return (
+                  <div
+                    key={opt.id}
+                    className="w-full p-3.5 rounded-xl flex items-center justify-between gap-3 cursor-default"
+                    style={optStyle}
+                  >
+                    <span className={`text-sm md:text-base font-semibold`} style={{ color: isCorrect ? 'var(--primary-active)' : (isStudentPick && !isCorrect ? 'var(--error)' : 'var(--text-secondary)') }}>{opt.text}</span>
+                    {icon}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* PREV / NEXT */}
+            <div className="shrink-0 p-3" style={{ borderTop: '1px solid var(--card-border)' }}>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setReviewQuestionIdx(Math.max(0, reviewQuestionIdx - 1))}
+                  disabled={reviewQuestionIdx === 0}
+                  className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', color: 'var(--text-secondary)' }}
+                >
+                  <ChevronLeft size={18} /> PREV
+                </button>
+                <button
+                  onClick={() => setReviewQuestionIdx(Math.min(totalQ - 1, reviewQuestionIdx + 1))}
+                  disabled={reviewQuestionIdx === totalQ - 1}
+                  className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: reviewQuestionIdx === totalQ - 1 ? 'none' : '0 2px 12px rgba(32,180,134,0.35)' }}
+                >
+                  NEXT <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const renderLeaderboard = () => (
+  <LeaderboardDashboard
+    entries={leaderboard}
+    onReset={resetLeaderboard}
+    onExit={() => isTeacherMode ? setAppState(AppState.TEACHER_PLAYING) : setAppState(AppState.RESULT)}
+    isSyncing={isSyncing}
+    isTeacherMode={isTeacherMode}
+    currentUserName={isTeacherMode ? '' : user.name}
+    onViewMyAttempt={isTeacherMode ? undefined : () => { setReviewQuestionIdx(0); setAppState(AppState.STUDENT_REVIEW); }}
+  />
+);
+
+
+return (
+  <div>
+    {appState === AppState.LOADING && (
+      <div
+        className="min-h-screen flex items-center justify-center text-center font-['Poppins']"
+        style={{ background: 'var(--bg-primary)' }}
+      >
+        <div className="flex flex-col items-center gap-5">
+          <div
+            className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin"
+            style={{ borderColor: 'rgba(32,180,134,0.25)', borderTopColor: 'var(--primary)' }}
+          />
+          <p className="text-base font-semibold tracking-wide animate-pulse" style={{ color: 'var(--text-muted)' }}>{loadingText}</p>
+        </div>
+      </div>
+    )}
+    {appState === AppState.LOGIN && renderLogin()}
+    {appState === AppState.PLAYING && renderPlaying()}
+    {appState === AppState.RESULT && renderResult()}
+    {appState === AppState.STUDENT_REVIEW && renderStudentReview()}
+    {appState === AppState.LEADERBOARD && renderLeaderboard()}
+    {appState === AppState.TEACHER_PLAYING && renderTeacherPlaying()}
+    {appState === AppState.TEACHER_REVIEW && renderTeacherReview()}
+  </div>
+);
 };
 
 export default App;
