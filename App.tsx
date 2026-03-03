@@ -28,7 +28,9 @@ import {
   Lock,
   ChevronLeft,
   ChevronRight,
-  Eye
+  Eye,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 
 const TEACHER_PIN = '1234';
@@ -53,6 +55,7 @@ const App: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Teacher Mode State
   const [isTeacherMode, setIsTeacherMode] = useState(false);
@@ -69,6 +72,21 @@ const App: React.FC = () => {
   const [selectedAnswerMap, setSelectedAnswerMap] = useState<Record<string, string>>({});
 
   // --- Effects ---
+
+  // Fullscreen toggle
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(console.error);
+    } else {
+      document.exitFullscreen().catch(console.error);
+    }
+  };
+
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handler);
+    return () => document.removeEventListener('fullscreenchange', handler);
+  }, []);
 
   // Initialize Leaderboard & Settings
   useEffect(() => {
@@ -491,17 +509,31 @@ const App: React.FC = () => {
               <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">Reading Challenge</span>
             </div>
 
-            {/* Right: Timer */}
-            <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono font-black text-base md:text-xl shrink-0 ${isUrgent ? 'animate-pulse' : ''}`}
-              style={{
-                background: isUrgent ? 'rgba(220,38,38,0.2)' : 'rgba(102,126,234,0.15)',
-                border: isUrgent ? '1.5px solid rgba(220,38,38,0.5)' : '1.5px solid rgba(102,126,234,0.4)',
-                color: isUrgent ? '#f87171' : '#a5b4fc'
-              }}
-            >
-              <Clock size={16} />
-              {timerString}
+            {/* Right: Fullscreen (desktop only) + Timer */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={toggleFullscreen}
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200 hover:brightness-125"
+                style={{
+                  background: 'rgba(102,126,234,0.15)',
+                  border: '1.5px solid rgba(102,126,234,0.4)',
+                  color: '#a5b4fc'
+                }}
+                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+              >
+                {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+              </button>
+              <div
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono font-black text-base md:text-xl shrink-0 ${isUrgent ? 'animate-pulse' : ''}`}
+                style={{
+                  background: isUrgent ? 'rgba(220,38,38,0.2)' : 'rgba(102,126,234,0.15)',
+                  border: isUrgent ? '1.5px solid rgba(220,38,38,0.5)' : '1.5px solid rgba(102,126,234,0.4)',
+                  color: isUrgent ? '#f87171' : '#a5b4fc'
+                }}
+              >
+                <Clock size={16} />
+                {timerString}
+              </div>
             </div>
           </div>
 
@@ -595,7 +627,7 @@ const App: React.FC = () => {
                     Question {currentStage + 1} / 10
                   </span>
                 </div>
-                <p className="text-white font-bold text-sm md:text-base leading-snug">{currentQ.content}</p>
+                <p className="text-white font-bold text-sm md:text-2xl leading-snug">{currentQ.content}</p>
               </div>
 
               {/* Options — shrink to fit, no scroll */}
@@ -651,7 +683,7 @@ const App: React.FC = () => {
                       className={`w-full px-4 py-2.5 md:py-3 rounded-xl text-left flex justify-between items-center transition-all duration-200 ${!isAnswerConfirmed && !isSelected ? 'hover:brightness-125' : ''}`}
                       style={optStyle}
                     >
-                      <span className={`text-sm md:text-base ${textClass}`}>{opt.text}</span>
+                      <span className={`text-sm md:text-[17px] ${textClass}`}>{opt.text}</span>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {statusIcon}
                         {!isAnswerConfirmed && isSelected && (
@@ -672,7 +704,7 @@ const App: React.FC = () => {
                   <button
                     onClick={checkAnswer}
                     disabled={!selectedAnswer}
-                    className="w-full py-3 rounded-xl font-black text-white text-sm md:text-base tracking-wide transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
                     style={{
                       background: selectedAnswer
                         ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
@@ -723,7 +755,7 @@ const App: React.FC = () => {
                       {/* Next Stage button */}
                       <button
                         onClick={nextStage}
-                        className="w-full py-3 rounded-xl font-black text-white text-sm tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110"
+                        className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110"
                         style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 4px 20px rgba(102,126,234,0.4)' }}
                       >
                         <Play size={16} className="fill-current" />
@@ -766,6 +798,13 @@ const App: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>
                 TEACHER MODE
               </div>
+              <button
+                onClick={toggleFullscreen}
+                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors border border-slate-200"
+                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+              >
+                {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+              </button>
               <button
                 onClick={() => setAppState(AppState.TEACHER_REVIEW)}
                 className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors border border-slate-200"
