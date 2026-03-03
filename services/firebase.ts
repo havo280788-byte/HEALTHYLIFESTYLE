@@ -26,17 +26,24 @@ export const addLeaderboardEntry = async (entry: LeaderboardEntry) => {
 };
 
 export const subscribeToLeaderboard = (callback: (entries: LeaderboardEntry[]) => void) => {
-    const q = query(collection(db, COLLECTION_NAME), orderBy("timeSpent", "asc"), limit(100)); // Ordered by fastest time
+    // We order by timeSpent asc at the DB level, but we will re-sort 
+    // on the client to handle Score DESC then Time ASC.
+    const q = query(collection(db, COLLECTION_NAME), limit(100));
 
     return onSnapshot(q, (snapshot) => {
         const entries: LeaderboardEntry[] = [];
         snapshot.forEach((doc) => {
             entries.push(doc.data() as LeaderboardEntry);
         });
-        // Secondary sort just in case (though firestore handles primary)
-        // Client side might want to sort by Score DESC then Time ASC if we use score
-        // But currently game logic is "Fastest Time" primary for winning.
-        // Let's stick to Time ASC as per query.
+
+        // Client-side sort: Priority 1: Score (Highest first), Priority 2: Time (Fastest first)
+        entries.sort((a, b) => {
+            if (b.score !== a.score) {
+                return b.score - a.score; // Score Descending
+            }
+            return a.timeSpent - b.timeSpent; // Time Ascending for same score
+        });
+
         callback(entries);
     });
 };
