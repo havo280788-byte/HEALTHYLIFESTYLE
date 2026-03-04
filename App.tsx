@@ -935,7 +935,7 @@ const App: React.FC = () => {
                           style={letterStyle}>
                           {hasRevealed && isCorrectAnswer ? <CheckCircle2 size={18} /> : letter}
                         </div>
-                        <span className="font-bold text-sm md:text-lg flex-1">{opt.content}</span>
+                        <span className="font-bold text-sm md:text-lg flex-1">{opt.text}</span>
                         {hasRevealed && isCorrectAnswer && (
                           <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-green-600 shadow-sm">
                             ✓
