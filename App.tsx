@@ -8,6 +8,7 @@ import ProgressNavigation from './components/ProgressNavigation';
 import ReadingPassage from './components/ReadingPassage';
 import LeaderboardDashboard from './components/LeaderboardDashboard';
 import FeedbackOverlay from './components/FeedbackOverlay';
+import QuizCard from './components/QuizCard';
 import { addLeaderboardEntry, subscribeToLeaderboard, resetLeaderboard } from './services/firebase';
 import {
   Trophy,
@@ -610,165 +611,89 @@ const App: React.FC = () => {
           {/* RIGHT: Question Card — no inner scroll */}
           <div
             className="md:flex-1 flex flex-col min-h-0">
+            <QuizCard
+              question={currentQ}
+              selectedAnswer={selectedAnswer}
+              isAnswerConfirmed={isAnswerConfirmed}
+              onSelect={handleAnswerSelect}
+              feedbackMessage={feedbackMessage}
+              currentStage={currentStage}
+            />
+
+            {/* Footer: CHECK ANSWER or NEXT STAGE (Outside QuizCard for easier state management) */}
             <div
-              className="flex flex-col flex-1 rounded-2xl md:overflow-hidden"
+              className="shrink-0 p-3 md:p-4 mt-2"
               style={{
                 background: 'var(--card-bg)',
                 border: '1px solid var(--card-border)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                borderRadius: '1rem',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
               }}
             >
-              {/* Question header */}
-              <div
-                className="shrink-0 p-3 md:p-4"
-                style={{ borderBottom: '1px solid var(--card-border)' }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full"
-                    style={{ background: 'var(--tag-bg)', color: 'var(--tag-text)' }}
-                  >
-                    Question {currentStage + 1} / 10
-                  </span>
-                </div>
-                <p className="font-bold text-sm md:text-2xl leading-snug" style={{ color: 'var(--text-primary)' }}>{currentQ.content}</p>
-              </div>
-
-              {/* Options — shrink to fit, no scroll */}
-              <div className="flex-1 flex flex-col justify-center p-3 md:p-4 gap-2 min-h-0">
-                {currentQ.options.map(opt => {
-                  const isSelected = selectedAnswer === opt.id;
-                  const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
-                  const isWrongSelection = isSelected && !isCorrectAnswer && isAnswerConfirmed;
-                  const isCorrectSelection = isSelected && isCorrectAnswer && isAnswerConfirmed;
-
-                  let optStyle: React.CSSProperties = {};
-                  let textClass = '';
-                  let statusIcon = null;
-
-                  if (!isAnswerConfirmed) {
-                    if (isSelected) {
-                      optStyle = {
-                        background: 'rgba(32,180,134,0.2)',
-                        border: '2px solid var(--primary)',
-                        boxShadow: '0 0 15px rgba(32,180,134,0.25)'
-                      };
-                      textClass = 'font-bold';
-                    } else {
-                      optStyle = {
-                        background: 'var(--bg-secondary)',
-                        border: '1.5px solid var(--card-border)'
-                      };
-                    }
-                  } else {
-                    if (isCorrectSelection) {
-                      optStyle = { background: 'rgba(34,197,94,0.2)', border: '2px solid var(--success)', boxShadow: '0 0 15px rgba(34,197,94,0.3)' };
-                      textClass = 'font-bold';
-                      statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
-                    } else if (isWrongSelection) {
-                      optStyle = { background: 'rgba(239,68,68,0.15)', border: '2px solid var(--error)', boxShadow: '0 0 15px rgba(239,68,68,0.2)' };
-                      textClass = 'font-bold';
-                      statusIcon = <XCircle size={18} className="text-red-400 shrink-0" />;
-                    } else if (isCorrectAnswer) {
-                      optStyle = { background: 'rgba(34,197,94,0.12)', border: '2px solid rgba(34,197,94,0.4)' };
-                      textClass = '';
-                      statusIcon = <CheckCircle2 size={18} className="text-green-400 shrink-0" />;
-                    } else {
-                      optStyle = { background: 'var(--card-soft)', border: '1px solid var(--card-border)', opacity: 0.5 };
-                      textClass = '';
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={opt.id}
-                      onClick={() => handleAnswerSelect(opt.id)}
-                      disabled={isAnswerConfirmed}
-                      className={`w-full px-4 py-2.5 md:py-3 rounded-xl text-left flex justify-between items-center transition-all duration-200 ${!isAnswerConfirmed && !isSelected ? 'hover:brightness-95' : ''}`}
-                      style={optStyle}
+              {!isAnswerConfirmed ? (
+                <button
+                  onClick={checkAnswer}
+                  disabled={!selectedAnswer}
+                  className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{
+                    background: selectedAnswer
+                      ? 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)'
+                      : 'var(--card-border)',
+                    boxShadow: selectedAnswer ? '0 4px 20px rgba(32,180,134,0.35)' : 'none'
+                  }}
+                >
+                  CHECK ANSWER
+                </button>
+              ) : (() => {
+                const isCorrect = feedbackMessage === 'CORRECT!';
+                const successMessages: Record<number, string> = {
+                  1: '🏃 Great start!', 2: '⏱ Smart choice!', 3: '🏠 Well done!',
+                  4: '📱 Stay active!', 5: '🥗 Strong work!', 6: '⭐ Brilliant!',
+                  7: '🪞 Nice balance!', 8: '💪 Great progress!', 9: '🌳 Fantastic!', 10: '🏆 Outstanding!'
+                };
+                return (
+                  <div className="space-y-2 animate-fade-in">
+                    {/* Feedback banner */}
+                    <div
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                      style={isCorrect
+                        ? { background: 'rgba(34,197,94,0.12)', border: '1.5px solid var(--success)' }
+                        : { background: 'rgba(239,68,68,0.08)', border: '1.5px solid var(--error)' }
+                      }
                     >
-                      <span className={`text-sm md:text-[17px] ${textClass}`} style={{ color: isAnswerConfirmed ? undefined : (isSelected ? 'var(--primary-active)' : 'var(--text-secondary)') }}>{opt.text}</span>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {statusIcon}
-                        {!isAnswerConfirmed && isSelected && (
-                          <div className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--primary)' }} />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Footer: CHECK ANSWER or inline feedback */}
-              <div
-                className="shrink-0 p-3 md:p-4"
-                style={{ borderTop: '1px solid var(--card-border)' }}
-              >
-                {!isAnswerConfirmed ? (
-                  <button
-                    onClick={checkAnswer}
-                    disabled={!selectedAnswer}
-                    className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
-                    style={{
-                      background: selectedAnswer
-                        ? 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)'
-                        : 'var(--card-border)',
-                      boxShadow: selectedAnswer ? '0 4px 20px rgba(32,180,134,0.35)' : 'none'
-                    }}
-                  >
-                    CHECK ANSWER
-                  </button>
-                ) : (() => {
-                  const isCorrect = feedbackMessage === 'CORRECT!';
-                  const successMessages: Record<number, string> = {
-                    1: '🏃 Great start!', 2: '⏱ Smart choice!', 3: '🏠 Well done!',
-                    4: '📱 Stay active!', 5: '🥗 Strong work!', 6: '⭐ Brilliant!',
-                    7: '🪞 Nice balance!', 8: '💪 Great progress!', 9: '🌳 Fantastic!', 10: '🏆 Outstanding!'
-                  };
-                  return (
-                    <div className="space-y-2 animate-fade-in">
-                      {/* Feedback banner */}
                       <div
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                        style={isCorrect
-                          ? { background: 'rgba(34,197,94,0.12)', border: '1.5px solid var(--success)' }
-                          : { background: 'rgba(239,68,68,0.08)', border: '1.5px solid var(--error)' }
-                        }
+                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                        style={isCorrect ? { background: 'rgba(34,197,94,0.2)' } : { background: 'rgba(239,68,68,0.15)' }}
                       >
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                          style={isCorrect ? { background: 'rgba(34,197,94,0.2)' } : { background: 'rgba(239,68,68,0.15)' }}
-                        >
+                        {isCorrect
+                          ? <CheckCircle2 size={18} className="text-green-500" />
+                          : <XCircle size={18} className="text-red-500" />
+                        }
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-black text-sm" style={isCorrect ? { color: 'var(--success)' } : { color: 'var(--error)' }}>
+                          {isCorrect ? 'Correct!' : 'Incorrect'}
+                        </div>
+                        <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                           {isCorrect
-                            ? <CheckCircle2 size={18} className="text-green-500" />
-                            : <XCircle size={18} className="text-red-500" />
+                            ? successMessages[currentStage + 1] || 'Well done!'
+                            : 'Incorrect. Please review the passage.'
                           }
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-black text-sm" style={isCorrect ? { color: 'var(--success)' } : { color: 'var(--error)' }}>
-                            {isCorrect ? 'Correct!' : 'Incorrect'}
-                          </div>
-                          <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                            {isCorrect
-                              ? successMessages[currentStage + 1] || 'Well done!'
-                              : 'Incorrect. Please review the passage.'
-                            }
-                          </div>
-                        </div>
                       </div>
-                      {/* Next Stage button */}
-                      <button
-                        onClick={nextStage}
-                        className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110"
-                        style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: '0 4px 20px rgba(32,180,134,0.35)' }}
-                      >
-                        <Play size={16} className="fill-current" />
-                        {currentStage < 9 ? 'NEXT STAGE' : 'SEE RESULTS'}
-                      </button>
                     </div>
-                  );
-                })()}
-              </div>
+                    {/* Next Stage button */}
+                    <button
+                      onClick={nextStage}
+                      className="w-full py-3 rounded-xl font-black text-white text-sm md:text-[17px] tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:brightness-110"
+                      style={{ background: 'linear-gradient(135deg, #20B486 0%, #1AA376 100%)', boxShadow: '0 4px 20px rgba(32,180,134,0.35)' }}
+                    >
+                      <Play size={16} className="fill-current" />
+                      {currentStage < 9 ? 'NEXT STAGE' : 'SEE RESULTS'}
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -847,146 +772,53 @@ const App: React.FC = () => {
 
           {/* RIGHT: Question (Teacher Mode) */}
           <div className="flex flex-col min-h-0 md:flex-1">
-            <div className="rounded-2xl md:overflow-hidden relative flex flex-col flex-1 min-h-0"
-              style={{
-                background: 'var(--card-bg)',
-                border: '1px solid var(--card-border)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-              }}>
+            <QuizCard
+              question={currentQ}
+              selectedAnswer={teacherSelectedAnswer}
+              isTeacherMode={true}
+              onSelect={(id) => setTeacherSelectedAnswer(id)}
+              currentStage={currentStage}
+            />
 
-              {/* Card Header */}
-              <div className="p-3 md:p-4 flex justify-between items-center"
-                style={{ borderBottom: '1px solid var(--card-border)' }}>
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                  style={{ background: 'var(--tag-bg)', color: 'var(--tag-text)' }}>
-                  Stage {currentStage + 1}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Multiple Choice</span>
-                </div>
-              </div>
+            {/* Action Bar */}
+            <div className="p-4 md:px-6 md:py-4 flex items-center justify-between gap-4 mt-2"
+              style={{ border: '1px solid var(--card-border)', borderRadius: '1rem', background: 'var(--card-bg)', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+              <button
+                onClick={teacherPrevStage}
+                disabled={currentStage === 0}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                ← Prev
+              </button>
 
-              {/* Question + options with letter labels */}
-              <div className="p-4 md:p-5 flex-1 flex flex-col overflow-y-auto min-h-0">
-                <h2 className="text-sm md:text-2xl font-bold mb-4 leading-snug" style={{ color: 'var(--text-primary)' }}>
-                  {currentQ.content
-                  }</h2>
-
-                <div className="space-y-2.5">
-                  {currentQ.options.map((opt, idx) => {
-                    const letter = String.fromCharCode(65 + idx); // A, B, C, D
-                    const isCorrectAnswer = opt.id === currentQ.correctAnswerId;
-                    const hasRevealed = teacherSelectedAnswer !== null;
-
-                    let optStyle: React.CSSProperties = {
-                      background: 'var(--bg-secondary)',
-                      border: '1.5px solid var(--card-border)',
-                      color: 'var(--text-primary)'
-                    };
-                    let letterStyle: React.CSSProperties = {
-                      background: 'rgba(255,255,255,0.05)',
-                      color: 'var(--text-muted)'
-                    };
-
-                    if (hasRevealed) {
-                      if (isCorrectAnswer) {
-                        optStyle = {
-                          background: 'var(--success)',
-                          border: '1.5px solid var(--success)',
-                          color: 'var(--text-inverse)'
-                        };
-                        letterStyle = {
-                          background: 'rgba(255,255,255,0.25)',
-                          color: 'var(--text-inverse)'
-                        };
-                      } else if (opt.id === teacherSelectedAnswer) {
-                        optStyle = {
-                          background: 'var(--error)',
-                          border: '1.5px solid var(--error)',
-                          color: 'var(--text-inverse)'
-                        };
-                        letterStyle = {
-                          background: 'rgba(255,255,255,0.25)',
-                          color: 'var(--text-inverse)'
-                        };
-                      } else {
-                        optStyle = {
-                          background: 'var(--bg-secondary)',
-                          border: '1.5px solid var(--card-border)',
-                          color: 'var(--text-muted)',
-                          opacity: 0.6
-                        };
-                        letterStyle = {
-                          background: 'rgba(255,255,255,0.03)',
-                          color: 'var(--text-muted)'
-                        };
-                      }
-                    }
-
-                    return (
-                      <button
-                        key={opt.id}
-                        onClick={() => !hasRevealed && setTeacherSelectedAnswer(opt.id)}
-                        disabled={hasRevealed}
-                        className="w-full text-left p-3 md:p-4 rounded-xl transition-all duration-200 flex items-center gap-4 group"
-                        style={optStyle}
-                      >
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-base md:text-xl shrink-0 transition-colors"
-                          style={letterStyle}>
-                          {hasRevealed && isCorrectAnswer ? <CheckCircle2 size={18} /> : letter}
-                        </div>
-                        <span className="font-bold text-sm md:text-lg flex-1">{opt.text}</span>
-                        {hasRevealed && isCorrectAnswer && (
-                          <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-green-600 shadow-sm">
-                            ✓
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Action Bar */}
-              <div className="p-4 md:px-6 md:py-4 flex items-center justify-between gap-4"
-                style={{ borderTop: '1px solid var(--card-border)', background: 'rgba(0,0,0,0.1)' }}>
+              <div className="flex gap-3">
                 <button
-                  onClick={teacherPrevStage}
-                  disabled={currentStage === 0}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100"
-                  style={{ color: 'var(--text-muted)' }}
+                  onClick={() => setTeacherSelectedAnswer(currentQ.correctAnswerId)}
+                  disabled={teacherSelectedAnswer !== null}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                  style={{ background: 'var(--accent)' }}
                 >
-                  ← Prev
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  REVEAL
                 </button>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setTeacherSelectedAnswer(currentQ.correctAnswerId)}
-                    disabled={teacherSelectedAnswer !== null}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
-                    style={{ background: 'var(--accent)' }}
-                  >
-                    <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                    REVEAL
-                  </button>
-
-                  <button
-                    onClick={teacherNextStage}
-                    disabled={currentStage === 9}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-white shadow-lg transition-all hover:brightness-110 active:scale-95 disabled:opacity-30"
-                    style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--card-border)' }}
-                  >
-                    NEXT →
-                  </button>
-                </div>
-
                 <button
-                  onClick={exitTeacherMode}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all hover:scale-105 text-rose-400 hover:text-rose-300"
+                  onClick={teacherNextStage}
+                  disabled={currentStage === 9}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-white shadow-lg transition-all hover:brightness-110 active:scale-95 disabled:opacity-30"
+                  style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--card-border)' }}
                 >
-                  Exit ➜
+                  NEXT →
                 </button>
               </div>
+
+              <button
+                onClick={exitTeacherMode}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all hover:scale-105 text-rose-400 hover:text-rose-300"
+              >
+                Exit ➜
+              </button>
             </div>
           </div>
         </div>
