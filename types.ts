@@ -17,6 +17,17 @@ export interface Question {
   explanation: string;
 }
 
+export interface GameItem {
+  id: string;
+  text: string;
+  target: 'mind' | 'body';
+}
+
+export interface DragDropContent {
+  activities: GameItem[];
+  reasons: GameItem[];
+}
+
 export interface User {
   name: string;
   className: string;
