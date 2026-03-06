@@ -182,7 +182,7 @@ const App: React.FC = () => {
               icon={<UserIcon size={18} />}
               placeholder="e.g. Ms Vo Thi Thu Ha"
               value={user.name}
-              onChange={(v) => setUser({ ...user, name: v })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUser({ ...user, name: e.target.value })}
               required
             />
             <Input
@@ -190,7 +190,7 @@ const App: React.FC = () => {
               icon={<Trophy size={18} />}
               placeholder="e.g. 6A1"
               value={user.className}
-              onChange={(v) => setUser({ ...user, className: v })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUser({ ...user, className: e.target.value })}
               required
             />
           </div>

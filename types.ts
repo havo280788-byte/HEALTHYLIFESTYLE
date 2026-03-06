@@ -1,22 +1,3 @@
-export enum QuestionType {
-  TRUE_FALSE = 'TRUE_FALSE',
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE'
-}
-
-export interface Option {
-  id: string;
-  text: string;
-}
-
-export interface Question {
-  id: string;
-  type: QuestionType;
-  content: string;
-  options: Option[];
-  correctAnswerId: string;
-  explanation: string;
-}
-
 export interface GameItem {
   id: string;
   text: string;
@@ -39,8 +20,7 @@ export interface LeaderboardEntry {
   score: number;
   timeSpent: number; // in seconds
   timestamp: number;
-  answers?: Record<string, boolean>; // map of questionId -> isCorrect
-  selectedAnswers?: Record<string, string>; // map of questionId -> selected optionId
+  answers?: Record<string, boolean>; // for compatibility
 }
 
 export interface GameSettings {

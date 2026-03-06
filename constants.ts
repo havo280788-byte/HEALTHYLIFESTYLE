@@ -1,30 +1,13 @@
-import { Question, QuestionType } from './types';
-
 export const GEMINI_MODELS = [
   { id: 'gemini-3-flash-preview', name: 'Gemini 3.0 Flash (Fast)' },
   { id: 'gemini-3-pro-preview', name: 'Gemini 3.0 Pro (Smart)' },
   { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Stable)' }
 ];
 
-export const GAME_STAGES = [
-  "Getting Started",
-  "Mini Workouts",
-  "Home Exercise",
-  "Fitness Apps",
-  "Healthy Diet",
-  "Tracking Progress",
-  "Smart Mirror",
-  "Fitness Technology",
-  "Outdoor Activities",
-  "Champion"
-];
-
-export const STAGE_ICONS = ["🏃", "⏱", "🏠", "📱", "🥗", "⭐", "🪞", "💪", "🌳", "🏆"];
-
 export const THEME_COLORS = {
-  primary: '#0F766E', // Deep Teal
-  secondary: '#14B8A6', // Fresh Teal
-  accent: '#5EEAD4', // Mint Light
+  primary: '#2563eb', // Blue
+  secondary: '#1d4ed8', // Darker Blue
+  accent: '#60a5fa', // Blue Light
   success: '#22c55e', // Green
   warning: '#eab308', // Yellow
   error: '#ef4444', // Red
